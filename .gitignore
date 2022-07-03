@@ -35,3 +35,7 @@ out/
 
 ### VS Code ###
 .vscode/
+
+### APM ###
+apm-server-7.15.0-darwin-x86_64
+apm-server-7.15.0-darwin-x86_64.tar.gz
