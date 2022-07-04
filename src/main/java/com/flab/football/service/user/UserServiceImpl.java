@@ -4,7 +4,7 @@ import com.flab.football.domain.User;
 import com.flab.football.exception.AlreadyExistEmailException;
 import com.flab.football.exception.NotValidEmailException;
 import com.flab.football.exception.NotValidPasswordException;
-import com.flab.football.repository.user.UserRepository;
+import com.flab.football.repository.user.JpaUserRepository;
 import com.flab.football.service.user.command.SignUpCommand;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -20,7 +20,7 @@ import org.springframework.stereotype.Service;
 @RequiredArgsConstructor
 public class UserServiceImpl implements UserService {
 
-  private final UserRepository userRepository;
+  private final JpaUserRepository userRepository;
 
   private final PasswordEncoder passwordEncoder;
 
@@ -44,7 +44,7 @@ public class UserServiceImpl implements UserService {
         .address(commandDto.getAddress())
         .build();
 
-    userRepository.save(user);
+    userRepository.persist(user);
 
   }
 
@@ -74,7 +74,7 @@ public class UserServiceImpl implements UserService {
   // @Transactional(readOnly = true)
   public User findByEmail(String email) {
 
-    return userRepository.findByEmail(email);
+    return userRepository.findByEmail(email).get();
 
   }
 
@@ -82,7 +82,7 @@ public class UserServiceImpl implements UserService {
   // @Transactional(readOnly = true)
   public boolean isExistEmail(String email) {
 
-    return userRepository.isExistEmail(email);
+    return userRepository.existsByEmail(email);
 
   }
 
