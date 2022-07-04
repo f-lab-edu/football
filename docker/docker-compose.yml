@@ -1,0 +1,24 @@
+version : "3"
+services:
+  db:
+    platform: linux/x86_64
+    container_name: football_db
+    image: mysql
+    environment:
+      MYSQL_DATABASE: football_db
+      MYSQL_USER: football
+      MYSQL_PASSWORD: 1234
+      MYSQL_ROOT_PASSWORD: 1234
+    volumes:
+      - ./db/data:/var/lib/mysql:rw
+    ports:
+      - "3307:3307"
+    restart: always
+
+  redis-docker:
+    container_name: football_redis
+    image: redis:latest
+    volumes:
+      - ./example-docker-data/redis:/data
+    ports:
+      - "6380:6380"
