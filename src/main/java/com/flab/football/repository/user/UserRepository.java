@@ -2,14 +2,12 @@ package com.flab.football.repository.user;
 
 import com.flab.football.domain.User;
 import java.util.Optional;
-import org.springframework.stereotype.Repository;
 
 /**
  * UserRepository 인터페이스.
  */
 
-@Repository
-public interface JpaUserRepository {
+public interface UserRepository {
 
   void persist(User user);
 
