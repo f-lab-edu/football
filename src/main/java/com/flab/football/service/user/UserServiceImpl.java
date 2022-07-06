@@ -6,10 +6,12 @@ import com.flab.football.exception.NotValidEmailException;
 import com.flab.football.exception.NotValidPasswordException;
 import com.flab.football.repository.user.UserRepository;
 import com.flab.football.service.user.command.SignUpCommand;
+import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 /**
  * 회원 관리 요청에 대한 비즈니스 처리를 담당하는 서비스.
@@ -25,7 +27,7 @@ public class UserServiceImpl implements UserService {
   private final PasswordEncoder passwordEncoder;
 
   @Override
-  // @Transactional
+  @Transactional
   public void signUp(SignUpCommand commandDto) {
 
     if (isExistEmail(commandDto.getEmail())) {
@@ -37,28 +39,46 @@ public class UserServiceImpl implements UserService {
     String encodedPassword = passwordEncoder.encode(commandDto.getPassword());
 
     User user = User.builder()
-        .email(commandDto.getEmail())
-        .password(encodedPassword)
-        .name(commandDto.getName())
-        .phone(commandDto.getPhone())
-        .address(commandDto.getAddress())
-        .build();
+      .email(commandDto.getEmail())
+      .password(encodedPassword)
+      .name(commandDto.getName())
+      .phone(commandDto.getPhone())
+      .gender(commandDto.getGender())
+      .build();
 
-    userRepository.persist(user);
+    userRepository.save(user);
 
   }
 
   @Override
-  //@Transactional(readOnly = true)
-  public User findByEmailAndPw(String email, String password) {
+  @Transactional(readOnly = true)
+  public boolean isExistEmail(String email) {
 
-    User user = findByEmail(email);
+    return userRepository.existsByEmail(email);
 
-    if (user == null) {
+  }
+
+  @Override
+  @Transactional(readOnly = true)
+  public User findByEmail(String email) {
+
+    Optional<User> user = userRepository.findByEmail(email);
+
+    if (user.isEmpty()) {
 
       throw new NotValidEmailException("이메일을 잘못 입력했습니다.");
 
     }
+
+    return user.get();
+
+  }
+
+  @Override
+  @Transactional(readOnly = true)
+  public User findByEmailAndPw(String email, String password) {
+
+    User user = findByEmail(email);
 
     if (!passwordEncoder.matches(password, user.getPassword())) {
 
@@ -67,22 +87,6 @@ public class UserServiceImpl implements UserService {
     }
 
     return user;
-
-  }
-
-  @Override
-  // @Transactional(readOnly = true)
-  public User findByEmail(String email) {
-
-    return userRepository.findByEmail(email).get();
-
-  }
-
-  @Override
-  // @Transactional(readOnly = true)
-  public boolean isExistEmail(String email) {
-
-    return userRepository.existsByEmail(email);
 
   }
 
