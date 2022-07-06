@@ -21,7 +21,7 @@ repositories {
 dependencies {
 
 	// Flyway
-	// implementation 'org.flywaydb:flyway-core:5.2.4'
+	implementation 'org.flywaydb:flyway-core:5.2.4'
 
 	// MySql
 	implementation 'mysql:mysql-connector-java'
