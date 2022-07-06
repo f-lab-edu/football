@@ -1,5 +1,6 @@
 package com.flab.football.service.user.command;
 
+import com.flab.football.domain.User;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -17,6 +18,6 @@ public class SignUpCommand {
   private String password;
   private String name;
   private String phone;
-  private String address;
+  private User.Gender gender;
 
 }
