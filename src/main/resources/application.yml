@@ -1,0 +1,28 @@
+spring:
+  datasource:
+    master:
+      hikari:
+        jdbc-url: jdbc:mysql://localhost:3306/football_db?characterEncoding=UTF-8
+        username: football
+        password: 1234
+        driver-class-name: com.mysql.cj.jdbc.Driver
+        read-only: false
+
+    slave:
+      hikari:
+        jdbc-url: jdbc:mysql://localhost:3306/football_db?characterEncoding=UTF-8
+        username: football
+        password: 1234
+        driver-class-name: com.mysql.cj.jdbc.Driver
+        read-only: true
+
+  jpa:
+    database : Mysql
+    show-sql: true
+    hibernate:
+      format_sql: true
+      ddl-auto: none
+
+#  flyway:
+#    enabled: true
+#    baseline-on-migrate: true
