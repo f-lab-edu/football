@@ -9,6 +9,7 @@ import static org.mockito.Mockito.when;
 
 import com.flab.football.domain.User;
 import com.flab.football.domain.User.Gender;
+import com.flab.football.domain.User.Role;
 import com.flab.football.exception.AlreadyExistEmailException;
 import com.flab.football.exception.NotValidEmailException;
 import com.flab.football.exception.NotValidPasswordException;
@@ -50,8 +51,9 @@ class UserServiceImplTest {
   String name = "name";
   String phone = "010-0000-0000";
   User.Gender gender = Gender.MALE;
+  User.Role role = Role.ROLE_ADMIN;
 
-  SignUpCommand command = new SignUpCommand(email, password, name, phone, gender);
+  SignUpCommand command = new SignUpCommand(email, password, name, phone, gender, role);
 
   User user = User.builder()
       .email(email)
@@ -59,6 +61,7 @@ class UserServiceImplTest {
       .name(name)
       .phone(phone)
       .gender(gender)
+      .role(role)
       .build();
 
   @Test
@@ -85,6 +88,7 @@ class UserServiceImplTest {
     assertThat(user.getName()).isEqualTo(command.getName());
     assertThat(user.getPhone()).isEqualTo(command.getPhone());
     assertThat(user.getGender()).isEqualTo(command.getGender());
+    assertThat(user.getRole()).isEqualTo(command.getRole());
 
   }
 
