@@ -5,5 +5,6 @@ CREATE TABLE user (
   name VARCHAR(255),
   phone VARCHAR(255),
   gender VARCHAR(255),
+  role VARCHAR(255),
   PRIMARY KEY (id)
   );

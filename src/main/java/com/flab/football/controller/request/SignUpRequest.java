@@ -34,6 +34,9 @@ public class SignUpRequest {
   @NotNull
   private User.Gender gender;
 
+  @NotNull
+  private User.Role role;
+
   /**
    * SignUpCommand 객체 생성을 위한 팩토리 메소드.
    */
@@ -44,7 +47,8 @@ public class SignUpRequest {
       requestDto.getPassword(),
       requestDto.getName(),
       requestDto.getPhone(),
-      requestDto.getGender()
+      requestDto.getGender(),
+      requestDto.getRole()
     );
   }
 }

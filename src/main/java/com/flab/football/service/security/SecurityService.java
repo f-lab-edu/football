@@ -6,7 +6,7 @@ package com.flab.football.service.security;
 
 public interface SecurityService {
 
-  void logIn(int userId);
+  void logIn(String email, String password);
 
   void logOut();
 

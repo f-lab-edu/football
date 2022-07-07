@@ -11,6 +11,7 @@ import com.flab.football.service.user.UserService;
 import javax.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -69,11 +70,12 @@ public class UserController {
    */
 
   @PostMapping("/login")
+  @PreAuthorize("hasAnyRole('ROLE_USER','ROLE_ADMIN')")
   public ResponseDto logIn(@Valid @RequestBody LogInRequest requestDto) {
 
     User user = userService.findByEmailAndPw(requestDto.getEmail(), requestDto.getPassword());
 
-    securityService.logIn(user.getId());
+    securityService.logIn(user.getEmail(), user.getPassword());
 
     return new ResponseDto(true, null, "로그인 성공", null);
 
