@@ -12,12 +12,14 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 
 /**
  * User Entity 클래스.
  */
 
+@Setter
 @Getter
 @Builder
 @AllArgsConstructor
@@ -48,6 +50,7 @@ public class User {
   public enum Role {
 
     ROLE_USER,
+    ROLE_MANAGER,
     ROLE_ADMIN
 
   }

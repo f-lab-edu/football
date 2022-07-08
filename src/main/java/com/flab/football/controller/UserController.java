@@ -6,14 +6,19 @@ import com.flab.football.controller.response.ResponseDto;
 import com.flab.football.service.security.SecurityService;
 import com.flab.football.service.user.UserService;
 import com.flab.football.util.SecurityUtil;
+import java.util.Optional;
 import javax.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 /**
@@ -103,6 +108,19 @@ public class UserController {
 
     return new ResponseDto(true, null, "로그인 체크", null);
 
+  }
+
+  /**
+   * 매니저로 권한을 변경하기 위한 API.
+   */
+
+  @PatchMapping("/update/role")
+  @PreAuthorize("hasAnyRole('ROLE_ADMIN')")
+  public ResponseDto changeRoleToManager(@RequestParam("email") String email) {
+
+    userService.updateUserRole(email);
+
+    return new ResponseDto(true, null, "매니저 권한 변경", null);
   }
 
 }

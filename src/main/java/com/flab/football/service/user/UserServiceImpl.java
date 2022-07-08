@@ -1,11 +1,14 @@
 package com.flab.football.service.user;
 
 import com.flab.football.domain.User;
+import com.flab.football.domain.User.Role;
 import com.flab.football.exception.AlreadyExistEmailException;
+import com.flab.football.exception.NotLogInBrowserException;
 import com.flab.football.exception.NotValidEmailException;
 import com.flab.football.exception.NotValidPasswordException;
 import com.flab.football.repository.user.UserRepository;
 import com.flab.football.service.user.command.SignUpCommand;
+import com.flab.football.util.SecurityUtil;
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -104,6 +107,23 @@ public class UserServiceImpl implements UserService {
     }
 
     return user;
+
+  }
+
+  @Override
+  public void updateUserRole(String email) {
+
+    Optional<User> user = userRepository.findByEmail(email);
+
+    if (user.isEmpty()) {
+
+      throw new NotValidEmailException("이메일을 잘못 입력했습니다.");
+
+    }
+
+    user.get().setRole(Role.ROLE_MANAGER);
+
+    userRepository.save(user.get());
 
   }
 
