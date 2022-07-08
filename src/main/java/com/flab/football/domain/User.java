@@ -40,6 +40,18 @@ public class User {
 
   }
 
+  /**
+   * 접근 권한을 구분하기 위한 Enum 클래스.
+   */
+
+  @Getter
+  public enum Role {
+
+    ROLE_USER,
+    ROLE_ADMIN
+
+  }
+
   @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
   @Column(name = "id", unique = true, nullable = false)
   private int id;
@@ -59,5 +71,9 @@ public class User {
   @Enumerated(EnumType.STRING)
   @Column(name = "gender")
   private Gender gender;
+
+  @Enumerated(EnumType.STRING)
+  @Column(name = "role")
+  private Role role;
 
 }

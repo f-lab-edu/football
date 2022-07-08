@@ -9,6 +9,7 @@ import static org.mockito.Mockito.when;
 
 import com.flab.football.domain.User;
 import com.flab.football.domain.User.Gender;
+import com.flab.football.domain.User.Role;
 import com.flab.football.exception.AlreadyExistEmailException;
 import com.flab.football.exception.NotValidEmailException;
 import com.flab.football.exception.NotValidPasswordException;
@@ -50,8 +51,9 @@ class UserServiceImplTest {
   String name = "name";
   String phone = "010-0000-0000";
   User.Gender gender = Gender.MALE;
+  User.Role role = Role.ROLE_ADMIN;
 
-  SignUpCommand command = new SignUpCommand(email, password, name, phone, gender);
+  SignUpCommand command = new SignUpCommand(email, password, name, phone, gender, role);
 
   User user = User.builder()
       .email(email)
@@ -59,6 +61,7 @@ class UserServiceImplTest {
       .name(name)
       .phone(phone)
       .gender(gender)
+      .role(role)
       .build();
 
   @Test
@@ -69,7 +72,7 @@ class UserServiceImplTest {
     final ArgumentCaptor<User> userCap = ArgumentCaptor.forClass(User.class);
 
     // when
-    when(userService.isExistEmail(command.getEmail())).thenReturn(false);
+    when(userService.checkValidEmail(command.getEmail())).thenReturn(false);
 
     when(passwordEncoder.encode(command.getPassword())).thenReturn(command.getPassword());
 
@@ -85,6 +88,7 @@ class UserServiceImplTest {
     assertThat(user.getName()).isEqualTo(command.getName());
     assertThat(user.getPhone()).isEqualTo(command.getPhone());
     assertThat(user.getGender()).isEqualTo(command.getGender());
+    assertThat(user.getRole()).isEqualTo(command.getRole());
 
   }
 
@@ -95,7 +99,7 @@ class UserServiceImplTest {
     // given
 
     // when
-    when(userService.isExistEmail(command.getEmail())).thenReturn(true);
+    when(userService.checkValidEmail(command.getEmail())).thenReturn(true);
 
     // then
     assertThatThrownBy(() -> userService.signUp(command))
@@ -112,7 +116,7 @@ class UserServiceImplTest {
     // when
     when(userRepository.existsByEmail(email)).thenReturn(true);
 
-    boolean result = userService.isExistEmail(email);
+    boolean result = userService.checkValidEmail(email);
 
     // then
     verify(userRepository, times(1)).existsByEmail(email);
@@ -190,6 +194,43 @@ class UserServiceImplTest {
 
     // then
     assertThatThrownBy(() -> userService.findByEmailAndPw(email, password))
+        .isInstanceOf(NotValidPasswordException.class);
+
+  }
+
+  @Test
+  @DisplayName("이메일, 패스워드로 회원 유효성 검사 테스트 - 정상적인 경우")
+  void checkValidEmailAndPw() {
+
+    // given
+    Optional<User> optionalUser = Optional.of(user);
+
+    // when
+    when(userRepository.findByEmail(email)).thenReturn(optionalUser);
+
+    when(passwordEncoder.matches(password, user.getPassword())).thenReturn(true);
+
+    boolean result = userService.checkValidEmailAndPw(email, password);
+
+    // then
+    assertThat(result).isTrue();
+
+  }
+
+  @Test
+  @DisplayName("이메일, 패스워드로 회원 유효성 검사 테스트 - 예외처리")
+  void checkValidEmailAndPwException() {
+
+    // given
+    Optional<User> optionalUser = Optional.of(user);
+
+    // when
+    when(userRepository.findByEmail(email)).thenReturn(optionalUser);
+
+    when(passwordEncoder.matches(password, user.getPassword())).thenReturn(false);
+
+    // then
+    assertThatThrownBy(() -> userService.checkValidEmailAndPw(email, password))
         .isInstanceOf(NotValidPasswordException.class);
 
   }

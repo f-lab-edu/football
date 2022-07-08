@@ -1,13 +1,11 @@
 package com.flab.football.controller;
 
-import com.flab.football.annotation.CheckLogIn;
-import com.flab.football.annotation.LogInUserId;
 import com.flab.football.controller.request.LogInRequest;
 import com.flab.football.controller.request.SignUpRequest;
 import com.flab.football.controller.response.ResponseDto;
-import com.flab.football.domain.User;
 import com.flab.football.service.security.SecurityService;
 import com.flab.football.service.user.UserService;
+import com.flab.football.util.SecurityUtil;
 import javax.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -52,9 +50,9 @@ public class UserController {
   @GetMapping("/{email}/exists")
   public ResponseDto checkEmail(@PathVariable String email) {
 
-    boolean existEmail = userService.isExistEmail(email);
+    boolean isExistEmail = userService.checkValidEmail(email);
 
-    if (existEmail) {
+    if (isExistEmail) {
 
       return new ResponseDto(true, null, "이미 존재하는 이메일", null);
 
@@ -69,11 +67,13 @@ public class UserController {
    */
 
   @PostMapping("/login")
-  public ResponseDto logIn(@Valid @RequestBody LogInRequest requestDto) {
+  public ResponseDto logIn(@Valid @RequestBody LogInRequest request) {
 
-    User user = userService.findByEmailAndPw(requestDto.getEmail(), requestDto.getPassword());
+    if (userService.checkValidEmailAndPw(request.getEmail(), request.getPassword())) {
 
-    securityService.logIn(user.getId());
+      securityService.logIn(request.getEmail(), request.getPassword());
+
+    }
 
     return new ResponseDto(true, null, "로그인 성공", null);
 
@@ -97,10 +97,9 @@ public class UserController {
    */
 
   @GetMapping("/login/check")
-  @CheckLogIn
-  public ResponseDto logInCheck(@LogInUserId int userId) {
+  public ResponseDto logInCheck() {
 
-    log.info("SigIn UserId = {}", userId);
+    SecurityUtil.getCurrentEmail().ifPresent(System.out::println);
 
     return new ResponseDto(true, null, "로그인 체크", null);
 

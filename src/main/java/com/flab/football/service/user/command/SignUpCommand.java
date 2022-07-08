@@ -19,5 +19,6 @@ public class SignUpCommand {
   private String name;
   private String phone;
   private User.Gender gender;
+  private User.Role role;
 
 }
