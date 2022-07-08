@@ -1,17 +1,14 @@
 package com.flab.football.controller;
 
-import com.flab.football.annotation.CheckLogIn;
-import com.flab.football.annotation.LogInUserId;
 import com.flab.football.controller.request.LogInRequest;
 import com.flab.football.controller.request.SignUpRequest;
 import com.flab.football.controller.response.ResponseDto;
-import com.flab.football.domain.User;
 import com.flab.football.service.security.SecurityService;
 import com.flab.football.service.user.UserService;
+import com.flab.football.util.SecurityUtil;
 import javax.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -100,10 +97,9 @@ public class UserController {
    */
 
   @GetMapping("/login/check")
-  @CheckLogIn
-  public ResponseDto logInCheck(@LogInUserId int userId) {
+  public ResponseDto logInCheck() {
 
-    log.info("SigIn UserId = {}", userId);
+    SecurityUtil.getCurrentEmail().ifPresent(System.out::println);
 
     return new ResponseDto(true, null, "로그인 체크", null);
 

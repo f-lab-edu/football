@@ -44,7 +44,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
           // 인증 절차를 생략할 API를 지정
           .and()
           .authorizeRequests()
-          .antMatchers("/user/**").permitAll()
+          .antMatchers("/user/signup", "/user/login").permitAll()
 
           // 그 외 API는 인증 절차 수행
           .anyRequest().authenticated()
