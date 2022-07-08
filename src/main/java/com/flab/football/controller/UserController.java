@@ -53,9 +53,9 @@ public class UserController {
   @GetMapping("/{email}/exists")
   public ResponseDto checkEmail(@PathVariable String email) {
 
-    boolean existEmail = userService.isExistEmail(email);
+    boolean isExistEmail = userService.checkValidEmail(email);
 
-    if (existEmail) {
+    if (isExistEmail) {
 
       return new ResponseDto(true, null, "이미 존재하는 이메일", null);
 
@@ -70,12 +70,13 @@ public class UserController {
    */
 
   @PostMapping("/login")
-  @PreAuthorize("hasAnyRole('ROLE_USER','ROLE_ADMIN')")
-  public ResponseDto logIn(@Valid @RequestBody LogInRequest requestDto) {
+  public ResponseDto logIn(@Valid @RequestBody LogInRequest request) {
 
-    User user = userService.findByEmailAndPw(requestDto.getEmail(), requestDto.getPassword());
+    if (userService.checkValidEmailAndPw(request.getEmail(), request.getPassword())) {
 
-    securityService.logIn(user.getEmail(), user.getPassword());
+      securityService.logIn(request.getEmail(), request.getPassword());
+
+    }
 
     return new ResponseDto(true, null, "로그인 성공", null);
 

@@ -23,7 +23,9 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
   @Bean
   public PasswordEncoder passwordEncoder() {
+
     return new BCryptPasswordEncoder();
+
   }
 
   @Override
@@ -44,7 +46,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
           .authorizeRequests()
           .antMatchers("/user/**").permitAll()
 
-          // 그 외 APIsms 인증 절차 수행
+          // 그 외 API는 인증 절차 수행
           .anyRequest().authenticated()
 
           // JwtSecurityConfig 클래스 적용

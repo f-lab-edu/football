@@ -72,7 +72,7 @@ class UserServiceImplTest {
     final ArgumentCaptor<User> userCap = ArgumentCaptor.forClass(User.class);
 
     // when
-    when(userService.isExistEmail(command.getEmail())).thenReturn(false);
+    when(userService.checkValidEmail(command.getEmail())).thenReturn(false);
 
     when(passwordEncoder.encode(command.getPassword())).thenReturn(command.getPassword());
 
@@ -99,7 +99,7 @@ class UserServiceImplTest {
     // given
 
     // when
-    when(userService.isExistEmail(command.getEmail())).thenReturn(true);
+    when(userService.checkValidEmail(command.getEmail())).thenReturn(true);
 
     // then
     assertThatThrownBy(() -> userService.signUp(command))
@@ -116,7 +116,7 @@ class UserServiceImplTest {
     // when
     when(userRepository.existsByEmail(email)).thenReturn(true);
 
-    boolean result = userService.isExistEmail(email);
+    boolean result = userService.checkValidEmail(email);
 
     // then
     verify(userRepository, times(1)).existsByEmail(email);

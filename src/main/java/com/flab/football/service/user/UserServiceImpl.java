@@ -30,7 +30,7 @@ public class UserServiceImpl implements UserService {
   @Transactional
   public void signUp(SignUpCommand commandDto) {
 
-    if (isExistEmail(commandDto.getEmail())) {
+    if (checkValidEmail(commandDto.getEmail())) {
 
       throw new AlreadyExistEmailException("이미 존재하는 이메일입니다");
 
@@ -53,7 +53,7 @@ public class UserServiceImpl implements UserService {
 
   @Override
   @Transactional(readOnly = true)
-  public boolean isExistEmail(String email) {
+  public boolean checkValidEmail(String email) {
 
     return userRepository.existsByEmail(email);
 
@@ -72,6 +72,22 @@ public class UserServiceImpl implements UserService {
     }
 
     return user.get();
+
+  }
+
+  @Override
+  @Transactional(readOnly = true)
+  public boolean checkValidEmailAndPw(String email, String password) {
+
+    User user = findByEmail(email);
+
+    if (!passwordEncoder.matches(password, user.getPassword())) {
+
+      throw new NotValidPasswordException("비밀번호를 잘못 입력했습니다.");
+
+    }
+
+    return true;
 
   }
 
