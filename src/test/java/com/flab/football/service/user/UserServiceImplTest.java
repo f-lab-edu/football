@@ -197,4 +197,41 @@ class UserServiceImplTest {
         .isInstanceOf(NotValidPasswordException.class);
 
   }
+
+  @Test
+  @DisplayName("이메일, 패스워드로 회원 유효성 검사 테스트 - 정상적인 경우")
+  void checkValidEmailAndPw() {
+
+    // given
+    Optional<User> optionalUser = Optional.of(user);
+
+    // when
+    when(userRepository.findByEmail(email)).thenReturn(optionalUser);
+
+    when(passwordEncoder.matches(password, user.getPassword())).thenReturn(true);
+
+    boolean result = userService.checkValidEmailAndPw(email, password);
+
+    // then
+    assertThat(result).isTrue();
+
+  }
+
+  @Test
+  @DisplayName("이메일, 패스워드로 회원 유효성 검사 테스트 - 예외처리")
+  void checkValidEmailAndPwException() {
+
+    // given
+    Optional<User> optionalUser = Optional.of(user);
+
+    // when
+    when(userRepository.findByEmail(email)).thenReturn(optionalUser);
+
+    when(passwordEncoder.matches(password, user.getPassword())).thenReturn(false);
+
+    // then
+    assertThatThrownBy(() -> userService.checkValidEmailAndPw(email, password))
+        .isInstanceOf(NotValidPasswordException.class);
+
+  }
 }
