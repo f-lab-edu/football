@@ -12,6 +12,10 @@ import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
+/**
+ * Spring Security 관련 설정 파일.
+ */
+
 @EnableWebSecurity
 @EnableGlobalMethodSecurity(prePostEnabled = true)
 @RequiredArgsConstructor
@@ -21,12 +25,20 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
   private final JwtAccessDeniedHandler jwtAccessDeniedHandler;
   private final JwtSecurityConfig jwtSecurityConfig;
 
+  /**
+   * 암호화 방식 선택.
+   */
+
   @Bean
   public PasswordEncoder passwordEncoder() {
 
     return new BCryptPasswordEncoder();
 
   }
+
+  /**
+   * HTTP 관련 설정을 메소드를 통해 선언할 수 있도록 지원해주는 메소드.
+   */
 
   @Override
   protected void configure(HttpSecurity http) throws Exception {

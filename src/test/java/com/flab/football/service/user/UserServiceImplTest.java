@@ -11,6 +11,7 @@ import com.flab.football.domain.User;
 import com.flab.football.domain.User.Gender;
 import com.flab.football.domain.User.Role;
 import com.flab.football.exception.AlreadyExistEmailException;
+import com.flab.football.exception.AlreadyManagerRoleException;
 import com.flab.football.exception.NotValidEmailException;
 import com.flab.football.exception.NotValidPasswordException;
 import com.flab.football.repository.user.UserRepository;
@@ -34,6 +35,18 @@ class UserServiceImplTest {
 
   PasswordEncoder passwordEncoder;
 
+  // 데이터 생성
+  String email = "email@email.com";
+  String password = "password1234";
+  String name = "name";
+  String phone = "010-0000-0000";
+  User.Gender gender = Gender.MALE;
+  User.Role role = Role.ROLE_USER;
+
+  SignUpCommand command;
+
+  User user;
+
   @BeforeEach
   void setUp() {
 
@@ -43,26 +56,18 @@ class UserServiceImplTest {
 
     userService = new UserServiceImpl(userRepository, passwordEncoder);
 
+    command = new SignUpCommand(email, password, name, phone, gender, role);
+
+    user = User.builder()
+        .email(email)
+        .password(password)
+        .name(name)
+        .phone(phone)
+        .gender(gender)
+        .role(role)
+        .build();
+
   }
-
-  // 데이터 생성
-  String email = "email@email.com";
-  String password = "password1234";
-  String name = "name";
-  String phone = "010-0000-0000";
-  User.Gender gender = Gender.MALE;
-  User.Role role = Role.ROLE_ADMIN;
-
-  SignUpCommand command = new SignUpCommand(email, password, name, phone, gender, role);
-
-  User user = User.builder()
-      .email(email)
-      .password(password)
-      .name(name)
-      .phone(phone)
-      .gender(gender)
-      .role(role)
-      .build();
 
   @Test
   @DisplayName("회원가입 테스트 - 정상적인 경우")
@@ -234,4 +239,58 @@ class UserServiceImplTest {
         .isInstanceOf(NotValidPasswordException.class);
 
   }
+
+  @Test
+  @DisplayName("매니저 권한 변경 테스트 - 정상적인 경우")
+  void updateUserRoleTest() {
+
+    // given
+    Optional<User> optionalUser = Optional.of(user);
+
+    // when
+    when(userRepository.findById(user.getId())).thenReturn(optionalUser);
+
+    userService.updateUserRole(user.getId());
+
+    // then
+    verify(userRepository, times(1)).findById(user.getId());
+    verify(userRepository, times(1)).save(user);
+
+    assertThat(user.getRole()).isEqualTo(Role.ROLE_MANAGER);
+
+  }
+
+  @Test
+  @DisplayName("매니저 권한 변경 테스트 - 예외처리(이메일 잘못 입력한 경우)")
+  void updateUserRoleException1() {
+
+    // given
+
+    // when
+    when(userRepository.findById(user.getId())).thenReturn(Optional.empty());
+
+    // then
+    assertThatThrownBy(() -> userService.updateUserRole(user.getId()))
+        .isInstanceOf(NotValidEmailException.class);
+
+  }
+
+  @Test
+  @DisplayName("매니저 권한 변경 테스트 - 예외처리(이미 매니저 권한이 있는 경우)")
+  void updateUserRoleException2() {
+
+    // given
+    user.setRole(Role.ROLE_MANAGER);
+
+    Optional<User> optionalUser = Optional.of(user);
+
+    // when
+    when(userRepository.findById(user.getId())).thenReturn(optionalUser);
+
+    // then
+    assertThatThrownBy(() -> userService.updateUserRole(user.getId()))
+        .isInstanceOf(AlreadyManagerRoleException.class);
+
+  }
+
 }

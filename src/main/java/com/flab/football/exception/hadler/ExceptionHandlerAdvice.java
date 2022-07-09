@@ -2,6 +2,7 @@ package com.flab.football.exception.hadler;
 
 import com.flab.football.controller.response.ResponseDto;
 import com.flab.football.exception.AlreadyExistEmailException;
+import com.flab.football.exception.AlreadyManagerRoleException;
 import com.flab.football.exception.NotLogInBrowserException;
 import com.flab.football.exception.NotValidEmailException;
 import com.flab.football.exception.NotValidPasswordException;
@@ -35,7 +36,7 @@ public class ExceptionHandlerAdvice {
   @ExceptionHandler(AlreadyExistEmailException.class)
   public ResponseDto alreadyExistEmailException(AlreadyExistEmailException e) {
 
-    return fail("Unauthorized", e.getMessage());
+    return fail("AlreadyExistEmail", e.getMessage());
 
   }
 
@@ -46,7 +47,7 @@ public class ExceptionHandlerAdvice {
   @ExceptionHandler(NotValidEmailException.class)
   public ResponseDto notValidEmailException(NotValidEmailException e) {
 
-    return fail("Unauthorized", e.getMessage());
+    return fail("NotValidEmail", e.getMessage());
 
   }
 
@@ -57,7 +58,7 @@ public class ExceptionHandlerAdvice {
   @ExceptionHandler(NotValidPasswordException.class)
   public ResponseDto notValidPasswordException(NotValidPasswordException e) {
 
-    return fail("Unauthorized", e.getMessage());
+    return fail("NotValidPassword", e.getMessage());
 
   }
 
@@ -68,7 +69,7 @@ public class ExceptionHandlerAdvice {
   @ExceptionHandler(NotLogInBrowserException.class)
   public ResponseDto notLogInBrowserException(NotLogInBrowserException e) {
 
-    return fail("Unauthorized", e.getMessage());
+    return fail("NotLogInBrowser", e.getMessage());
 
   }
 
@@ -79,7 +80,18 @@ public class ExceptionHandlerAdvice {
   @ExceptionHandler(NotValidTokenException.class)
   public ResponseDto notValidTokenException(NotValidTokenException e) {
 
-    return fail("Unauthorized", e.getMessage());
+    return fail("NotValidToken", e.getMessage());
+
+  }
+
+  /**
+   * 이미 매니저 권한이 부여된 회원인 경우.
+   */
+
+  @ExceptionHandler(AlreadyManagerRoleException.class)
+  public ResponseDto alreadyManagerRoleException(AlreadyManagerRoleException e) {
+
+    return fail("AlreadyManagerRole", e.getMessage());
 
   }
 

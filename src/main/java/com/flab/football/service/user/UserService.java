@@ -19,4 +19,6 @@ public interface UserService {
 
   boolean checkValidEmailAndPw(String email, String password);
 
+  void updateUserRole(int userId);
+
 }
