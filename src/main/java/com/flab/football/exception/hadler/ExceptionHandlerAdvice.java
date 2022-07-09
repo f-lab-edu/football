@@ -3,6 +3,7 @@ package com.flab.football.exception.hadler;
 import com.flab.football.controller.response.ResponseDto;
 import com.flab.football.exception.AlreadyExistEmailException;
 import com.flab.football.exception.AlreadyManagerRoleException;
+import com.flab.football.exception.NotExistStadiumException;
 import com.flab.football.exception.NotLogInBrowserException;
 import com.flab.football.exception.NotValidEmailException;
 import com.flab.football.exception.NotValidPasswordException;
@@ -94,6 +95,19 @@ public class ExceptionHandlerAdvice {
     return fail("AlreadyManagerRole", e.getMessage());
 
   }
+
+  /**
+   * 조회된 구장 정보가 없는 경우.
+   */
+
+  @ExceptionHandler(NotExistStadiumException.class)
+  public ResponseDto notExistStadiumException(NotExistStadiumException e) {
+
+    return fail("NotExistStadium", e.getMessage());
+
+  }
+
+
 
   /**
    * Error 클래스 객체 생성을 위한 팩토리 메서드.
