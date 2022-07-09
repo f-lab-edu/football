@@ -3,6 +3,7 @@ package com.flab.football.service.user;
 import com.flab.football.domain.User;
 import com.flab.football.domain.User.Role;
 import com.flab.football.exception.AlreadyExistEmailException;
+import com.flab.football.exception.AlreadyManagerRoleException;
 import com.flab.football.exception.NotLogInBrowserException;
 import com.flab.football.exception.NotValidEmailException;
 import com.flab.football.exception.NotValidPasswordException;
@@ -111,13 +112,19 @@ public class UserServiceImpl implements UserService {
   }
 
   @Override
-  public void updateUserRole(String email) {
+  public void updateUserRole(int userId) {
 
-    Optional<User> user = userRepository.findByEmail(email);
+    Optional<User> user = userRepository.findById(userId);
 
     if (user.isEmpty()) {
 
       throw new NotValidEmailException("이메일을 잘못 입력했습니다.");
+
+    }
+
+    if (user.get().getRole().equals(Role.ROLE_MANAGER)) {
+
+      throw new AlreadyManagerRoleException("이미 매니저 권한을 가지고 있습니다.");
 
     }
 

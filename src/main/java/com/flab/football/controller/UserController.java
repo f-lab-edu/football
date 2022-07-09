@@ -111,14 +111,15 @@ public class UserController {
   }
 
   /**
-   * 매니저로 권한을 변경하기 위한 API.
+   * 매니저로 권한 변경 API.
+   * 매니저 권한 변경은 관리자에 의해서만 가능하도록 인가를 제한
    */
 
   @PatchMapping("/update/role")
   @PreAuthorize("hasAnyRole('ROLE_ADMIN')")
-  public ResponseDto changeRoleToManager(@RequestParam("email") String email) {
+  public ResponseDto changeRoleToManager(@RequestParam("userId") int userId) {
 
-    userService.updateUserRole(email);
+    userService.updateUserRole(userId);
 
     return new ResponseDto(true, null, "매니저 권한 변경", null);
   }
