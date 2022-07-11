@@ -92,6 +92,10 @@ public class Match {
   @OneToOne(mappedBy = "match")
   private Manager manager;
 
+  @OneToOne
+  @JoinColumn(name = "stadium_id", referencedColumnName = "id")
+  private Stadium stadium;
+
   /**
    * Match_Manger 엔티티 클래스.
    */
