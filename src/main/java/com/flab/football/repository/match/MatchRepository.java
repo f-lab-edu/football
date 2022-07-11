@@ -13,6 +13,9 @@ public interface MatchRepository extends JpaRepository<Match, Integer> {
 
   Match save(Match match);
 
+  Match.Manager save(Match.Manager manager);
+
+
   // member 추가 로직
 
 }

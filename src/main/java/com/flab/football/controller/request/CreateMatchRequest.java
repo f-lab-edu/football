@@ -37,7 +37,7 @@ public class CreateMatchRequest {
       int userId, int stadiumId) {
 
     return new CreateMatchCommand(userId, stadiumId, request.startTime, request.finishTime,
-        request.max, request.min, request.rule, request.level, request.shoes, request.gender);
+        request.min, request.max, request.rule, request.level, request.shoes, request.gender);
 
   }
 
