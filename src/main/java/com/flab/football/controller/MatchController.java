@@ -36,7 +36,7 @@ public class MatchController {
                                  @PathVariable(value = "stadiumId") int stadiumId,
                                  @RequestBody @Valid CreateMatchRequest request) {
 
-    matchService.save(CreateMatchRequest.toCommand(request, userId, stadiumId));
+    matchService.createMatch(CreateMatchRequest.toCommand(request, userId, stadiumId));
 
     return new ResponseDto(true, null, "매치 생성 완료", null);
 
