@@ -1,9 +1,9 @@
 package com.flab.football.service.match.command;
 
-import com.flab.football.domain.Match.MatchInfo.LimitGender;
-import com.flab.football.domain.Match.MatchInfo.LimitLevel;
-import com.flab.football.domain.Match.MatchInfo.LimitShoes;
-import com.flab.football.domain.Match.MatchInfo.Rule;
+import com.flab.football.domain.Match.LimitGender;
+import com.flab.football.domain.Match.LimitLevel;
+import com.flab.football.domain.Match.LimitShoes;
+import com.flab.football.domain.Match.Rule;
 import java.time.LocalDateTime;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -23,9 +23,8 @@ public class CreateMatchCommand {
 
   private LocalDateTime startTime;
   private LocalDateTime finishTime;
-
-  private int max;
   private int min;
+  private int max;
   private Rule rule;
   private LimitLevel level;
   private LimitShoes shoes;
