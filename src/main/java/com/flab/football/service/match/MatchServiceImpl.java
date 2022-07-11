@@ -2,9 +2,11 @@ package com.flab.football.service.match;
 
 import com.flab.football.domain.Match;
 import com.flab.football.domain.Match.Manager;
+import com.flab.football.domain.Stadium;
 import com.flab.football.domain.User;
-import com.flab.football.domain.User.Role;
+import com.flab.football.exception.NotExistStadiumException;
 import com.flab.football.repository.match.MatchRepository;
+import com.flab.football.repository.stadium.StadiumRepository;
 import com.flab.football.repository.user.UserRepository;
 import com.flab.football.service.match.command.CreateMatchCommand;
 import java.util.Optional;
@@ -23,6 +25,8 @@ public class MatchServiceImpl implements MatchService {
 
   private final UserRepository userRepository;
 
+  private final StadiumRepository stadiumRepository;
+
   private final MatchRepository matchRepository;
 
   /**
@@ -37,9 +41,13 @@ public class MatchServiceImpl implements MatchService {
 
       throw new RuntimeException("찾는 회원이 없습니다.");
 
-    } else if (!user.get().getRole().equals(Role.ROLE_MANAGER)) {
+    }
 
-      throw new RuntimeException("매니저 권한이 없는 회원입니다.");
+    Optional<Stadium> stadium = stadiumRepository.findById(command.getStadiumId());
+
+    if (stadium.isEmpty()) {
+
+      throw new NotExistStadiumException("찾는 구장 정보가 없습니다.");
 
     }
 
@@ -60,8 +68,11 @@ public class MatchServiceImpl implements MatchService {
         .gender(command.getGender())
         .build();
 
-    match.setManager(manager);
-    manager.setMatch(match);
+    manager.setMatch(match); // 매치 - 매니저 양방향 관계 설정
+
+    match.setManager(manager); // 매치 - 매니저 양방향 관계 설정
+
+    match.setStadium(stadium.get()); // 매치 - 구장 단방향 관계 설정
 
     matchRepository.save(match);
 

@@ -32,7 +32,7 @@ public class MatchController {
 
   @PostMapping("/user/{userId}/stadium/{stadiumId}")
   @PreAuthorize("hasAnyRole('ROLE_MANAGER')")
-  public ResponseDto createMatch(@PathVariable(value = "userId") int userId,
+  public ResponseDto createMatch(@PathVariable(value = "userId") int userId, // 수정 필요
                                  @PathVariable(value = "stadiumId") int stadiumId,
                                  @RequestBody @Valid CreateMatchRequest request) {
 
