@@ -2,6 +2,7 @@ package com.flab.football.service.match;
 
 import com.flab.football.domain.Match;
 import com.flab.football.domain.Match.Manager;
+import com.flab.football.domain.Match.Member;
 import com.flab.football.domain.Stadium;
 import com.flab.football.domain.User;
 import com.flab.football.exception.NotExistStadiumException;
@@ -33,7 +34,8 @@ public class MatchServiceImpl implements MatchService {
    * 매치 저장 로직.
    */
 
-  public void save(CreateMatchCommand command) {
+  @Override
+  public void createMatch(CreateMatchCommand command) {
 
     Optional<User> user = userRepository.findById(command.getUserId());
 
@@ -78,6 +80,35 @@ public class MatchServiceImpl implements MatchService {
 
   }
 
+  @Override
+  public void applyToParticipant(int userId, int matchId) {
 
+    Optional<User> user = userRepository.findById(userId);
 
+    if (user.isEmpty()) {
+
+      throw new RuntimeException("회원 정보가 일치하지 않습니다.");
+
+    }
+
+    Optional<Match> match = matchRepository.findById(matchId);
+
+    if(match.isEmpty()) {
+
+      throw new RuntimeException("매치 정보가 일치하지 않습니다.");
+
+    }
+
+    Match.Member member = Match.Member.builder()
+        .user(user.get())
+        .match(match.get())
+        .build();
+
+    matchRepository.save(member);
+
+    match.get().getMembers().add(member); // 매치 - 멤버 일대다 관계 생성
+
+    matchRepository.save(match.get()); // 변경 감지 후 insert
+
+  }
 }

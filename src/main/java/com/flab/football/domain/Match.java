@@ -1,12 +1,15 @@
 package com.flab.football.domain;
 
 import java.time.LocalDateTime;
+import java.util.List;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
 import lombok.AllArgsConstructor;
@@ -89,12 +92,16 @@ public class Match {
   @Column(name = "limit_gender")
   private LimitGender gender;
 
-  @OneToOne(mappedBy = "match")
-  private Manager manager;
-
   @OneToOne
   @JoinColumn(name = "stadium_id", referencedColumnName = "id")
   private Stadium stadium;
+
+
+  @OneToOne(mappedBy = "match")
+  private Manager manager;
+
+  @OneToMany(mappedBy = "match")
+  private List<Member> members;
 
   /**
    * Match_Manger 엔티티 클래스.
@@ -121,4 +128,31 @@ public class Match {
     @JoinColumn(name = "user_id", referencedColumnName = "id")
     private User user;
   }
+
+  /**
+   * match_member 엔티티 클래스.
+   */
+
+  @Setter
+  @Getter
+  @Builder
+  @AllArgsConstructor
+  @NoArgsConstructor
+  @Entity
+  @Table(name = "match_member")
+  public static class Member {
+
+    @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "id")
+    private int id;
+
+    @ManyToOne
+    @JoinColumn(name = "match_id", referencedColumnName = "id")
+    private Match match;
+
+    @OneToOne
+    @JoinColumn(name = "user_id", referencedColumnName = "id")
+    private User user;
+  }
+
 }
