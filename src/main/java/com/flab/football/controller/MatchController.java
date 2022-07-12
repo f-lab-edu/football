@@ -36,10 +36,25 @@ public class MatchController {
                                  @PathVariable(value = "stadiumId") int stadiumId,
                                  @RequestBody @Valid CreateMatchRequest request) {
 
-    matchService.save(CreateMatchRequest.toCommand(request, userId, stadiumId));
+    matchService.createMatch(CreateMatchRequest.toCommand(request, userId, stadiumId));
 
     return new ResponseDto(true, null, "매치 생성 완료", null);
 
   }
 
+  /**
+   * 매치 참가 신청 API.
+   * 매치 참가 신청은 일반 사용자만 인가 권한을 부여합니다.
+   */
+
+  @PostMapping("/user/{userId}/match/{matchId}")
+  @PreAuthorize("hasAnyRole('ROLE_USER')")
+  public ResponseDto applyToParticipant(@PathVariable(value = "userId") int userId, // 수정 필요
+                                        @PathVariable(value = "matchId") int matchId) {
+
+    matchService.applyToParticipant(userId, matchId);
+
+    return new ResponseDto(true, null, "참가 신청 완료", null);
+
+  }
 }

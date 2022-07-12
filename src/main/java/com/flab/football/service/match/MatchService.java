@@ -8,6 +8,7 @@ import com.flab.football.service.match.command.CreateMatchCommand;
 
 public interface MatchService {
 
-  void save(CreateMatchCommand command);
+  void createMatch(CreateMatchCommand command);
 
+  void applyToParticipant(int userId, int matchId);
 }
