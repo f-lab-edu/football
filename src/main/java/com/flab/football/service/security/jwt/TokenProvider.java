@@ -63,7 +63,7 @@ public class TokenProvider implements InitializingBean {
    * Authentication 객체의 권한정보를 이용해서 토큰을 생성하는 createToken 메소드 추가.
    */
 
-  public String createToken(Authentication authentication) {
+  public String createToken(Authentication authentication, int userId, String userName) {
 
     String authorities = authentication.getAuthorities()
         .stream()
@@ -73,12 +73,19 @@ public class TokenProvider implements InitializingBean {
     long now = (new Date()).getTime();
     Date validity = new Date(now + this.tokenValidityInMilliseconds);
 
-    return Jwts.builder()
+    Claims claims = Jwts.claims()
         .setSubject(authentication.getName())
-        .claim(AUTHORITIES_KEY, authorities)
+        .setExpiration(validity);
+
+    claims.put(AUTHORITIES_KEY, authorities);
+    claims.put("id", userId);
+    claims.put("name", userName);
+
+    return Jwts.builder()
+        .setClaims(claims)
         .signWith(key, SignatureAlgorithm.HS512)
-        .setExpiration(validity)
         .compact();
+
   }
 
   /**

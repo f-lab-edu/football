@@ -3,9 +3,11 @@ package com.flab.football.controller;
 import com.flab.football.controller.request.LogInRequest;
 import com.flab.football.controller.request.SignUpRequest;
 import com.flab.football.controller.response.ResponseDto;
+import com.flab.football.domain.User;
 import com.flab.football.service.security.SecurityService;
 import com.flab.football.service.user.UserService;
 import com.flab.football.util.SecurityUtil;
+import java.lang.management.OperatingSystemMXBean;
 import java.util.Optional;
 import javax.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -74,11 +76,13 @@ public class UserController {
   @PostMapping("/login")
   public ResponseDto logIn(@Valid @RequestBody LogInRequest request) {
 
-    if (userService.checkValidEmailAndPw(request.getEmail(), request.getPassword())) {
+    User user = userService.findByEmailAndPw(request.getEmail(), request.getPassword());
 
-      securityService.logIn(request.getEmail(), request.getPassword());
-
-    }
+    securityService.logIn(
+        LogInRequest.toCommand(
+          request.getEmail(), request.getPassword(), user.getId(), user.getName()
+      )
+    );
 
     return new ResponseDto(true, null, "로그인 성공", null);
 
