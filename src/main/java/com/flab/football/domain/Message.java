@@ -3,6 +3,8 @@ package com.flab.football.domain;
 import java.time.LocalDateTime;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
@@ -28,10 +30,20 @@ import lombok.Setter;
 @Table(name = "message")
 public class Message {
 
+  @Getter
+  @AllArgsConstructor
+  public enum Type {
+    ENTER, MESSAGE, QUIT
+  }
+
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   @Column(name = "id")
   private int id;
+
+  @Enumerated(EnumType.STRING)
+  @Column(name = "type")
+  private Type type;
 
   @Column(name = "sender")
   private String sender;

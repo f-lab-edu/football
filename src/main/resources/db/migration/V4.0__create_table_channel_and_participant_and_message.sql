@@ -5,8 +5,9 @@ CREATE TABLE `channel` (
 
 CREATE TABLE `message` (
   id INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
-  content VARCHAR(255),
+  type VARCHAR(255),
   sender VARCHAR(255),
+  content VARCHAR(255),
   create_at DATETIME,
   channel_id INT,
   FOREIGN KEY (channel_id) REFERENCES `channel` (id)

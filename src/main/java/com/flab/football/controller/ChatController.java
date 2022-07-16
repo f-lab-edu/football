@@ -8,7 +8,6 @@ import javax.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -45,12 +44,12 @@ public class ChatController {
    * 초대할 수 있는 참가자는 다수가 될 수 있습니다.
    */
 
-  @PatchMapping("/{channelId}")
+  @PostMapping("/{channelId}")
   @PreAuthorize("hasAnyRole('ROLE_MANAGER')")
   public ResponseDto inviteParticipants(@PathVariable(value = "channelId") int channelId,
                                         @RequestBody InviteParticipantsRequest request) {
 
-    chatService.inviteParticipants(channelId, request.getParticipants());
+    chatService.saveParticipants(channelId, request.getParticipants());
 
     return new ResponseDto(true, null, "참가자 초대 완료", null);
 
@@ -63,8 +62,8 @@ public class ChatController {
   @GetMapping
   public ResponseDto findChannels() {
 
-
     return new ResponseDto(true, null, "채팅방 조회", null);
+
   }
 
 }
