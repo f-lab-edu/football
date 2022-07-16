@@ -4,7 +4,6 @@ import static com.flab.football.util.SecurityUtil.AUTHORIZATION_HEADER;
 
 import com.flab.football.service.security.jwt.TokenProvider;
 import com.flab.football.service.user.command.LogInCommand;
-import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -34,9 +33,13 @@ public class JwtSecurityService implements SecurityService {
 
     String jwt = tokenProvider.createToken(authentication, command.getUserId(), command.getName());
 
-    HttpServletResponse response = getCurrentResponse();
+    ServletRequestAttributes attributes = (ServletRequestAttributes) RequestContextHolder
+        .currentRequestAttributes();
+
+    HttpServletResponse response = attributes.getResponse();
 
     response.setHeader(AUTHORIZATION_HEADER, "Bearer " + jwt);
+
 
   }
 
@@ -45,28 +48,18 @@ public class JwtSecurityService implements SecurityService {
 
   }
 
+
   @Override
   public int getCurrentUserId() {
-    
-    return 0;
-    
-  }
 
-  private ServletRequestAttributes getRequestAttributes() {
-
-    return (ServletRequestAttributes) RequestContextHolder.currentRequestAttributes();
+    return tokenProvider.getCurrentUserId();
 
   }
 
-  private HttpServletRequest getCurrentRequest() {
+  @Override
+  public String getCurrentUserName() {
 
-    return getRequestAttributes().getRequest();
-
-  }
-
-  private HttpServletResponse getCurrentResponse() {
-
-    return getRequestAttributes().getResponse();
+    return tokenProvider.getCurrentUserName();
 
   }
 

@@ -17,7 +17,9 @@ import org.springframework.security.core.userdetails.UserDetails;
 public class SecurityUtil {
 
   public static final String AUTHORIZATION_HEADER = "Authorization";
-
+  public static final String AUTHORITIES_KEY = "auth";
+  public static final String ID_KEY = "id";
+  public static final String NAME_KEY = "name";
   /**
    * user Email 조회를 위한 메소드.
    */

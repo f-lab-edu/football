@@ -14,4 +14,6 @@ public interface SecurityService {
 
   int getCurrentUserId();
 
+  String getCurrentUserName();
+
 }
