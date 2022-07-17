@@ -41,4 +41,26 @@ public class Channel {
   @OneToMany(mappedBy = "channel", cascade = CascadeType.ALL)
   private List<Message> messages;
 
+  /**
+   * 참가자 객체를 리스트에 저장하는 메소드.
+   * 직접 변수를 호출해 저장하지 않고 메소드로 구현해 내부 구현 로직을 캡슐화하기 위한 목적으로 생성된 메소드입니다.
+   */
+
+  public void addParticipant(Participant participant) {
+
+    this.participants.add(participant);
+
+  }
+
+  /**
+   * 메세지 객체를 리스트에 저장하는 메소드.
+   * 직접 변수를 호출해 저장하지 않고 메소드로 구현해 내부 구현 로직을 캡슐화하기 위한 목적으로 생성된 메소드입니다.
+   */
+
+  public void addMessage(Message message) {
+
+    this.messages.add(message);
+
+  }
+
 }

@@ -6,6 +6,7 @@ import com.flab.football.controller.response.ResponseDto;
 import com.flab.football.service.chat.ChatService;
 import javax.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -18,6 +19,7 @@ import org.springframework.web.bind.annotation.RestController;
  * 채팅 기능 관련 API 선언이 되어있는 컨트롤러.
  */
 
+@Slf4j
 @RestController
 @RequestMapping("/chat")
 @RequiredArgsConstructor
@@ -49,7 +51,7 @@ public class ChatController {
   public ResponseDto inviteParticipants(@PathVariable(value = "channelId") int channelId,
                                         @RequestBody InviteParticipantsRequest request) {
 
-    chatService.saveParticipants(channelId, request.getParticipants());
+    chatService.inviteParticipants(channelId, request.getParticipants());
 
     return new ResponseDto(true, null, "참가자 초대 완료", null);
 

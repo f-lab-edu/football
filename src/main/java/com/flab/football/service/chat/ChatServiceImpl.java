@@ -7,12 +7,13 @@ import com.flab.football.domain.User;
 import com.flab.football.repository.chat.ChannelRepository;
 import com.flab.football.repository.chat.MessageRepository;
 import com.flab.football.repository.chat.ParticipantRepository;
-import com.flab.football.repository.user.UserRepository;
 import com.flab.football.service.security.SecurityService;
+import com.flab.football.service.user.UserService;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -20,11 +21,12 @@ import org.springframework.transaction.annotation.Transactional;
  * 채팅 관련 비즈니스 로직이 선언된 서비스 구현체.
  */
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class ChatServiceImpl implements ChatService {
 
-  private final UserRepository userRepository;
+  private final UserService userService;
 
   //private final SecurityService securityService;
 
@@ -48,38 +50,29 @@ public class ChatServiceImpl implements ChatService {
 
   @Override
   @Transactional
-  public void saveParticipants(int channelId, List<Integer> participants) {
+  public void inviteParticipants(int channelId, List<Integer> participants) {
 
-    Optional<Channel> channel = channelRepository.findById(channelId);
+    List<Participant> participantList = Participant.listOf();
 
-    if (channel.isEmpty()) {
+    Channel channel = findChannelById(channelId);
 
-      throw new RuntimeException("채팅방 정보가 존재하지 않습니다.");
+    List<User> users = userService.findAllById(participants);
 
-    }
-
-    for (int userId : participants) {
-
-      Optional<User> user = userRepository.findById(userId);
-
-      if (user.isEmpty()) {
-
-        throw new RuntimeException("회원 정보가 존재하지 않습니다.");
-      }
+    for (User user : users) {
 
       Participant participant = Participant.builder()
-          .user(user.get())
+          .user(user)
           .build();
 
-      participantRepository.save(participant);
+      participant.setChannel(channel);
 
-      participant.setChannel(channel.get());
+      channel.addParticipant(participant);
 
-      channel.get().getParticipants().add(participant);
-
-      channelRepository.save(channel.get());
+      participantList.add(participant);
 
     }
+
+    participantRepository.saveAll(participantList);
 
   }
 
@@ -87,18 +80,12 @@ public class ChatServiceImpl implements ChatService {
   @Transactional
   public void saveMessage(Message.Type type, int channelId, String content) {
 
-    Optional<Channel> channel = channelRepository.findById(channelId);
-
-    if (channel.isEmpty()) {
-
-      throw new RuntimeException("채팅방 정보가 존재하지 않습니다.");
-
-    }
+    Channel channel = findChannelById(channelId);
 
     //String name = securityService.getCurrentUserName();
 
     Message message = Message.builder()
-        .channel(channel.get())
+        .channel(channel)
         .type(type)
         .content(content)
         //.sender(name)
@@ -107,9 +94,9 @@ public class ChatServiceImpl implements ChatService {
 
     messageRepository.save(message);
 
-    channel.get().getMessages().add(message);
+    message.setChannel(channel);
 
-    channelRepository.save(channel.get());
+    channel.addMessage(message);
 
   }
 

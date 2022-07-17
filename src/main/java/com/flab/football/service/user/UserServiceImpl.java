@@ -4,12 +4,11 @@ import com.flab.football.domain.User;
 import com.flab.football.domain.User.Role;
 import com.flab.football.exception.AlreadyExistEmailException;
 import com.flab.football.exception.AlreadyManagerRoleException;
-import com.flab.football.exception.NotLogInBrowserException;
 import com.flab.football.exception.NotValidEmailException;
 import com.flab.football.exception.NotValidPasswordException;
 import com.flab.football.repository.user.UserRepository;
 import com.flab.football.service.user.command.SignUpCommand;
-import com.flab.football.util.SecurityUtil;
+import java.util.List;
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -43,13 +42,13 @@ public class UserServiceImpl implements UserService {
     String encodedPassword = passwordEncoder.encode(commandDto.getPassword());
 
     User user = User.builder()
-      .email(commandDto.getEmail())
-      .password(encodedPassword)
-      .name(commandDto.getName())
-      .phone(commandDto.getPhone())
-      .gender(commandDto.getGender())
-      .role(commandDto.getRole())
-      .build();
+        .email(commandDto.getEmail())
+        .password(encodedPassword)
+        .name(commandDto.getName())
+        .phone(commandDto.getPhone())
+        .gender(commandDto.getGender())
+        .role(commandDto.getRole())
+        .build();
 
     userRepository.save(user);
 
@@ -131,6 +130,14 @@ public class UserServiceImpl implements UserService {
     user.get().setRole(Role.ROLE_MANAGER);
 
     userRepository.save(user.get());
+
+  }
+
+  @Override
+  @Transactional(readOnly = true)
+  public List<User> findAllById(List<Integer> userIdList) {
+
+    return userRepository.findAllById(userIdList);
 
   }
 

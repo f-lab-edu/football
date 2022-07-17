@@ -8,7 +8,7 @@ public interface ChatService {
 
   void createChannel(String name);
 
-  void saveParticipants(int channelId, List<Integer> participants);
+  void inviteParticipants(int channelId, List<Integer> participants);
 
   void saveMessage(Message.Type type, int channelId, String content);
 
