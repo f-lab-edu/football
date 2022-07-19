@@ -1,8 +1,8 @@
 package com.flab.football.config;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Bean;
 import org.springframework.stereotype.Component;
@@ -21,9 +21,9 @@ public class ChatConfig {
    */
 
   @Bean
-  public List<WebSocketSession> sessions() {
+  public Map<String, WebSocketSession> sessions() {
 
-    return new ArrayList<>();
+    return new ConcurrentHashMap<>();
 
   }
 
