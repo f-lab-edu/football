@@ -9,11 +9,14 @@ import com.flab.football.repository.chat.MessageRepository;
 import com.flab.football.repository.chat.ParticipantRepository;
 import com.flab.football.service.security.SecurityService;
 import com.flab.football.service.user.UserService;
+import java.net.InetSocketAddress;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -28,13 +31,15 @@ public class ChatServiceImpl implements ChatService {
 
   private final UserService userService;
 
-  //private final SecurityService securityService;
+  private final SecurityService securityService;
 
   private final ChannelRepository channelRepository;
 
   private final ParticipantRepository participantRepository;
 
   private final MessageRepository messageRepository;
+
+  private final RedisTemplate<String, Object> redisTemplate;
 
   @Override
   @Transactional
@@ -115,4 +120,41 @@ public class ChatServiceImpl implements ChatService {
     return channel.get();
 
   }
+
+  @Override
+  @Transactional(readOnly = true)
+  public List<Participant> findParticipantsByChannelId(int channelId) {
+
+    return participantRepository.findAllByChannelId(channelId);
+
+  }
+
+  @Override
+  @Transactional
+  public List<String> findMessageReceivers(int channelId) {
+
+    List<String> uriList = new ArrayList<>();
+
+    // channelId로 참가중인 참가자들의 user 정보를 조회한다.
+    List<Participant> participants = findParticipantsByChannelId(channelId);
+
+    String userId = "";
+
+    String uri = "";
+
+    // 조회된 user들에 대한 웹소켓 서버 정보를 redis에서 조회한다.
+    for (Participant participant : participants) {
+
+      userId = String.valueOf(participant.getUser().getId());
+
+      InetSocketAddress localAddress = (InetSocketAddress) redisTemplate.opsForValue().get(userId);
+
+      uriList.add(localAddress.toString());
+
+    }
+
+    return uriList;
+
+  }
+
 }

@@ -2,6 +2,7 @@ package com.flab.football.service.chat;
 
 import com.flab.football.domain.Channel;
 import com.flab.football.domain.Message;
+import com.flab.football.domain.Participant;
 import java.util.List;
 
 public interface ChatService {
@@ -14,5 +15,8 @@ public interface ChatService {
 
   Channel findChannelById(int channelId);
 
+  List<Participant> findParticipantsByChannelId(int channelId);
+
+  List<String> findMessageReceivers(int channelId);
 
 }
