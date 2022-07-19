@@ -4,10 +4,12 @@ import com.flab.football.controller.request.CreateChannelRequest;
 import com.flab.football.controller.request.InviteParticipantsRequest;
 import com.flab.football.controller.response.ResponseDto;
 import com.flab.football.service.chat.ChatService;
+import java.net.InetSocketAddress;
 import java.util.List;
 import javax.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
@@ -29,6 +31,8 @@ import org.springframework.web.client.RestTemplate;
 public class ChatController {
 
   private final ChatService chatService;
+
+  private final RedisTemplate<String, Object> redisTemplate;
 
   private final RestTemplate restTemplate;
 
@@ -80,19 +84,26 @@ public class ChatController {
   @GetMapping("/message/channel/{channelId}")
   public ResponseDto findMessageReceivers(@PathVariable(value = "channelId") int channelId) {
 
-    List<String> uriList = chatService.findMessageReceivers(channelId);
+    List<String> userIdList = chatService.findMessageReceivers(channelId);
 
-    for (String uri : uriList) {
+    String uri = "";
+
+    // 조회된 user들에 대한 웹소켓 서버 정보를 redis에서 조회한다.
+    for (String userId : userIdList) {
+
+      InetSocketAddress localAddress = (InetSocketAddress) redisTemplate.opsForValue().get(userId);
 
       // 웹소켓에 접속중이지 않은 경우는 FCM을 통해 푸시 알림을 보낸다.
-      if (uri == null) {
+      if (localAddress == null) {
 
-        log.info("푸시 알림을 보냅니다.");
+        log.info(userId + "님에게 푸시 알림을 보냅니다.");
 
       } else {
 
+        uri = localAddress.toString();
+
         // 조회된 uri를 가지고 RestTemplate을 통해 해당 API 서버로 message 전송 API에 요청을 보낸다.
-        uri = "ws:/" + uri + "/ws/chat";
+        uri = "http:/" + uri + "chat/send/message/channel/" + channelId;
 
         restTemplate.optionsForAllow(uri, "Hello");
 
@@ -100,7 +111,7 @@ public class ChatController {
 
     }
 
-    return null;
+    return new ResponseDto<>(true, null, "메세지 전송 완료.", null);
 
   }
 
@@ -108,8 +119,6 @@ public class ChatController {
   public ResponseDto sendMessage(@PathVariable(value = "channelId") int channelId) {
 
     // 해당 URL로 요청이 오면 메세지 전송 로직을 호출한다.
-
-
 
     return null;
 
