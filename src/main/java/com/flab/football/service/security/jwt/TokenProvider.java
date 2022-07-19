@@ -1,5 +1,11 @@
 package com.flab.football.service.security.jwt;
 
+import static com.flab.football.util.SecurityUtil.AUTHORITIES_KEY;
+import static com.flab.football.util.SecurityUtil.AUTHORIZATION_HEADER;
+import static com.flab.football.util.SecurityUtil.ID_KEY;
+import static com.flab.football.util.SecurityUtil.NAME_KEY;
+
+import com.flab.football.exception.NotValidTokenException;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.Jwts;
@@ -14,6 +20,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
 import lombok.extern.slf4j.Slf4j;
+import org.flywaydb.core.internal.util.StringUtils;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -22,6 +29,8 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.stereotype.Component;
+import org.springframework.web.context.request.RequestContextHolder;
+import org.springframework.web.context.request.ServletRequestAttributes;
 
 /**
  * TokenProvider 클래스.
@@ -31,7 +40,6 @@ import org.springframework.stereotype.Component;
 @Slf4j
 @Component
 public class TokenProvider implements InitializingBean {
-  private static final String AUTHORITIES_KEY = "auth";
 
   private final String secret;
   private final long tokenValidityInMilliseconds;
@@ -63,7 +71,7 @@ public class TokenProvider implements InitializingBean {
    * Authentication 객체의 권한정보를 이용해서 토큰을 생성하는 createToken 메소드 추가.
    */
 
-  public String createToken(Authentication authentication) {
+  public String createToken(Authentication authentication, int userId, String userName) {
 
     String authorities = authentication.getAuthorities()
         .stream()
@@ -73,12 +81,19 @@ public class TokenProvider implements InitializingBean {
     long now = (new Date()).getTime();
     Date validity = new Date(now + this.tokenValidityInMilliseconds);
 
-    return Jwts.builder()
+    Claims claims = Jwts.claims()
         .setSubject(authentication.getName())
-        .claim(AUTHORITIES_KEY, authorities)
+        .setExpiration(validity);
+
+    claims.put(AUTHORITIES_KEY, authorities);
+    claims.put(ID_KEY, userId);
+    claims.put(NAME_KEY, userName);
+
+    return Jwts.builder()
+        .setClaims(claims)
         .signWith(key, SignatureAlgorithm.HS512)
-        .setExpiration(validity)
         .compact();
+
   }
 
   /**
@@ -122,6 +137,55 @@ public class TokenProvider implements InitializingBean {
       log.info("JWT 토큰이 잘못되었습니다.");
     }
     return false;
+  }
+
+  /**
+   * 로그인 회원의 id를 조회.
+   */
+
+  public int getCurrentUserId() {
+
+    Claims claims = getCurrentClaims();
+
+    return Integer.parseInt(claims.get(ID_KEY).toString());
+
+  }
+
+  /**
+   * 로그인 회원의 이름을 조회.
+   */
+
+  public String getCurrentUserName() {
+
+    Claims claims = getCurrentClaims();
+
+    return claims.get(NAME_KEY).toString();
+
+  }
+
+  /**
+   * 요청 헤더에 담겨있는 토큰을 가지고 Claims 객체를 생성.
+   */
+
+  private Claims getCurrentClaims() {
+
+    ServletRequestAttributes attributes = (ServletRequestAttributes) RequestContextHolder
+        .currentRequestAttributes();
+
+    String bearerToken = attributes.getRequest().getHeader(AUTHORIZATION_HEADER);
+
+    if (!StringUtils.hasText(bearerToken) && bearerToken.startsWith("Bearer ")) {
+
+      throw new NotValidTokenException("유효한 토큰 형식이 아닙니다.");
+
+    }
+
+    return Jwts.parserBuilder()
+        .setSigningKey(key)
+        .build()
+        .parseClaimsJws(bearerToken.substring(7))
+        .getBody();
+
   }
 
 }
