@@ -1,17 +1,26 @@
 package com.flab.football.handler;
 
+import static com.flab.football.util.SecurityUtil.AUTHORIZATION_HEADER;
+
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.flab.football.domain.Message;
+import com.flab.football.exception.NotValidTokenException;
 import com.flab.football.service.chat.ChatService;
 import com.flab.football.service.security.SecurityService;
+import com.flab.football.util.SecurityUtil;
+import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.Jwts;
 import java.util.Map;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.flywaydb.core.internal.util.StringUtils;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Component;
+import org.springframework.web.context.request.RequestContextHolder;
+import org.springframework.web.context.request.ServletRequestAttributes;
 import org.springframework.web.socket.CloseStatus;
 import org.springframework.web.socket.TextMessage;
 import org.springframework.web.socket.WebSocketSession;
@@ -79,9 +88,11 @@ public class ChatHandler extends TextWebSocketHandler {
   @Override
   public void afterConnectionEstablished(WebSocketSession session) throws Exception {
 
-    log.info("ID." + securityService.getCurrentUserId() + " 님이 입장하셨습니다.");
+    String bearerToken = session.getHandshakeHeaders().get(AUTHORIZATION_HEADER).toString();
 
-    String userId = String.valueOf(securityService.getCurrentUserId()); // 아직 동작하지 않습니다.
+    log.info("ID." + securityService.getCurrentUserId(bearerToken) + " 님이 입장하셨습니다.");
+
+    String userId = String.valueOf(securityService.getCurrentUserId(bearerToken));
 
     // userId 와 웹소켓 서버 정보를 redis 에 저장
     redisTemplate.opsForValue().set(userId, session.getLocalAddress().toString());
@@ -98,9 +109,13 @@ public class ChatHandler extends TextWebSocketHandler {
   @Override
   public void afterConnectionClosed(WebSocketSession session, CloseStatus status) throws Exception {
 
+    String bearerToken = session.getHandshakeHeaders().get(AUTHORIZATION_HEADER).toString();
+
     log.info(session.getPrincipal().getName() + " 님이 퇴장하셨습니다.");
 
-    String userId = String.valueOf(securityService.getCurrentUserId()); // 아직 동작하지 않습니다.
+    log.info(session.getHandshakeHeaders().toString());
+
+    String userId = String.valueOf(securityService.getCurrentUserId(bearerToken));
 
     // userId 와 웹소켓 서버 정보를 redis 에서 삭제
     redisTemplate.delete(userId);

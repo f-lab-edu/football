@@ -14,6 +14,8 @@ public interface SecurityService {
 
   int getCurrentUserId();
 
+  int getCurrentUserId(String bearerToken);
+
   String getCurrentUserName();
 
 }

@@ -57,6 +57,13 @@ public class JwtSecurityService implements SecurityService {
   }
 
   @Override
+  public int getCurrentUserId(String bearerToken) {
+
+    return tokenProvider.getCurrentUserId(bearerToken);
+
+  }
+
+  @Override
   public String getCurrentUserName() {
 
     return tokenProvider.getCurrentUserName();
