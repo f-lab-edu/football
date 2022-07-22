@@ -12,6 +12,8 @@ public interface UserService {
 
   void signUp(SignUpCommand commandDto);
 
+  User findById(int userId);
+
   List<User> findAllById(List<Integer> userIdList);
 
   User findByEmail(String email);

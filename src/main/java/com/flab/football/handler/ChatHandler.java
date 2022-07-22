@@ -3,24 +3,17 @@ package com.flab.football.handler;
 import static com.flab.football.util.SecurityUtil.AUTHORIZATION_HEADER;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.flab.football.domain.Message;
-import com.flab.football.exception.NotValidTokenException;
 import com.flab.football.service.chat.ChatService;
+import com.flab.football.service.redis.RedisService;
 import com.flab.football.service.security.SecurityService;
-import com.flab.football.util.SecurityUtil;
-import io.jsonwebtoken.Claims;
-import io.jsonwebtoken.Jwts;
 import java.util.Map;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.RequiredArgsConstructor;
+import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
-import org.flywaydb.core.internal.util.StringUtils;
-import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Component;
-import org.springframework.web.context.request.RequestContextHolder;
-import org.springframework.web.context.request.ServletRequestAttributes;
 import org.springframework.web.socket.CloseStatus;
 import org.springframework.web.socket.TextMessage;
 import org.springframework.web.socket.WebSocketSession;
@@ -39,9 +32,9 @@ public class ChatHandler extends TextWebSocketHandler {
 
   private final ChatService chatService;
 
-  private final Map<String, WebSocketSession> sessions;
+  private final RedisService redisService;
 
-  private final RedisTemplate<String, Object> redisTemplate;
+  private final Map<Integer, WebSocketSession> sessions;
 
   private final ObjectMapper objectMapper;
 
@@ -69,14 +62,14 @@ public class ChatHandler extends TextWebSocketHandler {
    */
 
   @Override
-  protected void handleTextMessage(WebSocketSession session, TextMessage message) throws Exception {
+  public void handleTextMessage(WebSocketSession session, TextMessage message) throws Exception {
 
-    MappingMessage mappingMsg = objectMapper.readValue(message.getPayload(), MappingMessage.class);
+    for(WebSocketSession tempSession : sessions.values()) {
 
-    chatService.saveMessage(mappingMsg.getType(), mappingMsg.getChannelId(),
-        mappingMsg.getContent());
+      tempSession.sendMessage(message);
 
-    session.sendMessage(message);
+    }
+
   }
 
   /**
@@ -92,10 +85,10 @@ public class ChatHandler extends TextWebSocketHandler {
 
     log.info("ID." + securityService.getCurrentUserId(bearerToken) + " 님이 입장하셨습니다.");
 
-    String userId = String.valueOf(securityService.getCurrentUserId(bearerToken));
+    int userId = securityService.getCurrentUserId(bearerToken);
 
     // userId 와 웹소켓 서버 정보를 redis 에 저장
-    redisTemplate.opsForValue().set(userId, session.getLocalAddress().toString());
+    redisService.setValue(userId, session.getLocalAddress().toString());
 
     // 웹소켓 서버 내 메모리에 session 객체를 저장
     sessions.put(userId, session);
@@ -113,12 +106,10 @@ public class ChatHandler extends TextWebSocketHandler {
 
     log.info(session.getPrincipal().getName() + " 님이 퇴장하셨습니다.");
 
-    log.info(session.getHandshakeHeaders().toString());
-
-    String userId = String.valueOf(securityService.getCurrentUserId(bearerToken));
+    int userId = securityService.getCurrentUserId(bearerToken);
 
     // userId 와 웹소켓 서버 정보를 redis 에서 삭제
-    redisTemplate.delete(userId);
+    redisService.deleteValue(userId);
 
     // 웹소켓 서버 내 메모리에 session 객체를 삭제
     sessions.remove(userId, session);
@@ -126,12 +117,13 @@ public class ChatHandler extends TextWebSocketHandler {
   }
 
   @Getter
+  @Setter
   @NoArgsConstructor
   @AllArgsConstructor
   private static class MappingMessage {
 
-    private Message.Type type;
     private int channelId;
+    private int userId;
     private String content;
 
   }

@@ -10,6 +10,7 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
+import javax.persistence.OneToOne;
 import javax.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -45,14 +46,15 @@ public class Message {
   @Column(name = "type")
   private Type type;
 
-  @Column(name = "sender")
-  private String sender;
-
   @Column(name = "content")
   private String content;
 
   @Column(name = "create_at")
   private LocalDateTime createAt;
+
+  @OneToOne
+  @JoinColumn(name = "user_id", referencedColumnName = "id")
+  private User user;
 
   @ManyToOne
   @JoinColumn(name = "channel_id", referencedColumnName = "id")

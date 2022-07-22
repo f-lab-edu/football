@@ -11,12 +11,12 @@ public interface ChatService {
 
   void inviteParticipants(int channelId, List<Integer> participants);
 
-  void saveMessage(Message.Type type, int channelId, String content);
+  void saveMessage(int channelId, int userId, String content);
 
   Channel findChannelById(int channelId);
 
   List<Participant> findParticipantsByChannelId(int channelId);
 
-  List<String> findMessageReceivers(int channelId);
+  List<Integer> findMessageReceivers(int channelId);
 
 }
