@@ -2,6 +2,7 @@ package com.flab.football.controller;
 
 import com.flab.football.controller.request.CreateChannelRequest;
 import com.flab.football.controller.request.InviteParticipantsRequest;
+import com.flab.football.controller.request.SendMessageOrPushRequest;
 import com.flab.football.controller.response.ResponseDto;
 import com.flab.football.service.chat.ChatService;
 import com.flab.football.service.redis.RedisService;
@@ -80,12 +81,11 @@ public class ChatController {
    * 메시지 수신자를 대상으로 메세지 또는 푸시알림 전송 API.
    */
 
-  @GetMapping("/message/channel/{channelId}")
-  public ResponseDto sendMessageOrPush(@PathVariable(value = "channelId") int channelId
-  ) {
+  @PostMapping("/message/channel")
+  public ResponseDto sendMessageOrPush(@RequestBody SendMessageOrPushRequest request) {
 
     // 해당 채팅방에 메세지를 받아야하는 대상자를 조회
-    List<Integer> userIdList = chatService.findMessageReceivers(channelId);
+    List<Integer> userIdList = chatService.findMessageReceivers(request.getChannelId());
 
     // 조회된 user들에 대한 웹소켓 서버 정보를 redis에서 조회한다.
     for (int userId : userIdList) {
@@ -102,7 +102,8 @@ public class ChatController {
         // 그 외 경우엔 해당 서버에 접속중인 회원이 Map 컬렉션에 저장되어 있기에 메세지를 전송한다.
         String uri = "http:/" + localAddress + "/ws/send/message/" + userId;
 
-        restTemplate.getForEntity(uri, ResponseEntity.class);
+        // football.websocket.controller.WebSocketController.sendMessage() 호출
+        restTemplate.postForEntity(uri, request, ResponseEntity.class);
 
         log.info(userId + "님에게 메세지 전송이 완료되었습니다.");
 
