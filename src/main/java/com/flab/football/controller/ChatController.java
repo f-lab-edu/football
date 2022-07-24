@@ -3,11 +3,9 @@ package com.flab.football.controller;
 import com.flab.football.controller.request.CreateChannelRequest;
 import com.flab.football.controller.request.InviteParticipantsRequest;
 import com.flab.football.controller.response.ResponseDto;
-import com.flab.football.handler.ChatHandler;
 import com.flab.football.service.chat.ChatService;
 import com.flab.football.service.redis.RedisService;
 import java.util.List;
-import java.util.Map;
 import javax.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -19,8 +17,6 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.client.RestTemplate;
-import org.springframework.web.socket.TextMessage;
-import org.springframework.web.socket.WebSocketSession;
 
 /**
  * 채팅 기능 관련 API 선언이 되어있는 컨트롤러.
@@ -37,10 +33,6 @@ public class ChatController {
   private final RedisService redisService;
 
   private final RestTemplate restTemplate;
-
-  private final ChatHandler chatHandler;
-
-  private final Map<Integer, WebSocketSession> sessions; // chatHandler에 주입된 sessions와 다른 값을 가진다.
 
   /**
    * 새로운 채팅방 생성 API.
@@ -84,11 +76,12 @@ public class ChatController {
   }
 
   /**
-   * 메시지 대상자 분류 API.
+   * 메시지 수신자를 대상으로 메세지 또는 푸시알림 전송 API.
    */
 
   @GetMapping("/message/channel/{channelId}")
-  public ResponseDto findMessageReceiver(@PathVariable(value = "channelId") int channelId) {
+  public ResponseDto sendMessageOrPush(@PathVariable(value = "channelId") int channelId
+  ) {
 
     // 해당 채팅방에 메세지를 받아야하는 대상자를 조회
     List<Integer> userIdList = chatService.findMessageReceivers(channelId);
@@ -106,14 +99,9 @@ public class ChatController {
       } else {
 
         // 그 외 경우엔 해당 서버에 접속중인 회원이 Map 컬렉션에 저장되어 있기에 메세지를 전송한다.
+        String uri = "http:/" + localAddress + "/ws/send/message/" + userId;
 
-        // API 서버에 메소드를 호출하면 웹소켓 서버 하나당 API 서버 하나가 존재하는 구조가 되는 것이 아닐까...?
-        // restTemplate을 활용해 웹소켓 서버에 메세지 전송을 할 수 있는 방법이 있는지 알아야 한다.
-        // String uri = "ws:/" + localAddress + "/ws/chat"; <= 프로토콜 에러 발생
-
-        String uri = "http:/" + localAddress + "/chat/send/message";
-
-        restTemplate.getForObject(uri, ResponseDto.class);
+        restTemplate.postForEntity(uri, null, ResponseDto.class);
 
         log.info(userId + "님에게 메세지 전송이 완료되었습니다.");
 
@@ -122,24 +110,6 @@ public class ChatController {
     }
 
     return new ResponseDto<>(true, null, "분류 완료.", null);
-
-  }
-
-  /**
-   * 접속한 대상 회원에게 메세지 전송 API.
-   */
-
-  @GetMapping("/send/message")
-  public ResponseDto sendMessage() throws Exception {
-
-      // chatHandler 에서 주입받은 sessions와 controller에서 주입받은 sesssions가 달르다
-      // 이 레이어에서의 sessions 컬렉션은 아무런 값을 가지고 있자 않아서 sendMessage()를 호출할 수 없다.
-
-      // 그래서 호출 시점에서 session은 null로 주입하고
-      // handleTextMessage() 가 수행하는 시점에서 sessions를 조회하고 메세지를 전송해야 한다.
-      chatHandler.handleTextMessage(null, new TextMessage("hello"));
-
-    return new ResponseDto(true, null, "메세지 전송 완료", null);
 
   }
 
