@@ -9,6 +9,7 @@ import java.util.List;
 import javax.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -101,7 +102,7 @@ public class ChatController {
         // 그 외 경우엔 해당 서버에 접속중인 회원이 Map 컬렉션에 저장되어 있기에 메세지를 전송한다.
         String uri = "http:/" + localAddress + "/ws/send/message/" + userId;
 
-        restTemplate.postForEntity(uri, null, ResponseDto.class);
+        restTemplate.getForEntity(uri, ResponseEntity.class);
 
         log.info(userId + "님에게 메세지 전송이 완료되었습니다.");
 
