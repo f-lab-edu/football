@@ -16,4 +16,6 @@ public interface ParticipantRepository extends JpaRepository<Participant, Intege
 
   Optional<Participant> findById(Participant participant);
 
+  List<Participant> findAllByChannelId(int channelId);
+
 }

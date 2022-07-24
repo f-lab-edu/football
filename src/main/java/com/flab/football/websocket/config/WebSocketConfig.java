@@ -1,6 +1,6 @@
-package com.flab.football.config;
+package com.flab.football.websocket.config;
 
-import com.flab.football.handler.ChatHandler;
+import com.flab.football.websocket.handler.ChatHandler;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.socket.config.annotation.EnableWebSocket;

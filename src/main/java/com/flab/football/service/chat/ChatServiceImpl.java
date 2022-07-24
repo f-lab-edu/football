@@ -10,6 +10,7 @@ import com.flab.football.repository.chat.ParticipantRepository;
 import com.flab.football.service.security.SecurityService;
 import com.flab.football.service.user.UserService;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;
@@ -28,7 +29,7 @@ public class ChatServiceImpl implements ChatService {
 
   private final UserService userService;
 
-  //private final SecurityService securityService;
+  private final SecurityService securityService;
 
   private final ChannelRepository channelRepository;
 
@@ -78,21 +79,20 @@ public class ChatServiceImpl implements ChatService {
 
   @Override
   @Transactional
-  public void saveMessage(Message.Type type, int channelId, String content) {
+  public void saveMessage(int channelId, int userId, String content) {
 
     Channel channel = findChannelById(channelId);
 
-    //String name = securityService.getCurrentUserName();
+    User user = userService.findById(userId);
 
     Message message = Message.builder()
-        .channel(channel)
-        .type(type)
         .content(content)
-        //.sender(name)
         .createAt(LocalDateTime.now())
         .build();
 
     messageRepository.save(message);
+
+    message.setUser(user);
 
     message.setChannel(channel);
 
@@ -115,4 +115,32 @@ public class ChatServiceImpl implements ChatService {
     return channel.get();
 
   }
+
+  @Override
+  @Transactional(readOnly = true)
+  public List<Participant> findParticipantsByChannelId(int channelId) {
+
+    return participantRepository.findAllByChannelId(channelId);
+
+  }
+
+  @Override
+  @Transactional
+  public List<Integer> findMessageReceivers(int channelId) {
+
+    List<Integer> userIdList = new ArrayList<>();
+
+    // channelId로 참가중인 참가자들의 user 정보를 조회한다.
+    List<Participant> participants = findParticipantsByChannelId(channelId);
+
+    for (Participant participant : participants) {
+
+      userIdList.add(participant.getUser().getId());
+
+    }
+
+    return userIdList;
+
+  }
+
 }

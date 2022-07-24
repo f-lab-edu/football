@@ -140,6 +140,18 @@ public class TokenProvider implements InitializingBean {
   }
 
   /**
+   * 로그인 회원의 이름을 조회.
+   */
+
+  public String getCurrentUserName() {
+
+    Claims claims = getCurrentClaims();
+
+    return claims.get(NAME_KEY).toString();
+
+  }
+
+  /**
    * 로그인 회원의 id를 조회.
    */
 
@@ -152,14 +164,14 @@ public class TokenProvider implements InitializingBean {
   }
 
   /**
-   * 로그인 회원의 이름을 조회.
+   * 웹소켓 서버에서 로그인 회원의 id를 조회.
    */
 
-  public String getCurrentUserName() {
+  public int getCurrentUserId(String bearerToken) {
 
-    Claims claims = getCurrentClaims();
+    Claims claims = getCurrentClaims(bearerToken);
 
-    return claims.get(NAME_KEY).toString();
+    return Integer.parseInt(claims.get(ID_KEY).toString());
 
   }
 
@@ -173,6 +185,26 @@ public class TokenProvider implements InitializingBean {
         .currentRequestAttributes();
 
     String bearerToken = attributes.getRequest().getHeader(AUTHORIZATION_HEADER);
+
+    if (!StringUtils.hasText(bearerToken) && bearerToken.startsWith("Bearer ")) {
+
+      throw new NotValidTokenException("유효한 토큰 형식이 아닙니다.");
+
+    }
+
+    return Jwts.parserBuilder()
+        .setSigningKey(key)
+        .build()
+        .parseClaimsJws(bearerToken.substring(7))
+        .getBody();
+
+  }
+
+  /**
+   * 웹소켓 핸드쉐이크 요청 헤더에 담겨있는 토큰을 가지고 Claims 객체를 생성.
+   */
+
+  private Claims getCurrentClaims(String bearerToken) {
 
     if (!StringUtils.hasText(bearerToken) && bearerToken.startsWith("Bearer ")) {
 
