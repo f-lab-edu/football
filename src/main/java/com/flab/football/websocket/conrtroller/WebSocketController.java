@@ -34,12 +34,12 @@ public class WebSocketController {
    * 이후 모듈 분리 대상
    */
 
-  @PostMapping("/send/message/{userId}")
+  @PostMapping("/send/message")
   public ResponseEntity<HttpStatus> sendMessage(
-      @PathVariable(value = "userId") int receiveUserId,
-      @RequestBody SendMessageRequest request) throws Exception {
+      @RequestBody SendMessageRequest request) throws Exception
+  {
 
-    WebSocketSession session = sessions.get(receiveUserId);
+    WebSocketSession session = sessions.get(request.getReceiveUserId());
 
     session.sendMessage(new TextMessage(objectMapper.writeValueAsString(request)));
 

@@ -57,7 +57,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
           .and()
           .authorizeRequests()
           .antMatchers("/user/signup", "/user/login").permitAll()
-          .antMatchers("/ws/send/message/*").permitAll() // 인증 방법을 찾아야 한다.
+          .antMatchers("/ws/send/message").permitAll() // 인증 방법을 찾아야 한다.
 
           // 그 외 API는 인증 절차 수행
           .anyRequest().authenticated()

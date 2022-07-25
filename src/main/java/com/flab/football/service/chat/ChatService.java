@@ -11,7 +11,7 @@ public interface ChatService {
 
   void inviteParticipants(int channelId, List<Integer> participants);
 
-  void saveMessage(int channelId, int userId, String content);
+  void sendMessage(int channelId, int sendUserId, String content);
 
   Channel findChannelById(int channelId);
 

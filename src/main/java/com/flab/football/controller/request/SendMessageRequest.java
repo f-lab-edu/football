@@ -7,7 +7,7 @@ import lombok.NoArgsConstructor;
 @Getter
 @NoArgsConstructor
 @AllArgsConstructor
-public class SendMessageOrPushRequest {
+public class SendMessageRequest {
 
   private int channelId;
   private String content;

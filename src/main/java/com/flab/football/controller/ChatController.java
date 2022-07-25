@@ -2,12 +2,11 @@ package com.flab.football.controller;
 
 import com.flab.football.controller.request.CreateChannelRequest;
 import com.flab.football.controller.request.InviteParticipantsRequest;
-import com.flab.football.controller.request.SendMessageOrPushRequest;
+import com.flab.football.controller.request.SendMessageRequest;
 import com.flab.football.controller.response.ResponseDto;
 import com.flab.football.service.chat.ChatService;
 import com.flab.football.service.redis.RedisService;
 import com.flab.football.service.security.SecurityService;
-import com.flab.football.websocket.conrtroller.request.SendMessageRequest;
 import java.util.List;
 import javax.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -35,10 +34,6 @@ public class ChatController {
   private final ChatService chatService;
 
   private final SecurityService securityService;
-
-  private final RedisService redisService;
-
-  private final RestTemplate restTemplate;
 
   /**
    * 새로운 채팅방 생성 API.
@@ -86,47 +81,13 @@ public class ChatController {
    */
 
   @PostMapping("/send/message")
-  public ResponseDto sendMessageOrPush(@RequestBody SendMessageOrPushRequest request) {
+  public ResponseDto sendMessage(@RequestBody SendMessageRequest request) {
 
     // 메세지를 보내는 사용자 id 조회
     int sendUserId = securityService.getCurrentUserId();
 
-    // 메세지 내용을 담을 request 객체 생성
-    SendMessageRequest sendMessage = SendMessageRequest.builder()
-        .channelId(request.getChannelId())
-        .sendUserId(sendUserId)
-        .content(request.getContent())
-        .build();
-
-    // 해당 채팅방에 메세지를 받아야하는 대상자를 조회
-    List<Integer> userIdList = chatService.findMessageReceivers(request.getChannelId());
-
-    // 조회된 user들에 대한 웹소켓 서버 정보를 redis에서 조회한다.
-    for (int userId : userIdList) {
-
-      String localAddress = (String) redisService.getValue(userId);
-
-      if (localAddress == null) {
-
-        // 웹소켓에 접속중이지 않은 경우는 FCM을 통해 푸시 알림을 보낸다.
-        log.info(userId + "님에게 푸시 알림을 보냅니다.");
-
-      } else {
-
-        // 그 외 경우엔 해당 서버에 접속중인 회원이 Map 컬렉션에 저장되어 있기에 메세지를 전송한다.
-        String uri = "http:/" + localAddress + "/ws/send/message/" + userId;
-
-        // football.websocket.controller.WebSocketController.sendMessage() 호출
-        restTemplate.postForEntity(uri, sendMessage, ResponseEntity.class);
-
-        log.info(userId + "님에게 메세지 전송이 완료되었습니다.");
-
-      }
-
-    }
-
-    // 푸시 알림 또는 메세지 전송이 성공하면 메세지 엔티티 객체를 저장
-    chatService.saveMessage(request.getChannelId(), sendUserId, request.getContent());
+    // 아래 로직이 모두 ChatService.sendMessage() 로 가야한다.
+    chatService.sendMessage(request.getChannelId(), sendUserId, request.getContent());
 
     return new ResponseDto<>(true, null, "분류 완료.", null);
 

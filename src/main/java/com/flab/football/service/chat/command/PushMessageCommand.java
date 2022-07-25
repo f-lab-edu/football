@@ -1,4 +1,4 @@
-package com.flab.football.websocket.conrtroller.request;
+package com.flab.football.service.chat.command;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -9,11 +9,16 @@ import lombok.NoArgsConstructor;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class SendMessageRequest {
+public class PushMessageCommand {
 
   private int channelId;
   private int sendUserId;
   private int receiveUserId;
   private String content;
 
+  public void setReceiveUserId(int receiveUSerId) {
+
+    this.receiveUserId = receiveUSerId;
+
+  }
 }

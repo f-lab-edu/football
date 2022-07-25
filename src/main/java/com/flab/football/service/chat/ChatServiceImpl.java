@@ -8,7 +8,7 @@ import com.flab.football.domain.User;
 import com.flab.football.repository.chat.ChannelRepository;
 import com.flab.football.repository.chat.MessageRepository;
 import com.flab.football.repository.chat.ParticipantRepository;
-import com.flab.football.service.security.SecurityService;
+import com.flab.football.service.chat.command.PushMessageCommand;
 import com.flab.football.service.user.UserService;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -30,7 +30,7 @@ public class ChatServiceImpl implements ChatService {
 
   private final UserService userService;
 
-  private final SecurityService securityService;
+  private final ChatPushService chatPushService;
 
   private final ChannelRepository channelRepository;
 
@@ -80,11 +80,11 @@ public class ChatServiceImpl implements ChatService {
 
   @Override
   @Transactional
-  public void saveMessage(int channelId, int userId, String content) {
+  public void sendMessage(int channelId, int sendUserId, String content) {
 
     Channel channel = findChannelById(channelId);
 
-    User user = userService.findById(userId);
+    User user = userService.findById(sendUserId);
 
     Message message = Message.builder()
         .type(Type.MESSAGE)
@@ -98,7 +98,28 @@ public class ChatServiceImpl implements ChatService {
 
     message.setChannel(channel);
 
-    channel.addMessage(message);
+    // 해당 채팅방에 메세지를 받아야하는 대상자를 조회
+    // N+1 쿼리 제어 필요
+    List<Integer> userIdList = findMessageReceivers(channelId);
+
+    PushMessageCommand command = PushMessageCommand.builder()
+        .channelId(channelId)
+        .sendUserId(sendUserId)
+        .content(content)
+        .build();
+
+    // 조회된 user들에 대해 메세지를 푸시한다.
+    for (int receiveUserId : userIdList) {
+
+      if (receiveUserId != sendUserId) {
+
+        command.setReceiveUserId(receiveUserId);
+
+        chatPushService.pushMessage(command);
+
+      }
+
+    }
 
   }
 
@@ -132,7 +153,6 @@ public class ChatServiceImpl implements ChatService {
 
     List<Integer> userIdList = new ArrayList<>();
 
-    // channelId로 참가중인 참가자들의 user 정보를 조회한다.
     List<Participant> participants = findParticipantsByChannelId(channelId);
 
     for (Participant participant : participants) {
