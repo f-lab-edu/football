@@ -7,7 +7,6 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -37,10 +36,10 @@ public class WebSocketController {
 
   @PostMapping("/send/message/{userId}")
   public ResponseEntity<HttpStatus> sendMessage(
-      @PathVariable(value = "userId") int userId,
+      @PathVariable(value = "userId") int receiveUserId,
       @RequestBody SendMessageRequest request) throws Exception {
 
-    WebSocketSession session = sessions.get(userId);
+    WebSocketSession session = sessions.get(receiveUserId);
 
     session.sendMessage(new TextMessage(objectMapper.writeValueAsString(request)));
 

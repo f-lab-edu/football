@@ -10,7 +10,6 @@ import lombok.NoArgsConstructor;
 public class SendMessageOrPushRequest {
 
   private int channelId;
-  private int userId;
   private String content;
 
 }

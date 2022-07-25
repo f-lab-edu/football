@@ -6,6 +6,8 @@ import com.flab.football.controller.request.SendMessageOrPushRequest;
 import com.flab.football.controller.response.ResponseDto;
 import com.flab.football.service.chat.ChatService;
 import com.flab.football.service.redis.RedisService;
+import com.flab.football.service.security.SecurityService;
+import com.flab.football.websocket.conrtroller.request.SendMessageRequest;
 import java.util.List;
 import javax.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -31,6 +33,8 @@ import org.springframework.web.client.RestTemplate;
 public class ChatController {
 
   private final ChatService chatService;
+
+  private final SecurityService securityService;
 
   private final RedisService redisService;
 
@@ -81,8 +85,18 @@ public class ChatController {
    * 메시지 수신자를 대상으로 메세지 또는 푸시알림 전송 API.
    */
 
-  @PostMapping("/message/channel")
+  @PostMapping("/send/message")
   public ResponseDto sendMessageOrPush(@RequestBody SendMessageOrPushRequest request) {
+
+    // 메세지를 보내는 사용자 id 조회
+    int sendUserId = securityService.getCurrentUserId();
+
+    // 메세지 내용을 담을 request 객체 생성
+    SendMessageRequest sendMessage = SendMessageRequest.builder()
+        .channelId(request.getChannelId())
+        .sendUserId(sendUserId)
+        .content(request.getContent())
+        .build();
 
     // 해당 채팅방에 메세지를 받아야하는 대상자를 조회
     List<Integer> userIdList = chatService.findMessageReceivers(request.getChannelId());
@@ -103,13 +117,16 @@ public class ChatController {
         String uri = "http:/" + localAddress + "/ws/send/message/" + userId;
 
         // football.websocket.controller.WebSocketController.sendMessage() 호출
-        restTemplate.postForEntity(uri, request, ResponseEntity.class);
+        restTemplate.postForEntity(uri, sendMessage, ResponseEntity.class);
 
         log.info(userId + "님에게 메세지 전송이 완료되었습니다.");
 
       }
 
     }
+
+    // 푸시 알림 또는 메세지 전송이 성공하면 메세지 엔티티 객체를 저장
+    chatService.saveMessage(request.getChannelId(), sendUserId, request.getContent());
 
     return new ResponseDto<>(true, null, "분류 완료.", null);
 

@@ -2,6 +2,7 @@ package com.flab.football.service.chat;
 
 import com.flab.football.domain.Channel;
 import com.flab.football.domain.Message;
+import com.flab.football.domain.Message.Type;
 import com.flab.football.domain.Participant;
 import com.flab.football.domain.User;
 import com.flab.football.repository.chat.ChannelRepository;
@@ -86,6 +87,7 @@ public class ChatServiceImpl implements ChatService {
     User user = userService.findById(userId);
 
     Message message = Message.builder()
+        .type(Type.MESSAGE)
         .content(content)
         .createAt(LocalDateTime.now())
         .build();
