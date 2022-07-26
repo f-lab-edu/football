@@ -2,6 +2,7 @@ package com.flab.football.websocket.conrtroller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.flab.football.websocket.conrtroller.request.SendMessageRequest;
+import com.flab.football.websocket.service.SessionService;
 import java.util.Map;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -25,7 +26,7 @@ import org.springframework.web.socket.WebSocketSession;
 @RequiredArgsConstructor
 public class WebSocketController {
 
-  private final Map<Integer, WebSocketSession> sessions;
+  private final SessionService sessionService;
 
   private final ObjectMapper objectMapper;
 
@@ -39,7 +40,7 @@ public class WebSocketController {
       @RequestBody SendMessageRequest request) throws Exception
   {
 
-    WebSocketSession session = sessions.get(request.getReceiveUserId());
+    WebSocketSession session = sessionService.findSessionByUserId(request.getReceiveUserId());
 
     session.sendMessage(new TextMessage(objectMapper.writeValueAsString(request)));
 

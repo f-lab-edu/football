@@ -5,13 +5,9 @@ import static com.flab.football.websocket.util.WebSocketUtils.PREFIX_KEY;
 
 import com.flab.football.service.redis.RedisService;
 import com.flab.football.service.security.SecurityService;
-import java.net.InetAddress;
-import java.util.Map;
-import javax.annotation.PostConstruct;
+import com.flab.football.websocket.service.SessionService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.context.ApplicationContext;
-import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Component;
 import org.springframework.web.socket.CloseStatus;
 import org.springframework.web.socket.WebSocketSession;
@@ -30,7 +26,7 @@ public class ChatHandler extends TextWebSocketHandler {
 
   private final RedisService redisService;
 
-  private final Map<Integer, WebSocketSession> sessions;
+  private final SessionService sessionService;
 
   private final String address;
 
@@ -51,7 +47,7 @@ public class ChatHandler extends TextWebSocketHandler {
     redisService.setSession(PREFIX_KEY + userId, address);
 
     // 웹소켓 서버 내 메모리에 session 객체를 저장
-    sessions.put(userId, session);
+    sessionService.saveSession(userId, session);
 
   }
 
@@ -70,7 +66,7 @@ public class ChatHandler extends TextWebSocketHandler {
     redisService.deleteSession(PREFIX_KEY + userId);
 
     // 웹소켓 서버 내 메모리에 session 객체를 삭제
-    sessions.remove(userId, session);
+    sessionService.removeSession(userId, session);
 
   }
 
