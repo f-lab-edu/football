@@ -102,18 +102,17 @@ public class ChatServiceImpl implements ChatService {
     // N+1 쿼리 제어 필요
     List<Integer> userIdList = findMessageReceivers(channelId);
 
-    PushMessageCommand command = PushMessageCommand.builder()
-        .channelId(channelId)
-        .sendUserId(sendUserId)
-        .content(content)
-        .build();
-
     // 조회된 user들에 대해 메세지를 푸시한다.
     for (int receiveUserId : userIdList) {
 
       if (receiveUserId != sendUserId) {
 
-        command.setReceiveUserId(receiveUserId);
+        PushMessageCommand command = PushMessageCommand.builder()
+            .channelId(channelId)
+            .sendUserId(sendUserId)
+            .receiveUserId(receiveUserId)
+            .content(content)
+            .build();
 
         chatPushService.pushMessage(command);
 

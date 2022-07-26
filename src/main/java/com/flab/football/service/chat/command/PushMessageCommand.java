@@ -16,9 +16,4 @@ public class PushMessageCommand {
   private int receiveUserId;
   private String content;
 
-  public void setReceiveUserId(int receiveUSerId) {
-
-    this.receiveUserId = receiveUSerId;
-
-  }
 }
