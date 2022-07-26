@@ -2,10 +2,10 @@ package com.flab.football.service.redis;
 
 public interface RedisService {
 
-  void setValue(int key, Object value);
+  void setSession(String userId, Object session);
 
-  void deleteValue(int key);
+  void deleteSession(String userId);
 
-  Object getValue(int key);
+  Object getSession(String userId);
 
 }

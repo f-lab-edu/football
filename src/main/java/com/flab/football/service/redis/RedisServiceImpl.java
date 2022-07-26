@@ -10,27 +10,27 @@ import org.springframework.stereotype.Service;
 @RequiredArgsConstructor
 public class RedisServiceImpl implements RedisService {
 
-  private final RedisTemplate<Integer, Object> redisTemplate;
+  private final RedisTemplate<String, Object> redisTemplate;
 
 
   @Override
-  public void setValue(int key, Object value) {
+  public void setSession(String userId, Object session) {
 
-    redisTemplate.opsForValue().set(key, value);
+    redisTemplate.opsForValue().set(userId, session);
 
   }
 
   @Override
-  public void deleteValue(int key) {
+  public void deleteSession(String userId) {
 
-    redisTemplate.delete(key);
+    redisTemplate.delete(userId);
 
   }
 
   @Override
-  public Object getValue(int key) {
+  public Object getSession(String userId) {
 
-    return redisTemplate.opsForValue().get(key);
+    return redisTemplate.opsForValue().get(userId);
 
   }
 }

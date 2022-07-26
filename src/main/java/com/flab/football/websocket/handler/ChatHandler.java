@@ -1,6 +1,7 @@
 package com.flab.football.websocket.handler;
 
 import static com.flab.football.util.SecurityUtil.AUTHORIZATION_HEADER;
+import static com.flab.football.websocket.util.WebSocketUtils.PREFIX_KEY;
 
 import com.flab.football.service.redis.RedisService;
 import com.flab.football.service.security.SecurityService;
@@ -41,7 +42,7 @@ public class ChatHandler extends TextWebSocketHandler {
     int userId = getCurrentUserId(session);
 
     // userId 와 웹소켓 서버 정보를 redis 에 저장
-    redisService.setValue(userId, session.getLocalAddress().toString());
+    redisService.setSession(PREFIX_KEY + userId, session.getLocalAddress().toString());
 
     // 웹소켓 서버 내 메모리에 session 객체를 저장
     sessions.put(userId, session);
@@ -60,7 +61,7 @@ public class ChatHandler extends TextWebSocketHandler {
     int userId = getCurrentUserId(session);
 
     // userId 와 웹소켓 서버 정보를 redis 에서 삭제
-    redisService.deleteValue(userId);
+    redisService.deleteSession(PREFIX_KEY + userId);
 
     // 웹소켓 서버 내 메모리에 session 객체를 삭제
     sessions.remove(userId, session);
