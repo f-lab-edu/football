@@ -32,27 +32,13 @@ public class ChatHandler extends TextWebSocketHandler {
 
   private final Map<Integer, WebSocketSession> sessions;
 
-  private final ApplicationContext applicationContext;
-
-  private static String address;
+  private final String address;
 
   /**
    * Client가 접속 시 호출되는 메서드.
      * 앱을 실행시킨 경우
      * key = userId, value = [웹소켓 서버 정보] 으로 Redis 에 저장
    */
-
-  @PostConstruct
-  private void postConstruct() {
-    String port = applicationContext
-        .getBean(Environment.class)
-        .getProperty("server.port", String.class, "8080");
-
-    address = InetAddress.getLoopbackAddress().getHostAddress() + ":" + port;
-
-    log.info("WebSocket Server Address = {}", address);
-
-  }
 
   @Override
   public void afterConnectionEstablished(WebSocketSession session) throws Exception {
