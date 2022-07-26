@@ -6,6 +6,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
+import org.springframework.security.config.annotation.web.builders.WebSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.config.http.SessionCreationPolicy;
@@ -37,7 +38,17 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
   }
 
   /**
-   * HTTP 관련 설정을 메소드를 통해 선언할 수 있도록 지원해주는 메소드.
+   * 어플리케이션으로 넘어오는 요청에 대한 인증, 인가 관련 설정에 대한 메소드.
+   */
+
+  @Override
+  public void configure(WebSecurity web) throws Exception {
+    web
+        .ignoring().antMatchers("/ws/send/message");
+  }
+
+  /**
+   * REST API 접근에 대한 인증 처리 관련 설정.
    */
 
   @Override
@@ -57,7 +68,6 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
           .and()
           .authorizeRequests()
           .antMatchers("/user/signup", "/user/login").permitAll()
-          .antMatchers("/ws/send/message").permitAll() // 인증 방법을 찾아야 한다.
 
           // 그 외 API는 인증 절차 수행
           .anyRequest().authenticated()
