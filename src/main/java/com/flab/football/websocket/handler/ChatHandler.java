@@ -5,9 +5,13 @@ import static com.flab.football.websocket.util.WebSocketUtils.PREFIX_KEY;
 
 import com.flab.football.service.redis.RedisService;
 import com.flab.football.service.security.SecurityService;
+import java.net.InetAddress;
 import java.util.Map;
+import javax.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.context.ApplicationContext;
+import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Component;
 import org.springframework.web.socket.CloseStatus;
 import org.springframework.web.socket.WebSocketSession;
@@ -28,11 +32,27 @@ public class ChatHandler extends TextWebSocketHandler {
 
   private final Map<Integer, WebSocketSession> sessions;
 
+  private final ApplicationContext applicationContext;
+
+  private static String address;
+
   /**
    * Client가 접속 시 호출되는 메서드.
      * 앱을 실행시킨 경우
      * key = userId, value = [웹소켓 서버 정보] 으로 Redis 에 저장
    */
+
+  @PostConstruct
+  private void postConstruct() {
+    String port = applicationContext
+        .getBean(Environment.class)
+        .getProperty("server.port", String.class, "8080");
+
+    address = InetAddress.getLoopbackAddress().getHostAddress() + ":" + port;
+
+    log.info("WebSocket Server Address = {}", address);
+
+  }
 
   @Override
   public void afterConnectionEstablished(WebSocketSession session) throws Exception {
@@ -42,7 +62,7 @@ public class ChatHandler extends TextWebSocketHandler {
     int userId = getCurrentUserId(session);
 
     // userId 와 웹소켓 서버 정보를 redis 에 저장
-    redisService.setSession(PREFIX_KEY + userId, session.getLocalAddress().toString());
+    redisService.setSession(PREFIX_KEY + userId, address);
 
     // 웹소켓 서버 내 메모리에 session 객체를 저장
     sessions.put(userId, session);
