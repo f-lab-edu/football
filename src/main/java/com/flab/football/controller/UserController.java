@@ -5,6 +5,7 @@ import com.flab.football.controller.request.SignUpRequest;
 import com.flab.football.controller.response.ResponseDto;
 import com.flab.football.domain.User;
 import com.flab.football.service.security.SecurityService;
+import com.flab.football.service.security.CustomUserDetailsService.UserAdapter;
 import com.flab.football.service.user.UserService;
 import com.flab.football.util.SecurityUtil;
 import javax.validation.Valid;
@@ -103,13 +104,16 @@ public class UserController {
    */
 
   @GetMapping("/login/check")
-  public ResponseDto logInCheck() {
+  public ResponseDto logInCheck(UserAdapter userAdapter) {
 
     log.info("userEmail from util = {}", SecurityUtil.getCurrentEmail().get());
 
     log.info("userId from token = {}", securityService.getCurrentUserId());
 
     log.info("userName from token = {}", securityService.getCurrentUserName());
+
+    // NPE 발
+    log.info("userAdapter = {}", userAdapter.getUser().getId());
 
     return new ResponseDto(true, null, "로그인 체크", null);
 
