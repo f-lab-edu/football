@@ -2,14 +2,16 @@ package com.flab.football.service.chat;
 
 import com.flab.football.domain.Channel;
 import com.flab.football.domain.Message;
+import com.flab.football.domain.Message.Type;
 import com.flab.football.domain.Participant;
 import com.flab.football.domain.User;
 import com.flab.football.repository.chat.ChannelRepository;
 import com.flab.football.repository.chat.MessageRepository;
 import com.flab.football.repository.chat.ParticipantRepository;
-import com.flab.football.service.security.SecurityService;
+import com.flab.football.service.chat.command.PushMessageCommand;
 import com.flab.football.service.user.UserService;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;
@@ -28,7 +30,7 @@ public class ChatServiceImpl implements ChatService {
 
   private final UserService userService;
 
-  //private final SecurityService securityService;
+  private final ChatPushService chatPushService;
 
   private final ChannelRepository channelRepository;
 
@@ -78,25 +80,45 @@ public class ChatServiceImpl implements ChatService {
 
   @Override
   @Transactional
-  public void saveMessage(Message.Type type, int channelId, String content) {
+  public void sendMessage(int channelId, int sendUserId, String content) {
 
     Channel channel = findChannelById(channelId);
 
-    //String name = securityService.getCurrentUserName();
+    User user = userService.findById(sendUserId);
 
     Message message = Message.builder()
-        .channel(channel)
-        .type(type)
+        .type(Type.MESSAGE)
         .content(content)
-        //.sender(name)
         .createAt(LocalDateTime.now())
         .build();
 
     messageRepository.save(message);
 
+    message.setUser(user);
+
     message.setChannel(channel);
 
-    channel.addMessage(message);
+    // 해당 채팅방에 메세지를 받아야하는 대상자를 조회
+    // N+1 쿼리 제어 필요
+    List<Integer> userIdList = findMessageReceivers(channelId);
+
+    // 조회된 user들에 대해 메세지를 푸시한다.
+    for (int receiveUserId : userIdList) {
+
+      if (receiveUserId != sendUserId) {
+
+        PushMessageCommand command = PushMessageCommand.builder()
+            .channelId(channelId)
+            .sendUserId(sendUserId)
+            .receiveUserId(receiveUserId)
+            .content(content)
+            .build();
+
+        chatPushService.pushMessage(command);
+
+      }
+
+    }
 
   }
 
@@ -115,4 +137,31 @@ public class ChatServiceImpl implements ChatService {
     return channel.get();
 
   }
+
+  @Override
+  @Transactional(readOnly = true)
+  public List<Participant> findParticipantsByChannelId(int channelId) {
+
+    return participantRepository.findAllByChannelId(channelId);
+
+  }
+
+  @Override
+  @Transactional
+  public List<Integer> findMessageReceivers(int channelId) {
+
+    List<Integer> userIdList = new ArrayList<>();
+
+    List<Participant> participants = findParticipantsByChannelId(channelId);
+
+    for (Participant participant : participants) {
+
+      userIdList.add(participant.getUser().getId());
+
+    }
+
+    return userIdList;
+
+  }
+
 }

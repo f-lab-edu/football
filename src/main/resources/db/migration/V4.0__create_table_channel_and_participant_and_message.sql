@@ -6,10 +6,11 @@ CREATE TABLE `channel` (
 CREATE TABLE `message` (
   id INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
   type VARCHAR(255),
-  sender VARCHAR(255),
   content VARCHAR(255),
   create_at DATETIME,
+  user_id INT,
   channel_id INT,
+  FOREIGN KEY (user_id) REFERENCES `user` (id),
   FOREIGN KEY (channel_id) REFERENCES `channel` (id)
 );
 

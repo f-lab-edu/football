@@ -2,11 +2,16 @@ package com.flab.football.controller;
 
 import com.flab.football.controller.request.CreateChannelRequest;
 import com.flab.football.controller.request.InviteParticipantsRequest;
+import com.flab.football.controller.request.SendMessageRequest;
 import com.flab.football.controller.response.ResponseDto;
 import com.flab.football.service.chat.ChatService;
+import com.flab.football.service.redis.RedisService;
+import com.flab.football.service.security.SecurityService;
+import java.util.List;
 import javax.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -14,6 +19,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.client.RestTemplate;
 
 /**
  * 채팅 기능 관련 API 선언이 되어있는 컨트롤러.
@@ -26,6 +32,8 @@ import org.springframework.web.bind.annotation.RestController;
 public class ChatController {
 
   private final ChatService chatService;
+
+  private final SecurityService securityService;
 
   /**
    * 새로운 채팅방 생성 API.
@@ -65,6 +73,23 @@ public class ChatController {
   public ResponseDto findChannels() {
 
     return new ResponseDto(true, null, "채팅방 조회", null);
+
+  }
+
+  /**
+   * 메시지 수신자를 대상으로 메세지 또는 푸시알림 전송 API.
+   */
+
+  @PostMapping("/send/message")
+  public ResponseDto sendMessage(@RequestBody SendMessageRequest request) {
+
+    // 메세지를 보내는 사용자 id 조회
+    int sendUserId = securityService.getCurrentUserId();
+
+    // 아래 로직이 모두 ChatService.sendMessage() 로 가야한다.
+    chatService.sendMessage(request.getChannelId(), sendUserId, request.getContent());
+
+    return new ResponseDto<>(true, null, "분류 완료.", null);
 
   }
 

@@ -141,4 +141,20 @@ public class UserServiceImpl implements UserService {
 
   }
 
+  @Override
+  @Transactional(readOnly = true)
+  public User findById(int userId) {
+
+    Optional<User> user = userRepository.findById(userId);
+
+    if (user.isEmpty()) {
+
+      throw new AlreadyManagerRoleException("회원 정보가 존재하지 않습니다.");
+
+    }
+
+    return user.get();
+
+  }
+
 }

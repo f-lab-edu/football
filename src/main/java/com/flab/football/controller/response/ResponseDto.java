@@ -2,12 +2,16 @@ package com.flab.football.controller.response;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 /**
  * 응답 클래스.
  */
 
 @Getter
+@Setter
+@NoArgsConstructor
 @AllArgsConstructor
 public class ResponseDto<T> {
 
