@@ -9,13 +9,18 @@ import com.flab.football.repository.chat.ChannelRepository;
 import com.flab.football.repository.chat.MessageRepository;
 import com.flab.football.repository.chat.ParticipantRepository;
 import com.flab.football.service.chat.command.PushMessageCommand;
+import com.flab.football.service.redis.RedisService;
 import com.flab.football.service.user.UserService;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
+import java.util.concurrent.ConcurrentHashMap;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.redis.core.HashOperations;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -31,6 +36,8 @@ public class ChatServiceImpl implements ChatService {
   private final UserService userService;
 
   private final ChatPushService chatPushService;
+
+  private final RedisService redisService;
 
   private final ChannelRepository channelRepository;
 
@@ -161,6 +168,20 @@ public class ChatServiceImpl implements ChatService {
     }
 
     return userIdList;
+
+  }
+
+  @Override
+  @Transactional
+  public void healthCheck(String address, int connectionCount, LocalDateTime lastHeartBeatTime) {
+
+    // 10초 동안 결과가 안넘어오면 서버가 죽은 걸로 판단하도록 로직 구현
+
+    redisService.setServerInfo(address, connectionCount, lastHeartBeatTime);
+
+    log.info(address + " connectionCount = {}", redisService.getConnectionCount(address));
+
+    log.info(address + " LastHeartBeatTime = {}", redisService.getLastHeartBeatTime(address));
 
   }
 

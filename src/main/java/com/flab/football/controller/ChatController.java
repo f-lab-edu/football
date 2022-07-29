@@ -1,6 +1,7 @@
 package com.flab.football.controller;
 
 import com.flab.football.controller.request.CreateChannelRequest;
+import com.flab.football.controller.request.HealthCheckRequest;
 import com.flab.football.controller.request.InviteParticipantsRequest;
 import com.flab.football.controller.request.SendMessageRequest;
 import com.flab.football.controller.response.ResponseDto;
@@ -34,6 +35,22 @@ public class ChatController {
   private final ChatService chatService;
 
   private final SecurityService securityService;
+
+  @PostMapping("/health/check")
+  public ResponseDto healthCheck(@RequestBody HealthCheckRequest request) {
+
+    // 받아온 결과값을 저장하고 유지한다.
+    chatService.healthCheck(
+        request.getAddress(),
+        request.getConnectionCount(),
+        request.getHeartBeatTime()
+    );
+
+    // 가장 연결 수가 적은 서버를 리턴해주는 로직도 구현해야 한다.
+
+    return new ResponseDto(true, null, "헬스 체크 완료", null);
+
+  }
 
   /**
    * 새로운 채팅방 생성 API.
