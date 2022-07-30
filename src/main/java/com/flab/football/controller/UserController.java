@@ -4,14 +4,15 @@ import com.flab.football.controller.request.LogInRequest;
 import com.flab.football.controller.request.SignUpRequest;
 import com.flab.football.controller.response.ResponseDto;
 import com.flab.football.domain.User;
-import com.flab.football.service.security.SecurityService;
 import com.flab.football.service.security.CustomUserDetailsService.UserAdapter;
+import com.flab.football.service.security.SecurityService;
 import com.flab.football.service.user.UserService;
 import com.flab.football.util.SecurityUtil;
 import javax.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -104,7 +105,7 @@ public class UserController {
    */
 
   @GetMapping("/login/check")
-  public ResponseDto logInCheck(UserAdapter userAdapter) {
+  public ResponseDto logInCheck(@AuthenticationPrincipal UserAdapter userAdapter) {
 
     log.info("userEmail from util = {}", SecurityUtil.getCurrentEmail().get());
 
@@ -112,8 +113,11 @@ public class UserController {
 
     log.info("userName from token = {}", securityService.getCurrentUserName());
 
-    // NPE 발
-    log.info("userAdapter = {}", userAdapter.getUser().getId());
+    // NPE 발생!
+    // 해당 객체는 CustomUserDetailsService.loadUserByUsername() 리턴 객체를 가져온다.
+    // 리턴 타입이 UserDetails.user 일 경우는 정상적으로 가져오지만
+    // Entity 클래스 타입의 User 객체를 필드로 가진 UserAdapter 타입의 객체는 가져오지 못하고 Null 값이 리턴된다.
+    log.info("userAdapter info = {}", userAdapter.getUser().getId());
 
     return new ResponseDto(true, null, "로그인 체크", null);
 

@@ -2,7 +2,7 @@ package com.flab.football.service.security;
 
 import com.flab.football.domain.User;
 import com.flab.football.repository.user.UserRepository;
-import com.flab.football.service.user.UserService;
+import java.io.Serializable;
 import java.util.List;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
@@ -23,25 +23,21 @@ public class CustomUserDetailsService implements UserDetailsService {
   private final UserRepository userRepository;
 
   @Override
-  public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
+  public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
 
-    User user = userRepository.findByEmail(email).get();
-    log.info("" + user.getId());
+    // User 타입 객체 리턴 시
+    /*
+    return userRepository.findByEmail(email)
+        .map(user -> createUserDetails(user))
+        .orElseThrow(() -> new UsernameNotFoundException(username + " 존재하지 않는 username 입니다."));
+    */
 
-    UserAdapter userAdapter = createUserAdapter(user);
-    log.info("" + userAdapter.getUser().getId());
+    // UserAdapter 객체 리턴 시
+    User user = userRepository.findByEmail(username)
+        .orElseThrow(() -> new UsernameNotFoundException(username + " 존재하지 않는 username 입니다."));
 
-    if (userAdapter == null) {
-
-      throw new UsernameNotFoundException("존재하지 않는 email입니다.");
-
-    }
-
-    return userAdapter;
-
-//    return userRepository.findByEmail(username)
-//        .map(user -> createUserAdapter(user))
-//        .orElseThrow(() -> new UsernameNotFoundException(username + " 존재하지 않는 username 입니다."));
+    // UserDetails 인터페이스 구현 클래스인 User 클래스의 상속 클래스인 UserAdapter 클래스 return
+    return createUserAdapter(user);
 
   }
 
@@ -64,6 +60,7 @@ public class CustomUserDetailsService implements UserDetailsService {
   @Getter
   public static class UserAdapter extends org.springframework.security.core.userdetails.User {
 
+    // 엔티티 클래스인 User 클래스
     private User user;
 
     public UserAdapter(User user) {
@@ -79,4 +76,5 @@ public class CustomUserDetailsService implements UserDetailsService {
     }
 
   }
+
 }
