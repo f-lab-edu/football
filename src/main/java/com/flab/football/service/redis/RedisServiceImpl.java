@@ -1,7 +1,7 @@
 package com.flab.football.service.redis;
 
+import com.flab.football.websocket.util.WebSocketUtils;
 import java.time.LocalDateTime;
-import java.util.Map;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.redis.core.HashOperations;
@@ -42,9 +42,13 @@ public class RedisServiceImpl implements RedisService {
 
     HashOperations<String, String, Object> hashOperations = redisTemplate.opsForHash();
 
-    hashOperations.put(address, "connectionCount", connectionCount);
+    String key = WebSocketUtils.PREFIX_SERVER + address;
 
-    hashOperations.put(address, "lastHeartBeatTime", lastHeartBeatTime);
+    hashOperations.put(key, WebSocketUtils.ADDRESS, address);
+
+    hashOperations.put(key, WebSocketUtils.CONNECTION_COUNT, connectionCount);
+
+    hashOperations.put(key, WebSocketUtils.LAST_HEARTBEAT_TIME, lastHeartBeatTime);
 
   }
 
@@ -58,16 +62,27 @@ public class RedisServiceImpl implements RedisService {
   }
 
   @Override
+  public String getAddress(String address) {
+
+    return (String) redisTemplate.opsForHash()
+        .get(WebSocketUtils.PREFIX_SERVER + address, WebSocketUtils.ADDRESS);
+
+  }
+
+  @Override
   public Integer getConnectionCount(String address) {
 
-    return (Integer) redisTemplate.opsForHash().get(address, "connectionCount");
+    return (Integer) redisTemplate.opsForHash()
+        .get(WebSocketUtils.PREFIX_SERVER + address, WebSocketUtils.CONNECTION_COUNT);
 
   }
 
   @Override
   public LocalDateTime getLastHeartBeatTime(String address) {
 
-    return (LocalDateTime) redisTemplate.opsForHash().get(address, "lastHeartBeatTime");
+    return (LocalDateTime) redisTemplate.opsForHash()
+        .get(WebSocketUtils.PREFIX_SERVER + address, WebSocketUtils.LAST_HEARTBEAT_TIME);
 
   }
+
 }

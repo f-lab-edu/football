@@ -179,7 +179,9 @@ public class ChatServiceImpl implements ChatService {
 
     redisService.setServerInfo(address, connectionCount, lastHeartBeatTime);
 
-    log.info(address + " connectionCount = {}", redisService.getConnectionCount(address));
+    log.info("connectionCount = {}", redisService.getAddress(address));
+
+    log.info("connectionCount = {}", redisService.getConnectionCount(address));
 
     log.info(address + " LastHeartBeatTime = {}", redisService.getLastHeartBeatTime(address));
 

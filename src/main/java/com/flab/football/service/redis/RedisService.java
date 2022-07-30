@@ -1,7 +1,6 @@
 package com.flab.football.service.redis;
 
 import java.time.LocalDateTime;
-import java.util.Map;
 
 public interface RedisService {
 
@@ -14,6 +13,8 @@ public interface RedisService {
   void setServerInfo(String address, int connectionCount, LocalDateTime lastHeartBeatTime);
 
   Object getServerInfo(String address);
+
+  String getAddress(String address);
 
   Integer getConnectionCount(String address);
 
