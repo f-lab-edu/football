@@ -1,6 +1,6 @@
 package com.flab.football.config;
 
-import com.flab.football.resolver.UserAdapterArgumentResolver;
+import com.flab.football.resolver.LogInUserArgumentResolver;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Configuration;
@@ -11,12 +11,12 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 @RequiredArgsConstructor
 public class WebConfig implements WebMvcConfigurer {
 
-  private final UserAdapterArgumentResolver customArgumentResolver;
+  private final LogInUserArgumentResolver customArgumentResolver;
 
   @Override
   public void addArgumentResolvers(List<HandlerMethodArgumentResolver> argumentResolvers) {
 
-    // argumentResolvers.add(customArgumentResolver);
+    argumentResolvers.add(customArgumentResolver);
 
   }
 
