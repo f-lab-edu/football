@@ -68,6 +68,13 @@ public class RedisServiceImpl implements RedisService {
   }
 
   @Override
+  public void deleteServerInfo(String key) {
+
+    redisTemplate.delete(key);
+
+  }
+
+  @Override
   public String getAddress(String key) {
 
     return (String) redisTemplate.opsForHash().get(key, WebSocketUtils.ADDRESS);

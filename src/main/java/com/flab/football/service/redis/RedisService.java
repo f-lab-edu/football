@@ -13,6 +13,8 @@ public interface RedisService {
 
   void setServerInfo(String address, int connectionCount, LocalDateTime lastHeartBeatTime);
 
+  void deleteServerInfo(String key);
+
   Set<String> getServerInfoKeySet();
 
   String getAddress(String key);
