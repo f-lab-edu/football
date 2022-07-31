@@ -46,7 +46,8 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     web
         .ignoring()
         .antMatchers("/chat/health/check")
-        .antMatchers("/ws/send/message");
+        .antMatchers("/ws/send/message")
+        .antMatchers("/ws/connect");
 
   }
 

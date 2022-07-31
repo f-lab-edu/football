@@ -2,6 +2,7 @@ package com.flab.football.service.redis;
 
 import com.flab.football.websocket.util.WebSocketUtils;
 import java.time.LocalDateTime;
+import java.util.Set;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.redis.core.HashOperations;
@@ -50,38 +51,40 @@ public class RedisServiceImpl implements RedisService {
 
     hashOperations.put(key, WebSocketUtils.LAST_HEARTBEAT_TIME, lastHeartBeatTime);
 
-  }
+    log.info("address = {}", getAddress(key));
 
-  @Override
-  public Object getServerInfo(String address) {
+    log.info("connectionCount = {}", getConnectionCount(key));
 
-    HashOperations<String, String, Object> hashOperations = redisTemplate.opsForHash();
-
-    return hashOperations.entries(address);
+    log.info("LastHeartBeatTime = {}", getLastHeartBeatTime(key));
 
   }
 
   @Override
-  public String getAddress(String address) {
+  public Set<String> getServerInfoKeySet() {
 
-    return (String) redisTemplate.opsForHash()
-        .get(WebSocketUtils.PREFIX_SERVER + address, WebSocketUtils.ADDRESS);
+    return redisTemplate.opsForHash()
+        .getOperations()
+        .keys(WebSocketUtils.PREFIX_SERVER + "*");
+  }
+
+  @Override
+  public String getAddress(String key) {
+
+    return (String) redisTemplate.opsForHash().get(key, WebSocketUtils.ADDRESS);
 
   }
 
   @Override
-  public Integer getConnectionCount(String address) {
+  public Integer getConnectionCount(String key) {
 
-    return (Integer) redisTemplate.opsForHash()
-        .get(WebSocketUtils.PREFIX_SERVER + address, WebSocketUtils.CONNECTION_COUNT);
+    return (Integer) redisTemplate.opsForHash().get(key, WebSocketUtils.CONNECTION_COUNT);
 
   }
 
   @Override
-  public LocalDateTime getLastHeartBeatTime(String address) {
+  public LocalDateTime getLastHeartBeatTime(String key) {
 
-    return (LocalDateTime) redisTemplate.opsForHash()
-        .get(WebSocketUtils.PREFIX_SERVER + address, WebSocketUtils.LAST_HEARTBEAT_TIME);
+    return (LocalDateTime) redisTemplate.opsForHash().get(key, WebSocketUtils.LAST_HEARTBEAT_TIME);
 
   }
 

@@ -13,16 +13,15 @@ import com.flab.football.service.redis.RedisService;
 import com.flab.football.service.user.UserService;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
-import java.util.concurrent.ConcurrentHashMap;
+import java.util.Set;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.data.redis.core.HashOperations;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.client.RestTemplate;
 
 /**
  * 채팅 관련 비즈니스 로직이 선언된 서비스 구현체.
@@ -38,6 +37,8 @@ public class ChatServiceImpl implements ChatService {
   private final ChatPushService chatPushService;
 
   private final RedisService redisService;
+
+  private final RestTemplate restTemplate;
 
   private final ChannelRepository channelRepository;
 
@@ -175,15 +176,36 @@ public class ChatServiceImpl implements ChatService {
   @Transactional
   public void healthCheck(String address, int connectionCount, LocalDateTime lastHeartBeatTime) {
 
-    // 10초 동안 결과가 안넘어오면 서버가 죽은 걸로 판단하도록 로직 구현
-
     redisService.setServerInfo(address, connectionCount, lastHeartBeatTime);
 
-    log.info("connectionCount = {}", redisService.getAddress(address));
+  }
 
-    log.info("connectionCount = {}", redisService.getConnectionCount(address));
+  @Override
+  public void connectUserToWebSocket() {
 
-    log.info(address + " LastHeartBeatTime = {}", redisService.getLastHeartBeatTime(address));
+    Set<String> serverInfoKeySet = redisService.getServerInfoKeySet();
+
+    int minConnectionCount = Integer.MAX_VALUE;
+
+    String address = "";
+
+    for (String key : serverInfoKeySet) {
+
+      int connectionCount = redisService.getConnectionCount(key);
+
+      if (connectionCount < minConnectionCount) {
+
+        minConnectionCount = connectionCount;
+
+        address = redisService.getAddress(key);
+
+      }
+
+    }
+
+    String uri = "http://" + address + "/ws/connect";
+
+    restTemplate.getForEntity(uri, ResponseEntity.class);
 
   }
 

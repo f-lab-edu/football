@@ -1,7 +1,6 @@
 package com.flab.football.service.chat;
 
 import com.flab.football.domain.Channel;
-import com.flab.football.domain.Message;
 import com.flab.football.domain.Participant;
 import java.time.LocalDateTime;
 import java.util.List;
@@ -21,5 +20,7 @@ public interface ChatService {
   List<Integer> findMessageReceivers(int channelId);
 
   void healthCheck(String address, int connectionCount, LocalDateTime lastHeartBeatTime);
+
+  void connectUserToWebSocket();
 
 }

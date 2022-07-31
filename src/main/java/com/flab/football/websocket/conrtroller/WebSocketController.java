@@ -1,23 +1,19 @@
 package com.flab.football.websocket.conrtroller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.flab.football.controller.response.ResponseDto;
-import com.flab.football.websocket.conrtroller.request.HeartBeatRequest;
 import com.flab.football.websocket.conrtroller.request.SendMessageRequest;
 import com.flab.football.websocket.service.HeartBeatService;
 import com.flab.football.websocket.service.SessionService;
-import java.time.LocalDateTime;
-import javax.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.scheduling.annotation.Scheduled;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.client.RestTemplate;
 import org.springframework.web.socket.TextMessage;
 import org.springframework.web.socket.WebSocketSession;
 
@@ -41,6 +37,17 @@ public class WebSocketController {
   public void heartBeat() {
 
     heartBeatService.sendHeartBeat();
+
+  }
+
+  @GetMapping("/connect")
+  public ResponseEntity<HttpStatus> connectServer() {
+
+    log.info("OK");
+
+    // 웹소켓에 클라이언트를 연결시켜주는 메소드는 어떤 것이 있을지 고민해봐야 한다.
+
+    return new ResponseEntity<>(HttpStatus.OK);
 
   }
 

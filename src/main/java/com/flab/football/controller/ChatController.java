@@ -6,13 +6,10 @@ import com.flab.football.controller.request.InviteParticipantsRequest;
 import com.flab.football.controller.request.SendMessageRequest;
 import com.flab.football.controller.response.ResponseDto;
 import com.flab.football.service.chat.ChatService;
-import com.flab.football.service.redis.RedisService;
 import com.flab.football.service.security.SecurityService;
-import java.util.List;
 import javax.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -20,7 +17,6 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.client.RestTemplate;
 
 /**
  * 채팅 기능 관련 API 선언이 되어있는 컨트롤러.
@@ -36,6 +32,10 @@ public class ChatController {
 
   private final SecurityService securityService;
 
+  /**
+   * 웹 소켓 서버에 대한 healthCheck 값을 받기 위한 API.
+   */
+
   @PostMapping("/health/check")
   public ResponseDto healthCheck(@RequestBody HealthCheckRequest request) {
 
@@ -46,11 +46,26 @@ public class ChatController {
         request.getHeartBeatTime()
     );
 
-    // 가장 연결 수가 적은 서버를 리턴해주는 로직도 구현해야 한다.
-
     return new ResponseDto(true, null, "헬스 체크 완료", null);
 
   }
+
+  /**
+   * 새로운 사용자를 웹소켓 서버에 연결시켜주는 API
+   * req 포함 내용 ->
+   */
+
+  @GetMapping("/connect")
+  public ResponseDto connectWebSocket() {
+
+    // 가장 커넥션 수가 적은 서버 주소로 웹소켓 연결 요청을 보낸다.
+    // user 정보를 보내줘야 할 수도 있겠다.
+    chatService.connectUserToWebSocket();
+
+    return new ResponseDto(true, null, "웹 소켓 연결 완료.", null);
+
+  }
+
 
   /**
    * 새로운 채팅방 생성 API.
