@@ -9,7 +9,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.scheduling.annotation.Scheduled;
-import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -33,21 +32,14 @@ public class WebSocketController {
 
   private final ObjectMapper objectMapper;
 
+  /**
+   * WebSocket 서버의 상태를 지속적으로 API 서버로 전송하는 heartBeat 메소드.
+   */
+
   @Scheduled(fixedRate = 3000)
   public void heartBeat() {
 
     heartBeatService.sendHeartBeat();
-
-  }
-
-  @GetMapping("/connect")
-  public ResponseEntity<HttpStatus> connectServer() {
-
-    log.info("OK");
-
-    // 웹소켓에 클라이언트를 연결시켜주는 메소드는 어떤 것이 있을지 고민해봐야 한다.
-
-    return new ResponseEntity<>(HttpStatus.OK);
 
   }
 

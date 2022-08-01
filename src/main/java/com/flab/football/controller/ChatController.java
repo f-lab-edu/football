@@ -5,6 +5,7 @@ import com.flab.football.controller.request.HealthCheckRequest;
 import com.flab.football.controller.request.InviteParticipantsRequest;
 import com.flab.football.controller.request.SendMessageRequest;
 import com.flab.football.controller.response.ResponseDto;
+import com.flab.football.controller.response.data.FindPossibleConnectServerResponse;
 import com.flab.football.service.chat.ChatService;
 import com.flab.football.service.security.SecurityService;
 import javax.validation.Valid;
@@ -51,18 +52,21 @@ public class ChatController {
   }
 
   /**
-   * 새로운 사용자를 웹소켓 서버에 연결시켜주는 API
-   * req 포함 내용 ->
+   * 새로운 사용자를 웹소켓 서버 주소를 탐색하는 API.
+   *
    */
 
   @GetMapping("/connect")
-  public ResponseDto connectWebSocket() {
+  public ResponseDto findPossibleConnectServerAddress() {
 
-    // 가장 커넥션 수가 적은 서버 주소로 웹소켓 연결 요청을 보낸다.
-    // user 정보를 보내줘야 할 수도 있겠다.
-    chatService.connectUserToWebSocket();
+    String address = chatService.findPossibleConnectServerAddress();
 
-    return new ResponseDto(true, null, "웹 소켓 연결 완료.", null);
+    return new ResponseDto(
+        true,
+        new FindPossibleConnectServerResponse(address),
+        "웹 소켓 주소 전송 완료.",
+        null
+    );
 
   }
 
@@ -121,7 +125,7 @@ public class ChatController {
     // 아래 로직이 모두 ChatService.sendMessage() 로 가야한다.
     chatService.sendMessage(request.getChannelId(), sendUserId, request.getContent());
 
-    return new ResponseDto<>(true, null, "분류 완료.", null);
+    return new ResponseDto<>(true, null, "메세지 전송 완료", null);
 
   }
 

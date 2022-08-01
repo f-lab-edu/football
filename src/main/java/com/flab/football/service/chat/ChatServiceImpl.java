@@ -19,11 +19,9 @@ import java.util.Optional;
 import java.util.Set;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.http.ResponseEntity;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.client.RestTemplate;
 
 /**
  * 채팅 관련 비즈니스 로직이 선언된 서비스 구현체.
@@ -39,8 +37,6 @@ public class ChatServiceImpl implements ChatService {
   private final ChatPushService chatPushService;
 
   private final RedisService redisService;
-
-  private final RestTemplate restTemplate;
 
   private final ChannelRepository channelRepository;
 
@@ -183,7 +179,8 @@ public class ChatServiceImpl implements ChatService {
   }
 
   @Override
-  public void connectUserToWebSocket() {
+  @Transactional
+  public String findPossibleConnectServerAddress() {
 
     Set<String> serverInfoKeySet = redisService.getServerInfoKeySet();
 
@@ -211,9 +208,7 @@ public class ChatServiceImpl implements ChatService {
 
     }
 
-    String uri = "http://" + address + "/ws/connect";
-
-    restTemplate.getForEntity(uri, ResponseEntity.class);
+    return "ws://" + address + "/ws/chat";
 
   }
 

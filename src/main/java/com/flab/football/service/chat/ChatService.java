@@ -21,6 +21,6 @@ public interface ChatService {
 
   void healthCheck(String address, int connectionCount, LocalDateTime lastHeartBeatTime);
 
-  void connectUserToWebSocket();
+  String findPossibleConnectServerAddress();
 
 }
