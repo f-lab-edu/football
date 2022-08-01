@@ -9,13 +9,17 @@ import com.flab.football.repository.chat.ChannelRepository;
 import com.flab.football.repository.chat.MessageRepository;
 import com.flab.football.repository.chat.ParticipantRepository;
 import com.flab.football.service.chat.command.PushMessageCommand;
+import com.flab.football.service.redis.RedisService;
 import com.flab.football.service.user.UserService;
 import java.time.LocalDateTime;
+import java.time.ZoneOffset;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -31,6 +35,8 @@ public class ChatServiceImpl implements ChatService {
   private final UserService userService;
 
   private final ChatPushService chatPushService;
+
+  private final RedisService redisService;
 
   private final ChannelRepository channelRepository;
 
@@ -163,5 +169,78 @@ public class ChatServiceImpl implements ChatService {
     return userIdList;
 
   }
+
+  @Override
+  @Transactional
+  public void healthCheck(String address, int connectionCount, LocalDateTime lastHeartBeatTime) {
+
+    redisService.setServerInfo(address, connectionCount, lastHeartBeatTime);
+
+  }
+
+  @Override
+  @Transactional
+  public String findPossibleConnectServerAddress() {
+
+    Set<String> serverInfoKeySet = redisService.getServerInfoKeySet();
+
+    if (serverInfoKeySet.size() == 0) {
+
+      throw new RuntimeException("연결 가능한 웹소켓 서버가 없습니다.");
+
+    }
+
+    int minConnectionCount = Integer.MAX_VALUE;
+
+    String address = "";
+
+    for (String key : serverInfoKeySet) {
+
+      int connectionCount = redisService.getConnectionCount(key);
+
+      if (connectionCount < minConnectionCount) {
+
+        minConnectionCount = connectionCount;
+
+        address = redisService.getAddress(key);
+
+      }
+
+    }
+
+    return "ws://" + address + "/ws/chat";
+
+  }
+
+  @Scheduled(fixedRate = 3000)
+  public void refuseWebSocketServer() {
+
+    Set<String> serverInfoKeySet = redisService.getServerInfoKeySet();
+
+    if (serverInfoKeySet.size() == 0) {
+
+      return;
+
+    }
+
+    for (String key : serverInfoKeySet) {
+
+      long lastHeartBeatTime = redisService.getLastHeartBeatTime(key).toEpochSecond(ZoneOffset.UTC);
+
+      long currentTime = LocalDateTime.now().toEpochSecond(ZoneOffset.UTC);
+
+      if (currentTime - lastHeartBeatTime > 10) {
+
+        log.info(key + "'s heartbeatTime = {}", currentTime - lastHeartBeatTime);
+
+        // redis 에서 해당 서버 정보 삭제
+        redisService.deleteServerInfo(key);
+
+      }
+
+    }
+
+  }
+
 
 }

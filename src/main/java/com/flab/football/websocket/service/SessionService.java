@@ -10,4 +10,6 @@ public interface SessionService {
 
   WebSocketSession findSessionByUserId(int userId);
 
+  int getSessionCount();
+
 }

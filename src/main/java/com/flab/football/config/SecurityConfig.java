@@ -44,7 +44,11 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
   @Override
   public void configure(WebSecurity web) throws Exception {
     web
-        .ignoring().antMatchers("/ws/send/message");
+        .ignoring()
+        .antMatchers("/chat/health/check")
+        .antMatchers("/ws/send/message")
+        .antMatchers("/ws/connect");
+
   }
 
   /**

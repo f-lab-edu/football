@@ -34,4 +34,11 @@ public class SessionServiceImpl implements SessionService {
 
   }
 
+  @Override
+  public int getSessionCount() {
+
+    return sessions.size();
+
+  }
+
 }
