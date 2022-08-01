@@ -1,13 +1,12 @@
 package com.flab.football.controller;
 
-import com.flab.football.annotation.LogInUser;
+import com.flab.football.annotation.LogInUserId;
 import com.flab.football.controller.request.LogInRequest;
 import com.flab.football.controller.request.SignUpRequest;
 import com.flab.football.controller.response.ResponseDto;
 import com.flab.football.domain.User;
 import com.flab.football.service.security.SecurityService;
 import com.flab.football.service.user.UserService;
-import com.flab.football.util.SecurityUtil;
 import javax.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -104,22 +103,9 @@ public class UserController {
    */
 
   @GetMapping("/login/check")
-  public ResponseDto logInCheck(@LogInUser User user) {
+  public ResponseDto logInCheck(@LogInUserId int userId) {
 
-    log.info("userEmail from util = {}", SecurityUtil.getCurrentEmail().get());
-
-    log.info("userId from token = {}", securityService.getCurrentUserId());
-
-    log.info("userName from token = {}", securityService.getCurrentUserName());
-
-    // NPE 발생!
-    // 해당 객체는 CustomUserDetailsService.loadUserByUsername() 리턴 객체를 가져온다.
-    // 리턴 타입이 UserDetails.user 일 경우는 정상적으로 가져오지만
-    // Entity 클래스 타입의 User 객체를 필드로 가진 UserAdapter 타입의 객체는 가져오지 못하고 Null 값이 리턴된다.
-
-    // log.info("userAdapter info = {}", userAdapter.getUser().getId());
-
-    log.info("userId from CurrentLogInUser = {}", user.getId());
+    log.info("userId from LogInUserId annotation = {}", userId);
 
     return new ResponseDto(true, null, "로그인 체크", null);
 

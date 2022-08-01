@@ -2,7 +2,6 @@ package com.flab.football.service.security;
 
 import com.flab.football.domain.User;
 import com.flab.football.repository.user.UserRepository;
-import java.io.Serializable;
 import java.util.List;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
@@ -24,13 +23,6 @@ public class CustomUserDetailsService implements UserDetailsService {
 
   @Override
   public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-
-    // User 타입 객체 리턴 시
-    /*
-    return userRepository.findByEmail(email)
-        .map(user -> createUserDetails(user))
-        .orElseThrow(() -> new UsernameNotFoundException(username + " 존재하지 않는 username 입니다."));
-    */
 
     // UserAdapter 객체 리턴 시
     User user = userRepository.findByEmail(username)

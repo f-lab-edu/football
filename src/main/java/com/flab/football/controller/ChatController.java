@@ -1,5 +1,6 @@
 package com.flab.football.controller;
 
+import com.flab.football.annotation.LogInUserId;
 import com.flab.football.controller.request.CreateChannelRequest;
 import com.flab.football.controller.request.InviteParticipantsRequest;
 import com.flab.football.controller.request.SendMessageRequest;
@@ -77,10 +78,10 @@ public class ChatController {
    */
 
   @PostMapping("/send/message")
-  public ResponseDto sendMessage(@RequestBody SendMessageRequest request) {
-
-    // 메세지를 보내는 사용자 id 조회
-    int sendUserId = securityService.getCurrentUserId();
+  public ResponseDto sendMessage(
+      @RequestBody SendMessageRequest request,
+      @LogInUserId int sendUserId
+  ) {
 
     // 아래 로직이 모두 ChatService.sendMessage() 로 가야한다.
     chatService.sendMessage(request.getChannelId(), sendUserId, request.getContent());
