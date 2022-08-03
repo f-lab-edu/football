@@ -44,7 +44,7 @@ public class ChatHandler extends TextWebSocketHandler {
     int userId = getCurrentUserId(session);
 
     // userId 와 웹소켓 서버 정보를 redis 에 저장
-    redisService.setSession(PREFIX_KEY + userId, address);
+    redisService.setWebSocketSession(PREFIX_KEY + userId, address);
 
     // 웹소켓 서버 내 메모리에 session 객체를 저장
     sessionService.saveSession(userId, session);
@@ -63,7 +63,7 @@ public class ChatHandler extends TextWebSocketHandler {
     int userId = getCurrentUserId(session);
 
     // userId 와 웹소켓 서버 정보를 redis 에서 삭제
-    redisService.deleteSession(PREFIX_KEY + userId);
+    redisService.deleteWebSocketSession(PREFIX_KEY + userId);
 
     // 웹소켓 서버 내 메모리에 session 객체를 삭제
     sessionService.removeSession(userId, session);

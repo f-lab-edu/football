@@ -5,7 +5,7 @@ import com.flab.football.controller.request.HealthCheckRequest;
 import com.flab.football.controller.request.InviteParticipantsRequest;
 import com.flab.football.controller.request.SendMessageRequest;
 import com.flab.football.controller.response.ResponseDto;
-import com.flab.football.controller.response.data.FindPossibleConnectServerResponse;
+import com.flab.football.controller.response.data.FindPrimaryWebSocketServerAddressData;
 import com.flab.football.service.chat.ChatService;
 import com.flab.football.service.security.SecurityService;
 import javax.validation.Valid;
@@ -52,18 +52,18 @@ public class ChatController {
   }
 
   /**
-   * 새로운 사용자를 웹소켓 서버 주소를 탐색하는 API.
+   * 새로운 사용자가 접근할 최적 환경의 웹소켓 서버 주소를 탐색하는 API.
    *
    */
 
   @GetMapping("/connect")
-  public ResponseDto findPossibleConnectServerAddress() {
+  public ResponseDto findPrimaryWebSocketServerAddress() {
 
-    String address = chatService.findPossibleConnectServerAddress();
+    String address = chatService.findPrimaryWebSocketServerAddress();
 
     return new ResponseDto(
         true,
-        new FindPossibleConnectServerResponse(address),
+        new FindPrimaryWebSocketServerAddressData(address),
         "웹 소켓 주소 전송 완료.",
         null
     );

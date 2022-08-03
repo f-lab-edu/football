@@ -43,9 +43,9 @@ public class JwtFilter implements Filter {
 
     if (StringUtils.hasText(jwt) && tokenProvider.validateToken(jwt)) {
 
-      Authentication authentication = tokenProvider.getAuthentication(jwt);
+      Authentication authentication = tokenProvider.getAuthentication(jwt); // 이 부분에 DTO 클래스를 추가하면 된다? 굳이 userDetails와 관련 없어도 된다!!
 
-      SecurityContextHolder.getContext().setAuthentication(authentication);
+      SecurityContextHolder.getContext().setAuthentication(authentication); // 넘겨주는 것!
 
       log.debug("Security Context에 '{}' 인증 정보 저장, uri: {}", authentication.getName(), requestURI);
 

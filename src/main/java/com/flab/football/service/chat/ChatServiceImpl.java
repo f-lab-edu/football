@@ -16,9 +16,9 @@ import java.time.ZoneOffset;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
-import java.util.Set;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.redis.core.Cursor;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -174,73 +174,47 @@ public class ChatServiceImpl implements ChatService {
   @Transactional
   public void healthCheck(String address, int connectionCount, LocalDateTime lastHeartBeatTime) {
 
-    redisService.setServerInfo(address, connectionCount, lastHeartBeatTime);
+    redisService.setWebSocketServerInfo(address, connectionCount, lastHeartBeatTime);
 
   }
 
   @Override
   @Transactional
-  public String findPossibleConnectServerAddress() {
+  public String findPrimaryWebSocketServerAddress() {
 
-    Set<String> serverInfoKeySet = redisService.getServerInfoKeySet();
+    redisService.setPrimaryWebSocketServerKeys();
 
-    if (serverInfoKeySet.size() == 0) {
+    String key = redisService.getPrimaryWebSocketServerKey();
 
-      throw new RuntimeException("연결 가능한 웹소켓 서버가 없습니다.");
-
-    }
-
-    int minConnectionCount = Integer.MAX_VALUE;
-
-    String address = "";
-
-    for (String key : serverInfoKeySet) {
-
-      int connectionCount = redisService.getConnectionCount(key);
-
-      if (connectionCount < minConnectionCount) {
-
-        minConnectionCount = connectionCount;
-
-        address = redisService.getAddress(key);
-
-      }
-
-    }
-
-    return "ws://" + address + "/ws/chat";
+    return "ws://" + redisService.getWebSocketAddress(key) + "/ws/chat";
 
   }
 
   @Scheduled(fixedRate = 3000)
-  public void refuseWebSocketServer() {
+  public void deleteWebSocketServer() {
 
-    Set<String> serverInfoKeySet = redisService.getServerInfoKeySet();
+    Cursor<String> keys = redisService.scanWebSocketServerKey();
 
-    if (serverInfoKeySet.size() == 0) {
+    if (keys.hasNext()) {
 
-      return;
+      String key = keys.next();
 
-    }
+      long lastHeartBeatTime = redisService.getWebSocketLastHeartBeatTime(key)
+          .toEpochSecond(ZoneOffset.UTC);
 
-    for (String key : serverInfoKeySet) {
-
-      long lastHeartBeatTime = redisService.getLastHeartBeatTime(key).toEpochSecond(ZoneOffset.UTC);
-
-      long currentTime = LocalDateTime.now().toEpochSecond(ZoneOffset.UTC);
+      long currentTime = LocalDateTime.now()
+          .toEpochSecond(ZoneOffset.UTC);
 
       if (currentTime - lastHeartBeatTime > 10) {
 
-        log.info(key + "'s heartbeatTime = {}", currentTime - lastHeartBeatTime);
+        log.info("server name {} died", key);
 
-        // redis 에서 해당 서버 정보 삭제
-        redisService.deleteServerInfo(key);
+        redisService.deleteWebSocketServerInfo(key);
 
       }
 
     }
 
   }
-
 
 }

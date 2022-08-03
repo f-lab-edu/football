@@ -24,7 +24,9 @@ public class ChatPushServiceImpl implements ChatPushService {
   @Override
   public void pushMessage(PushMessageCommand command) {
 
-    String address = (String) redisService.getSession(PREFIX_KEY + command.getReceiveUserId());
+    String address = redisService.getWebSocketSession(
+        PREFIX_KEY + command.getReceiveUserId()
+    );
 
     if (address == null) {
 

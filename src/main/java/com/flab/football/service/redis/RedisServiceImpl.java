@@ -2,11 +2,15 @@ package com.flab.football.service.redis;
 
 import com.flab.football.websocket.util.WebSocketUtils;
 import java.time.LocalDateTime;
+import java.util.Optional;
 import java.util.Set;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.redis.core.Cursor;
 import org.springframework.data.redis.core.HashOperations;
 import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.data.redis.core.ScanOptions;
+import org.springframework.data.redis.core.ZSetOperations;
 import org.springframework.stereotype.Service;
 
 @Slf4j
@@ -18,28 +22,29 @@ public class RedisServiceImpl implements RedisService {
 
 
   @Override
-  public void setSession(String userId, String session) {
+  public void setWebSocketSession(String userId, String session) {
 
     redisTemplate.opsForValue().set(userId, session);
 
   }
 
   @Override
-  public void deleteSession(String userId) {
+  public void deleteWebSocketSession(String userId) {
 
     redisTemplate.delete(userId);
 
   }
 
   @Override
-  public String getSession(String userId) {
+  public String getWebSocketSession(String userId) {
 
     return (String) redisTemplate.opsForValue().get(userId);
 
   }
 
   @Override
-  public void setServerInfo(String address, int connectionCount, LocalDateTime lastHeartBeatTime) {
+  public void setWebSocketServerInfo(String address, int connectionCount,
+      LocalDateTime lastHeartBeatTime) {
 
     HashOperations<String, String, Object> hashOperations = redisTemplate.opsForHash();
 
@@ -51,47 +56,103 @@ public class RedisServiceImpl implements RedisService {
 
     hashOperations.put(key, WebSocketUtils.LAST_HEARTBEAT_TIME, lastHeartBeatTime);
 
-    log.info("address = {}", getAddress(key));
+    log.info("address = {}", getWebSocketAddress(key));
 
-    log.info("connectionCount = {}", getConnectionCount(key));
+    log.info("connectionCount = {}", getWebSocketConnectionCount(key));
 
-    log.info("LastHeartBeatTime = {}", getLastHeartBeatTime(key));
+    log.info("LastHeartBeatTime = {}", getWebSocketLastHeartBeatTime(key));
 
   }
 
   @Override
-  public Set<String> getServerInfoKeySet() {
-
-    return redisTemplate.opsForHash()
-        .getOperations()
-        .keys(WebSocketUtils.PREFIX_SERVER + "*");
-  }
-
-  @Override
-  public void deleteServerInfo(String key) {
+  public void deleteWebSocketServerInfo(String key) {
 
     redisTemplate.delete(key);
 
   }
 
   @Override
-  public String getAddress(String key) {
+  public String getWebSocketAddress(String key) {
 
     return (String) redisTemplate.opsForHash().get(key, WebSocketUtils.ADDRESS);
 
   }
 
   @Override
-  public Integer getConnectionCount(String key) {
+  public Integer getWebSocketConnectionCount(String key) {
 
     return (Integer) redisTemplate.opsForHash().get(key, WebSocketUtils.CONNECTION_COUNT);
 
   }
 
   @Override
-  public LocalDateTime getLastHeartBeatTime(String key) {
+  public LocalDateTime getWebSocketLastHeartBeatTime(String key) {
 
     return (LocalDateTime) redisTemplate.opsForHash().get(key, WebSocketUtils.LAST_HEARTBEAT_TIME);
+
+  }
+
+  @Override
+  public Cursor<String> scanWebSocketServerKey() {
+
+    return redisTemplate.opsForHash()
+        .getOperations()
+        .scan(ScanOptions.scanOptions()
+            .match(WebSocketUtils.PREFIX_SERVER + "*")
+            .count(3) // 커맨드 한번당 가져올 데이터 개수
+            .build()
+        );
+
+  }
+
+  @Override
+  public void setPrimaryWebSocketServerKeys() {
+
+    Cursor<String> keys = scanWebSocketServerKey();
+
+    int count = 0;
+
+    while(keys.hasNext() && count < 3) {
+
+      String key = keys.next();
+
+      Integer connectionCount = (Integer) redisTemplate.opsForHash()
+          .get(key, WebSocketUtils.CONNECTION_COUNT);
+
+      if (connectionCount == null) {
+
+        throw new RuntimeException("웹 서버에 연결된 커넥션 정보가 없습니다.");
+
+      }
+
+      // Sorted Set 자료구조로 연결하기 가장 좋은 서버 정보를 따로 저장해둔다.
+      redisTemplate.opsForZSet().add("zSetKey", key, connectionCount);
+
+      count++;
+
+    }
+
+    log.info("zSet = {}", redisTemplate.opsForZSet().range("zSetKey", 0, 2));
+
+  }
+
+  @Override
+  public String getPrimaryWebSocketServerKey() {
+
+    // Sorted Set 으로 저장하기 때문에 가장 첫번째 녀석을 가져오면 된다.
+    ZSetOperations<String, Object> zSetOperations = redisTemplate.opsForZSet();
+
+    Set<Object> set = zSetOperations.range("zSetKey", 0, 0);
+
+    if (set.isEmpty()) {
+
+      throw new RuntimeException("접속 가능한 서버 정보가 없습니다.");
+
+    }
+
+    Optional<Object> key  =  set.stream().findFirst();
+
+    return (String) key.get();
 
   }
 
