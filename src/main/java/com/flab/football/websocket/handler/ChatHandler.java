@@ -70,6 +70,7 @@ public class ChatHandler extends TextWebSocketHandler {
 
   }
 
+  // SecurityUtils.getCurrentUserId()를 활용하지 못하기 때문에 session에서 토큰 정보를 직접 가져와 해석해 userId를 조회하는 메소드를 따로 구현
   private int getCurrentUserId(WebSocketSession session) {
 
     String bearerToken = session.getHandshakeHeaders().get(AUTHORIZATION_HEADER).toString();
