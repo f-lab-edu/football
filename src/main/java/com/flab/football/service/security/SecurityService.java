@@ -12,10 +12,6 @@ public interface SecurityService {
 
   void logOut();
 
-  int getCurrentUserId();
-
   int getCurrentUserId(String bearerToken);
-
-  String getCurrentUserName();
 
 }

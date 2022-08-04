@@ -71,7 +71,7 @@ public class TokenProvider implements InitializingBean {
    * Authentication 객체의 권한정보를 이용해서 토큰을 생성하는 createToken 메소드 추가.
    */
 
-  public String createToken(Authentication authentication, int userId, String userName) {
+  public String createToken(Authentication authentication, String userName) {
 
     String authorities = authentication.getAuthorities()
         .stream()
@@ -86,7 +86,6 @@ public class TokenProvider implements InitializingBean {
         .setExpiration(validity);
 
     claims.put(AUTHORITIES_KEY, authorities);
-    claims.put(ID_KEY, userId);
     claims.put(NAME_KEY, userName);
 
     return Jwts.builder()
@@ -140,30 +139,6 @@ public class TokenProvider implements InitializingBean {
   }
 
   /**
-   * 로그인 회원의 이름을 조회.
-   */
-
-  public String getCurrentUserName() {
-
-    Claims claims = getCurrentClaims();
-
-    return claims.get(NAME_KEY).toString();
-
-  }
-
-  /**
-   * 로그인 회원의 id를 조회.
-   */
-
-  public int getCurrentUserId() {
-
-    Claims claims = getCurrentClaims();
-
-    return Integer.parseInt(claims.get(ID_KEY).toString());
-
-  }
-
-  /**
    * 웹소켓 서버에서 로그인 회원의 id를 조회.
    */
 
@@ -171,32 +146,7 @@ public class TokenProvider implements InitializingBean {
 
     Claims claims = getCurrentClaims(bearerToken);
 
-    return Integer.parseInt(claims.get(ID_KEY).toString());
-
-  }
-
-  /**
-   * 요청 헤더에 담겨있는 토큰을 가지고 Claims 객체를 생성.
-   */
-
-  private Claims getCurrentClaims() {
-
-    ServletRequestAttributes attributes = (ServletRequestAttributes) RequestContextHolder
-        .currentRequestAttributes();
-
-    String bearerToken = attributes.getRequest().getHeader(AUTHORIZATION_HEADER);
-
-    if (!StringUtils.hasText(bearerToken) && bearerToken.startsWith("Bearer ")) {
-
-      throw new NotValidTokenException("유효한 토큰 형식이 아닙니다.");
-
-    }
-
-    return Jwts.parserBuilder()
-        .setSigningKey(key)
-        .build()
-        .parseClaimsJws(bearerToken.substring(7))
-        .getBody();
+    return Integer.parseInt(claims.getSubject());
 
   }
 

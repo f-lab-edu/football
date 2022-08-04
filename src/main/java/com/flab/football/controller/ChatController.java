@@ -1,6 +1,5 @@
 package com.flab.football.controller;
 
-import com.flab.football.annotation.LogInUserId;
 import com.flab.football.controller.request.CreateChannelRequest;
 import com.flab.football.controller.request.InviteParticipantsRequest;
 import com.flab.football.controller.request.SendMessageRequest;
@@ -11,6 +10,8 @@ import javax.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -80,11 +81,15 @@ public class ChatController {
   @PostMapping("/send/message")
   public ResponseDto sendMessage(
       @RequestBody SendMessageRequest request,
-      @LogInUserId int sendUserId
+      @AuthenticationPrincipal UserDetails user
   ) {
 
     // 아래 로직이 모두 ChatService.sendMessage() 로 가야한다.
-    chatService.sendMessage(request.getChannelId(), sendUserId, request.getContent());
+    chatService.sendMessage(
+        request.getChannelId(),
+        Integer.parseInt(user.getUsername()),
+        request.getContent()
+    );
 
     return new ResponseDto<>(true, null, "분류 완료.", null);
 

@@ -1,7 +1,7 @@
 package com.flab.football.resolver;
 
 import com.flab.football.annotation.LogInUserId;
-import com.flab.football.service.security.SecurityService;
+import com.flab.football.util.SecurityUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.core.MethodParameter;
 import org.springframework.stereotype.Component;
@@ -17,8 +17,6 @@ import org.springframework.web.method.support.ModelAndViewContainer;
 @Component
 @RequiredArgsConstructor
 public class LogInUserIdArgumentResolver implements HandlerMethodArgumentResolver {
-
-  private final SecurityService securityService;
 
   /**
    * 리졸버가 동작하기 위한 조건을 정의하는 메소드.
@@ -43,7 +41,7 @@ public class LogInUserIdArgumentResolver implements HandlerMethodArgumentResolve
       WebDataBinderFactory webDataBinderFactory
   ) {
 
-    return securityService.getCurrentUserId();
+    return SecurityUtil.getCurrentUserId();
 
   }
 

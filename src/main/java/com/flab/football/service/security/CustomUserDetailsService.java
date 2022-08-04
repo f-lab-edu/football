@@ -24,48 +24,20 @@ public class CustomUserDetailsService implements UserDetailsService {
   @Override
   public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
 
-    // UserAdapter 객체 리턴 시
-    User user = userRepository.findByEmail(username)
+    User user = userRepository.findById(Integer.parseInt(username))
         .orElseThrow(() -> new UsernameNotFoundException(username + " 존재하지 않는 username 입니다."));
 
-    // UserDetails 인터페이스 구현 클래스인 User 클래스의 상속 클래스인 UserAdapter 클래스 return
-    return createUserAdapter(user);
+    return createUserDetails(user);
 
   }
 
   private UserDetails createUserDetails(User user) {
 
     return new org.springframework.security.core.userdetails.User(
-        user.getEmail(),
+        String.valueOf(user.getId()),
         user.getPassword(),
         List.of(new SimpleGrantedAuthority(user.getRole().toString()))
     );
-
-  }
-
-  private UserAdapter createUserAdapter(User user) {
-
-    return new UserAdapter(user);
-
-  }
-
-  @Getter
-  public static class UserAdapter extends org.springframework.security.core.userdetails.User {
-
-    // 엔티티 클래스인 User 클래스
-    private User user;
-
-    public UserAdapter(User user) {
-
-      super(
-          user.getEmail(),
-          user.getPassword(),
-          List.of(new SimpleGrantedAuthority(user.getRole().toString()))
-      );
-
-      this.user = user;
-
-    }
 
   }
 
