@@ -110,9 +110,14 @@ public class RedisServiceImpl implements RedisService {
 
     Cursor<String> keys = scanWebSocketServerKey();
 
-    int count = 0;
+    // 연결 가능한 서버가 다운되어 조회된 키가 없는 경우
+    if(!keys.hasNext()) {
+      // 저장되어 있던 ZSet 데이터를 삭제
+      redisTemplate.delete(WebSocketUtils.Z_SET_KEY);
 
-    while(keys.hasNext() && count < 3) {
+    }
+
+    while(keys.hasNext()) {
 
       String key = keys.next();
 
@@ -126,13 +131,17 @@ public class RedisServiceImpl implements RedisService {
       }
 
       // Sorted Set 자료구조로 연결하기 가장 좋은 서버 정보를 따로 저장해둔다.
-      redisTemplate.opsForZSet().add("zSetKey", key, connectionCount);
-
-      count++;
+      redisTemplate.opsForZSet().add(WebSocketUtils.Z_SET_KEY, key, connectionCount);
 
     }
 
-    log.info("zSet = {}", redisTemplate.opsForZSet().range("zSetKey", 0, 2));
+    log.info("ZSet = {}", redisTemplate.opsForZSet()
+        .range(
+            WebSocketUtils.Z_SET_KEY,
+            0,
+            redisTemplate.opsForZSet().size(WebSocketUtils.Z_SET_KEY)
+        )
+    );
 
   }
 
@@ -142,9 +151,9 @@ public class RedisServiceImpl implements RedisService {
     // Sorted Set 으로 저장하기 때문에 가장 첫번째 녀석을 가져오면 된다.
     ZSetOperations<String, Object> zSetOperations = redisTemplate.opsForZSet();
 
-    Set<Object> set = zSetOperations.range("zSetKey", 0, 0);
+    Set<Object> set = zSetOperations.range(WebSocketUtils.Z_SET_KEY, 0, 0);
 
-    if (set.isEmpty()) {
+    if (set == null || set.isEmpty()) {
 
       throw new RuntimeException("접속 가능한 서버 정보가 없습니다.");
 

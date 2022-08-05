@@ -7,6 +7,6 @@ public class WebSocketUtils {
   public static final String ADDRESS = "address";
   public static final String CONNECTION_COUNT = "connectionCount";
   public static final String LAST_HEARTBEAT_TIME = "lastHeartBeatTime";
-
+  public static final String Z_SET_KEY = "zSetKey";
 
 }
