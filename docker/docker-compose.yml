@@ -15,10 +15,51 @@ services:
       - "3306:3306"
     restart: always
 
-  redis-docker:
+#  redis-docker:
+#    container_name: football_redis
+#    image: redis:latest
+#    volumes:
+#      - ./example-docker-data/redis:/data
+#    ports:
+#      - "6379:6379"
+
+  redis-cluster:
+    platform: linux/x86_64
+    image: redis:6.2
     container_name: football_redis
-    image: redis:latest
-    volumes:
-      - ./example-docker-data/redis:/data
+    volumes: # 작성한 설정 파일을 볼륨을 통해 컨테이너에 공유
+      - ./redis.conf:/usr/local/etc/redis/redis.conf
+    command: redis-server /usr/local/etc/redis/redis.conf
     ports:
       - "6379:6379"
+      - "6380:6380"
+      - "6381:6381"
+
+  redis-node-1:
+    network_mode: "service:redis-cluster"
+    platform: linux/x86_64
+    image: redis:6.2
+    container_name: football_redis_node_1
+    volumes:
+      - ./redis1.conf:/usr/local/etc/redis/redis.conf
+    command: redis-server /usr/local/etc/redis/redis.conf
+
+  redis-node-2:
+    network_mode: "service:redis-cluster"
+    platform: linux/x86_64
+    image: redis:6.2
+    container_name: football_redis_node_2
+    volumes:
+      - ./redis2.conf:/usr/local/etc/redis/redis.conf
+    command: redis-server /usr/local/etc/redis/redis.conf
+
+  redis-cluster-entry:
+    network_mode: "service:redis-cluster"
+    platform: linux/x86_64
+    image: redis:6.2
+    container_name: football_redis_cluster_entry
+    command: redis-cli --cluster create 127.0.0.1:6379 127.0.0.1:6380 127.0.0.1:6381 --cluster-yes
+    depends_on:
+      - redis-cluster
+      - redis-node-1
+      - redis-node-2

@@ -28,8 +28,13 @@ spring:
     baseline-on-migrate: true
 
   redis:
-    host: localhost
+    cluster:
+      nodes:
+        - 127.0.0.1:6379
+        - 127.0.0.1:6380
+        - 127.0.0.1:6481
     port: 6379
+    host: localhost
 
 jwt:
   header: Authorization
