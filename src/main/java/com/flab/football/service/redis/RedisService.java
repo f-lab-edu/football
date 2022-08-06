@@ -1,26 +1,30 @@
 package com.flab.football.service.redis;
 
 import java.time.LocalDateTime;
-import java.util.Set;
+import org.springframework.data.redis.core.Cursor;
 
 public interface RedisService {
 
-  void setSession(String userId, String session);
+  void setWebSocketSession(String userId, String session);
 
-  void deleteSession(String userId);
+  void deleteWebSocketSession(String userId);
 
-  String getSession(String userId);
+  String getWebSocketSession(String userId);
 
-  void setServerInfo(String address, int connectionCount, LocalDateTime lastHeartBeatTime);
+  void setWebSocketServerInfo(String address, int connectionCount, LocalDateTime lastHeartBeatTime);
 
-  void deleteServerInfo(String key);
+  void deleteWebSocketServerInfo(String key);
 
-  Set<String> getServerInfoKeySet();
+  Cursor<String> scanWebSocketServerKey();
 
-  String getAddress(String key);
+  String getWebSocketAddress(String key);
 
-  Integer getConnectionCount(String key);
+  Integer getWebSocketConnectionCount(String key);
 
-  LocalDateTime getLastHeartBeatTime(String key);
+  LocalDateTime getWebSocketLastHeartBeatTime(String key);
+
+  void setPrimaryWebSocketServerKeys();
+
+  String getPrimaryWebSocketServerKey();
 
 }

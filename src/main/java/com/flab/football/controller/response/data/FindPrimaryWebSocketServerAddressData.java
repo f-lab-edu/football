@@ -7,7 +7,7 @@ import lombok.NoArgsConstructor;
 @Getter
 @NoArgsConstructor
 @AllArgsConstructor
-public class FindPossibleConnectServerResponse {
+public class FindPrimaryWebSocketServerAddressData {
 
   private String address;
 
