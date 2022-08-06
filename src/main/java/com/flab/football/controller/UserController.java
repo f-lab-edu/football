@@ -11,6 +11,8 @@ import javax.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -103,13 +105,11 @@ public class UserController {
    */
 
   @GetMapping("/login/check")
-  public ResponseDto logInCheck() {
+  public ResponseDto logInCheck(@AuthenticationPrincipal UserDetails user) {
 
-    log.info("userEmail from util = {}", SecurityUtil.getCurrentEmail().get());
+    log.info("user.userName = {}", user.getUsername());
 
-    log.info("userId from token = {}", securityService.getCurrentUserId());
-
-    log.info("userName from token = {}", securityService.getCurrentUserName());
+    log.info("currentUserId = {}", SecurityUtil.getCurrentUserId().get());
 
     return new ResponseDto(true, null, "로그인 체크", null);
 

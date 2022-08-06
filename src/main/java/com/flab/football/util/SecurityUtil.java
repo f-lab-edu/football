@@ -24,7 +24,7 @@ public class SecurityUtil {
    * user Email 조회를 위한 메소드.
    */
 
-  public static Optional<String> getCurrentEmail() {
+  public static Optional<Integer> getCurrentUserId() {
 
     final Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 
@@ -46,7 +46,7 @@ public class SecurityUtil {
 
     }
 
-    return Optional.ofNullable(username);
+    return Optional.ofNullable(Integer.parseInt(username));
 
   }
 

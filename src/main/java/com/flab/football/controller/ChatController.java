@@ -12,6 +12,8 @@ import javax.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -117,13 +119,17 @@ public class ChatController {
    */
 
   @PostMapping("/send/message")
-  public ResponseDto sendMessage(@RequestBody SendMessageRequest request) {
-
-    // 메세지를 보내는 사용자 id 조회
-    int sendUserId = securityService.getCurrentUserId();
+  public ResponseDto sendMessage(
+      @RequestBody SendMessageRequest request,
+      @AuthenticationPrincipal UserDetails user
+  ) {
 
     // 아래 로직이 모두 ChatService.sendMessage() 로 가야한다.
-    chatService.sendMessage(request.getChannelId(), sendUserId, request.getContent());
+    chatService.sendMessage(
+        request.getChannelId(),
+        Integer.parseInt(user.getUsername()),
+        request.getContent()
+    );
 
     return new ResponseDto<>(true, null, "메세지 전송 완료", null);
 
