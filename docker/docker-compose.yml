@@ -15,10 +15,45 @@ services:
       - "3306:3306"
     restart: always
 
-  redis-docker:
-    container_name: football_redis
+  # 노드 역할을 똑같이 수행하는 컨테이너. 클러스터를 처음 구성할 때 필요한 컨테이너.
+  redis-cluster:
+    platform: linux/x86_64
     image: redis:latest
+    container_name: football_redis_cluster
     volumes:
-      - ./example-docker-data/redis:/data
+      - ./redis/redis.conf:/usr/local/etc/redis/redis.conf # ./ -> 해당 파일과 같은 위치에 있어야 한다.
+    command: redis-server /usr/local/etc/redis/redis.conf
     ports:
       - "6379:6379"
+      - "6380:6380"
+      - "6381:6381"
+
+  redis-node-1:
+    network_mode: "service:redis-cluster"
+    platform: linux/x86_64
+    image: redis:latest
+    container_name: football_redis_node1
+    volumes:
+      - ./redis/redis1.conf:/usr/local/etc/redis/redis.conf
+    command: redis-server /usr/local/etc/redis/redis.conf
+
+  redis-node-2:
+    network_mode: "service:redis-cluster"
+    platform: linux/x86_64
+    image: redis:latest
+    container_name: football_redis_node2
+    volumes:
+      - ./redis/redis2.conf:/usr/local/etc/redis/redis.conf
+    command: redis-server /usr/local/etc/redis/redis.conf # 서버로 동작, 실행
+
+  # 생성된 노드를 가지고 클러스터를 생성해주는 역할을 한다. 해당 컨테이너 설정을 안하면 커맨드를 직접 실행시켜야 한다.
+  redis-cluster-entry:
+    network_mode: "service:redis-cluster"
+    platform: linux/x86_64
+    image: redis:latest
+    container_name: football_redis_cluster_entry
+    command: redis-cli --cluster create 127.0.0.1:6379 127.0.0.1:6380 127.0.0.1:6381 --cluster-yes
+    depends_on:
+      - redis-cluster
+      - redis-node-1
+      - redis-node-2
