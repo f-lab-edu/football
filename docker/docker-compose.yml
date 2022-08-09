@@ -15,45 +15,100 @@ services:
       - "3306:3306"
     restart: always
 
-  # 노드 역할을 똑같이 수행하는 컨테이너. 클러스터를 처음 구성할 때 필요한 컨테이너.
   redis-cluster:
-    platform: linux/x86_64
+    container_name: redis-master-1
     image: redis:latest
-    container_name: football_redis_cluster
-    volumes:
-      - ./redis/redis.conf:/usr/local/etc/redis/redis.conf # ./ -> 해당 파일과 같은 위치에 있어야 한다.
     command: redis-server /usr/local/etc/redis/redis.conf
+    volumes:
+      - ./redis/master1.conf:/usr/local/etc/redis/redis.conf
+    restart: always
     ports:
-      - "6379:6379"
-      - "6380:6380"
-      - "6381:6381"
+      - "7001:7001"
+      - "7002:7002"
+      - "7003:7003"
+      - "7004:7004"
+      - "7005:7005"
+      - "7006:7006"
 
-  redis-node-1:
+  redis-master-2:
     network_mode: "service:redis-cluster"
-    platform: linux/x86_64
+    container_name: redis-master-2
     image: redis:latest
-    container_name: football_redis_node1
-    volumes:
-      - ./redis/redis1.conf:/usr/local/etc/redis/redis.conf
     command: redis-server /usr/local/etc/redis/redis.conf
-
-  redis-node-2:
-    network_mode: "service:redis-cluster"
-    platform: linux/x86_64
-    image: redis:latest
-    container_name: football_redis_node2
     volumes:
-      - ./redis/redis2.conf:/usr/local/etc/redis/redis.conf
-    command: redis-server /usr/local/etc/redis/redis.conf # 서버로 동작, 실행
+      - ./redis/master2.conf:/usr/local/etc/redis/redis.conf
+    restart: always
 
-  # 생성된 노드를 가지고 클러스터를 생성해주는 역할을 한다. 해당 컨테이너 설정을 안하면 커맨드를 직접 실행시켜야 한다.
+  redis-master-3:
+    network_mode: "service:redis-cluster"
+    container_name: redis-master-3
+    image: redis:latest
+    command: redis-server /usr/local/etc/redis/redis.conf
+    volumes:
+      - ./redis/master3.conf:/usr/local/etc/redis/redis.conf
+    restart: always
+
+  redis-slave-1:
+    network_mode: "service:redis-cluster"
+    container_name: redis-slave-1
+    image: redis:latest
+    command: redis-server /usr/local/etc/redis/redis.conf
+    volumes:
+      - ./redis/slave1.conf:/usr/local/etc/redis/redis.conf
+    restart: always
+
+  redis-slave-2:
+    network_mode: "service:redis-cluster"
+    container_name: redis-slave-2
+    image: redis:latest
+    command: redis-server /usr/local/etc/redis/redis.conf
+    volumes:
+      - ./redis/slave2.conf:/usr/local/etc/redis/redis.conf
+    restart: always
+
+  redis-slave-3:
+    network_mode: "service:redis-cluster"
+    container_name: redis-slave-3
+    image: redis:latest
+    command: redis-server /usr/local/etc/redis/redis.conf
+    volumes:
+      - ./redis/slave3.conf:/usr/local/etc/redis/redis.conf
+    restart: always
+
   redis-cluster-entry:
     network_mode: "service:redis-cluster"
     platform: linux/x86_64
     image: redis:latest
-    container_name: football_redis_cluster_entry
-    command: redis-cli --cluster create 127.0.0.1:6379 127.0.0.1:6380 127.0.0.1:6381 --cluster-yes
+    container_name: football-redis-cluster-entry
+    command: redis-cli --cluster create 127.0.0.1:7001 127.0.0.1:7002 127.0.0.1:7003 --cluster-yes
     depends_on:
       - redis-cluster
-      - redis-node-1
-      - redis-node-2
+      - redis-master-2
+      - redis-master-3
+
+  redis-cluster-replicas-1:
+    network_mode: "service:redis-cluster"
+    platform: linux/x86_64
+    image: redis:latest
+    container_name: football-redis-cluster-replicas-1
+    command: redis-cli --cluster add-node 127.0.0.1:7004 127.0.0.1:7001 --cluster-slave
+    depends_on:
+      - redis-slave-1
+
+  redis-cluster-replicas-2:
+    network_mode: "service:redis-cluster"
+    platform: linux/x86_64
+    image: redis:latest
+    container_name: football-redis-cluster-replicas-2
+    command: redis-cli --cluster add-node 127.0.0.1:7005 127.0.0.1:7002 --cluster-slave
+    depends_on:
+      - redis-slave-2
+
+  redis-cluster-replicas-3:
+    network_mode: "service:redis-cluster"
+    platform: linux/x86_64
+    image: redis:latest
+    container_name: football-redis-cluster-replicas-3
+    command: redis-cli --cluster add-node 127.0.0.1:7006 127.0.0.1:7003 --cluster-slave
+    depends_on:
+      - redis-slave-3

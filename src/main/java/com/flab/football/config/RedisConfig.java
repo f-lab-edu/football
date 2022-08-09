@@ -12,6 +12,8 @@ import org.springframework.data.redis.serializer.StringRedisSerializer;
 
 /**
  * Redis 사용을 위한 객체 생성 클래스.
+ *
+ * Redis Cluster로 서버 확장을 함에 따라 port에 대한 정보가 배열에 여러 데이터가 담기는 형태로 변경되었습니다.
  */
 
 @Configuration
