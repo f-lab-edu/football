@@ -1,32 +1,28 @@
 package com.flab.football.config;
 
+import io.lettuce.core.ReadFrom;
 import java.util.List;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.data.redis.connection.RedisClusterConfiguration;
 import org.springframework.data.redis.connection.RedisConnectionFactory;
+import org.springframework.data.redis.connection.lettuce.LettuceClientConfiguration;
 import org.springframework.data.redis.connection.lettuce.LettuceConnectionFactory;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.serializer.StringRedisSerializer;
 
 /**
  * Redis 사용을 위한 객체 생성 클래스.
- *
- * Redis Cluster로 서버 확장을 함에 따라 port에 대한 정보가 배열에 여러 데이터가 담기는 형태로 변경되었습니다.
  */
 
 @Configuration
+// @ConfigurationProperties(prefix = "spring.redis.cluster")
 public class RedisConfig {
 
-//  @Value("${spring.redis.host}")
-//  private String redisHost;
-
-//  @Value("${spring.redis.port}")
-//  private int redisPort;
-
   @Value("${spring.redis.cluster.nodes}")
-  private List<String> clusterNodes;
+  private List<String> nodes;
 
   /**
    * Redis Client 는 Lettuce로 지정합니다.
@@ -36,10 +32,12 @@ public class RedisConfig {
   @Bean
   public RedisConnectionFactory redisConnectionFactory() {
 
-    // return new LettuceConnectionFactory(redisHost, redisPort);
+    LettuceClientConfiguration clientConfiguration = LettuceClientConfiguration.builder()
+        .readFrom(ReadFrom.MASTER_PREFERRED) // Master 노드에 우선 접근, 서버 다운시 Slave로 임시 접근
+        .build();
 
-    RedisClusterConfiguration redisClusterConfig = new RedisClusterConfiguration(clusterNodes);
-    return new LettuceConnectionFactory(redisClusterConfig);
+    RedisClusterConfiguration redisClusterConfig = new RedisClusterConfiguration(nodes);
+    return new LettuceConnectionFactory(redisClusterConfig, clientConfiguration);
 
   }
 
