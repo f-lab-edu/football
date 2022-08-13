@@ -2,6 +2,8 @@ package com.flab.football.config;
 
 import io.lettuce.core.ReadFrom;
 import java.util.List;
+import lombok.Getter;
+import lombok.Setter;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Bean;
@@ -17,11 +19,12 @@ import org.springframework.data.redis.serializer.StringRedisSerializer;
  * Redis 사용을 위한 객체 생성 클래스.
  */
 
+@Getter
+@Setter
 @Configuration
-// @ConfigurationProperties(prefix = "spring.redis.cluster")
+@ConfigurationProperties(prefix = "spring.redis.cluster")
 public class RedisConfig {
 
-  @Value("${spring.redis.cluster.nodes}")
   private List<String> nodes;
 
   /**
@@ -33,7 +36,7 @@ public class RedisConfig {
   public RedisConnectionFactory redisConnectionFactory() {
 
     LettuceClientConfiguration clientConfiguration = LettuceClientConfiguration.builder()
-        .readFrom(ReadFrom.MASTER_PREFERRED) // Master 노드에 우선 접근, 서버 다운시 Slave로 임시 접근
+        .readFrom(ReadFrom.REPLICA_PREFERRED) // Slave 노드에 우선으로 접근
         .build();
 
     RedisClusterConfiguration redisClusterConfig = new RedisClusterConfiguration(nodes);
