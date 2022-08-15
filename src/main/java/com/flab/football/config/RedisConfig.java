@@ -1,11 +1,15 @@
 package com.flab.football.config;
 
+import io.lettuce.core.ReadFrom;
 import java.util.List;
-import org.springframework.beans.factory.annotation.Value;
+import lombok.Getter;
+import lombok.Setter;
+import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.data.redis.connection.RedisClusterConfiguration;
 import org.springframework.data.redis.connection.RedisConnectionFactory;
+import org.springframework.data.redis.connection.lettuce.LettuceClientConfiguration;
 import org.springframework.data.redis.connection.lettuce.LettuceConnectionFactory;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.serializer.StringRedisSerializer;
@@ -14,17 +18,13 @@ import org.springframework.data.redis.serializer.StringRedisSerializer;
  * Redis 사용을 위한 객체 생성 클래스.
  */
 
+@Getter
+@Setter
 @Configuration
+@ConfigurationProperties(prefix = "spring.redis.cluster")
 public class RedisConfig {
 
-//  @Value("${spring.redis.host}")
-//  private String redisHost;
-
-//  @Value("${spring.redis.port}")
-//  private int redisPort;
-
-  @Value("${spring.redis.cluster.nodes}")
-  private List<String> clusterNodes;
+  private List<String> nodes;
 
   /**
    * Redis Client 는 Lettuce로 지정합니다.
@@ -34,10 +34,13 @@ public class RedisConfig {
   @Bean
   public RedisConnectionFactory redisConnectionFactory() {
 
-    // return new LettuceConnectionFactory(redisHost, redisPort);
+    LettuceClientConfiguration clientConfiguration = LettuceClientConfiguration.builder()
+        .readFrom(ReadFrom.REPLICA_PREFERRED) // Slave 노드에 우선으로 접근
+        .build();
 
-    RedisClusterConfiguration redisClusterConfig = new RedisClusterConfiguration(clusterNodes);
-    return new LettuceConnectionFactory(redisClusterConfig);
+    RedisClusterConfiguration redisClusterConfig = new RedisClusterConfiguration(nodes);
+
+    return new LettuceConnectionFactory(redisClusterConfig, clientConfiguration);
 
   }
 
