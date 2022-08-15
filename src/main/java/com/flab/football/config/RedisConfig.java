@@ -4,7 +4,6 @@ import io.lettuce.core.ReadFrom;
 import java.util.List;
 import lombok.Getter;
 import lombok.Setter;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -40,6 +39,7 @@ public class RedisConfig {
         .build();
 
     RedisClusterConfiguration redisClusterConfig = new RedisClusterConfiguration(nodes);
+
     return new LettuceConnectionFactory(redisClusterConfig, clientConfiguration);
 
   }
