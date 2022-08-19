@@ -100,13 +100,13 @@ public class ChatServiceImpl implements ChatService {
         .createAt(LocalDateTime.now())
         .build();
 
-    messageRepository.save(message);
-
     // user 정보 주입
     message.setUser(user);
 
     // channel 정보 주입
     message.setChannel(channel);
+
+    messageRepository.save(message);
 
     // 해당 채팅방에 메세지를 받아야하는 대상자를 조회 -> N+1 쿼리 발생 지점!!
     List<Integer> userIdList = findMessageReceivers(channelId);
