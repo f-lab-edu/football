@@ -3,7 +3,9 @@ package com.flab.football.repository.chat;
 import com.flab.football.domain.Participant;
 import java.util.List;
 import java.util.Optional;
+import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
 @Repository
@@ -16,6 +18,8 @@ public interface ParticipantRepository extends JpaRepository<Participant, Intege
 
   Optional<Participant> findById(Participant participant);
 
+  @EntityGraph(attributePaths = "user")
+  @Query("SELECT p FROM Participant p")
   List<Participant> findAllByChannelId(int channelId);
 
 }

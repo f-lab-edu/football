@@ -88,10 +88,8 @@ public class ChatServiceImpl implements ChatService {
   @Transactional
   public void sendMessage(int channelId, int sendUserId, String content) {
 
-    // message 객체에 주입할 channel 정보 조회
     Channel channel = findChannelById(channelId);
 
-    // message 객체에 주입할 user 정보를 조회
     User user = userService.findById(sendUserId);
 
     Message message = Message.builder()
@@ -100,18 +98,14 @@ public class ChatServiceImpl implements ChatService {
         .createAt(LocalDateTime.now())
         .build();
 
-    // user 정보 주입
     message.setUser(user);
 
-    // channel 정보 주입
     message.setChannel(channel);
 
     messageRepository.save(message);
 
-    // 해당 채팅방에 메세지를 받아야하는 대상자를 조회 -> N+1 쿼리 발생 지점!!
     List<Integer> userIdList = findMessageReceivers(channelId);
 
-    // 조회된 user들에 대해 메세지를 푸시
     for (int receiveUserId : userIdList) {
 
       if (receiveUserId != sendUserId) {
@@ -157,9 +151,6 @@ public class ChatServiceImpl implements ChatService {
 
     for (Participant participant : participants) {
 
-      // participant 객체에 저장된 User 객체를 사용하기 위해 N번의 쿼리문 발생
-
-      // 잠깐! N+1 쿼리라기 보다는 연관관계를 가진 객체를 조회하는 지점에서 쿼리문이 발생하는 지연 로딩으로 인한 N번의 쿼리문 발생 지점이진 않은지...
       userIdList.add(participant.getUser().getId());
 
     }

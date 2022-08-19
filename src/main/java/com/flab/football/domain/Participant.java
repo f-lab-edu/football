@@ -45,7 +45,6 @@ public class Participant {
 
   /**
    * 매니저가 초대한 참가자 객체들을 담을 리스트 객체 생성 메소드.
-   *
    */
 
   public static List<Participant> listOf() {
