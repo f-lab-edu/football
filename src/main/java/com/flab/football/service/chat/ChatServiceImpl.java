@@ -13,7 +13,6 @@ import com.flab.football.service.redis.RedisService;
 import com.flab.football.service.user.UserService;
 import java.time.LocalDateTime;
 import java.time.ZoneOffset;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;
@@ -62,19 +61,12 @@ public class ChatServiceImpl implements ChatService {
 
     List<Participant> participantList = Participant.listOf();
 
-    Channel channel = findChannelById(channelId);
-
-    List<User> users = userService.findAllById(participants);
-
-    for (User user : users) {
+    for (int userId : participants) {
 
       Participant participant = Participant.builder()
-          .user(user)
+          .userId(userId)
+          .channelId(channelId)
           .build();
-
-      participant.setChannel(channel);
-
-      channel.addParticipant(participant);
 
       participantList.add(participant);
 
@@ -142,20 +134,10 @@ public class ChatServiceImpl implements ChatService {
   }
 
   @Override
-  @Transactional
+  @Transactional(readOnly = true)
   public List<Integer> findMessageReceivers(int channelId) {
 
-    List<Integer> userIdList = new ArrayList<>();
-
-    List<Participant> participants = findParticipantsByChannelId(channelId);
-
-    for (Participant participant : participants) {
-
-      userIdList.add(participant.getUser().getId());
-
-    }
-
-    return userIdList;
+    return participantRepository.findAllUserIdByChannelId(channelId);
 
   }
 

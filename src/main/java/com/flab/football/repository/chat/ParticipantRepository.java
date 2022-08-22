@@ -23,4 +23,7 @@ public interface ParticipantRepository extends JpaRepository<Participant, Intege
   @Query("SELECT p FROM Participant p WHERE p.channel.id = :channelId")
   List<Participant> findAllByChannelId(@Param(value = "channelId") int channelId);
 
+  @Query("SELECT p.userId FROM Participant p WHERE p.channel.id = :channelId")
+  List<Integer> findAllUserIdByChannelId(@Param(value = "channelId") int channelId);
+
 }
