@@ -57,8 +57,6 @@ public class MatchServiceImpl implements MatchService {
         .user(user.get())
         .build();
 
-    matchRepository.save(manager);
-
     Match match = Match.builder()
         .startTime(command.getStartTime())
         .finishTime(command.getFinishTime())

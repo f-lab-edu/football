@@ -20,12 +20,6 @@ public class StadiumServiceImpl implements StadiumService {
   @Override
   public void save(SaveStadiumCommand command) {
 
-    Stadium stadium = Stadium.builder()
-        .name(command.getName())
-        .build();
-
-    stadiumRepository.save(stadium);
-
     Stadium.StadiumInfo info = StadiumInfo.builder()
         .rentalFee(command.getRentalFee())
         .showerRoom(command.isShowerRoom())
@@ -33,10 +27,15 @@ public class StadiumServiceImpl implements StadiumService {
         .uniform(command.isUniform())
         .build();
 
+    Stadium stadium = Stadium.builder()
+        .name(command.getName())
+        .build();
+
     info.setStadium(stadium);
+
     stadium.setInfo(info);
 
-    stadiumRepository.save(info);
+    stadiumRepository.save(stadium);
 
   }
 

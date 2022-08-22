@@ -2,6 +2,7 @@ package com.flab.football.domain;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -92,15 +93,14 @@ public class Match {
   @Column(name = "limit_gender")
   private LimitGender gender;
 
-  @OneToOne
+  @OneToOne(cascade = CascadeType.ALL)
   @JoinColumn(name = "stadium_id", referencedColumnName = "id")
   private Stadium stadium;
 
-
-  @OneToOne(mappedBy = "match")
+  @OneToOne(mappedBy = "match", cascade = CascadeType.ALL)
   private Manager manager;
 
-  @OneToMany(mappedBy = "match")
+  @OneToMany(mappedBy = "match", cascade = CascadeType.ALL)
   private List<Member> members;
 
   /**

@@ -13,7 +13,6 @@ import com.flab.football.service.redis.RedisService;
 import com.flab.football.service.user.UserService;
 import java.time.LocalDateTime;
 import java.time.ZoneOffset;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;
@@ -62,19 +61,12 @@ public class ChatServiceImpl implements ChatService {
 
     List<Participant> participantList = Participant.listOf();
 
-    Channel channel = findChannelById(channelId);
-
-    List<User> users = userService.findAllById(participants);
-
-    for (User user : users) {
+    for (int userId : participants) {
 
       Participant participant = Participant.builder()
-          .user(user)
+          .userId(userId)
+          .channelId(channelId)
           .build();
-
-      participant.setChannel(channel);
-
-      channel.addParticipant(participant);
 
       participantList.add(participant);
 
@@ -98,17 +90,14 @@ public class ChatServiceImpl implements ChatService {
         .createAt(LocalDateTime.now())
         .build();
 
-    messageRepository.save(message);
-
     message.setUser(user);
 
     message.setChannel(channel);
 
-    // 해당 채팅방에 메세지를 받아야하는 대상자를 조회
-    // N+1 쿼리 제어 필요
+    messageRepository.save(message);
+
     List<Integer> userIdList = findMessageReceivers(channelId);
 
-    // 조회된 user들에 대해 메세지를 푸시한다.
     for (int receiveUserId : userIdList) {
 
       if (receiveUserId != sendUserId) {
@@ -146,27 +135,17 @@ public class ChatServiceImpl implements ChatService {
 
   @Override
   @Transactional(readOnly = true)
-  public List<Participant> findParticipantsByChannelId(int channelId) {
+  public List<Integer> findMessageReceivers(int channelId) {
 
-    return participantRepository.findAllByChannelId(channelId);
+    return participantRepository.findAllUserIdByChannelId(channelId);
 
   }
 
   @Override
-  @Transactional
-  public List<Integer> findMessageReceivers(int channelId) {
+  @Transactional(readOnly = true)
+  public List<Participant> findParticipantsByChannelId(int channelId) {
 
-    List<Integer> userIdList = new ArrayList<>();
-
-    List<Participant> participants = findParticipantsByChannelId(channelId);
-
-    for (Participant participant : participants) {
-
-      userIdList.add(participant.getUser().getId());
-
-    }
-
-    return userIdList;
+    return participantRepository.findAllByChannelId(channelId);
 
   }
 
