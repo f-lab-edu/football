@@ -93,8 +93,16 @@ public class Match {
   @Column(name = "limit_gender")
   private LimitGender gender;
 
+  @Column(name = "stadium_id", updatable = false)
+  private int stadiumId;
+
   @OneToOne(cascade = CascadeType.ALL)
-  @JoinColumn(name = "stadium_id", referencedColumnName = "id")
+  @JoinColumn(
+      name = "stadium_id",
+      referencedColumnName = "id",
+      insertable = false,
+      updatable = false
+  )
   private Stadium stadium;
 
   @OneToOne(mappedBy = "match", cascade = CascadeType.ALL)
@@ -120,13 +128,22 @@ public class Match {
     @Column(name = "id")
     private int id;
 
+    @Column(name = "user_id", updatable = false)
+    private int userId;
+
+    @OneToOne
+    @JoinColumn(
+        name = "user_id",
+        referencedColumnName = "id",
+        insertable = false,
+        updatable = false
+    )
+    private User user;
+
     @OneToOne
     @JoinColumn(name = "match_id", referencedColumnName = "id")
     private Match match;
 
-    @OneToOne
-    @JoinColumn(name = "user_id", referencedColumnName = "id")
-    private User user;
   }
 
   /**
@@ -146,12 +163,18 @@ public class Match {
     @Column(name = "id")
     private int id;
 
+    @Column(name = "match_id", updatable = false)
+    private int matchId;
+
+    @Column(name = "user_id", updatable = false)
+    private int userId;
+
     @ManyToOne
-    @JoinColumn(name = "match_id", referencedColumnName = "id")
+    @JoinColumn(name = "match_id", referencedColumnName = "id", insertable = false, updatable = false)
     private Match match;
 
     @OneToOne
-    @JoinColumn(name = "user_id", referencedColumnName = "id")
+    @JoinColumn(name = "user_id", referencedColumnName = "id", insertable = false, updatable = false)
     private User user;
   }
 

@@ -35,10 +35,10 @@ public class Participant {
   @Column(name = "id")
   private int id;
 
-  @Column(name = "channel_id")
+  @Column(name = "channel_id", updatable = false)
   private int channelId;
 
-  @Column(name = "user_id")
+  @Column(name = "user_id", updatable = false)
   private int userId;
 
   @ManyToOne

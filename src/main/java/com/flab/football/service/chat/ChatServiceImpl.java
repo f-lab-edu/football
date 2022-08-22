@@ -4,13 +4,11 @@ import com.flab.football.domain.Channel;
 import com.flab.football.domain.Message;
 import com.flab.football.domain.Message.Type;
 import com.flab.football.domain.Participant;
-import com.flab.football.domain.User;
 import com.flab.football.repository.chat.ChannelRepository;
 import com.flab.football.repository.chat.MessageRepository;
 import com.flab.football.repository.chat.ParticipantRepository;
 import com.flab.football.service.chat.command.PushMessageCommand;
 import com.flab.football.service.redis.RedisService;
-import com.flab.football.service.user.UserService;
 import java.time.LocalDateTime;
 import java.time.ZoneOffset;
 import java.util.List;
@@ -30,8 +28,6 @@ import org.springframework.transaction.annotation.Transactional;
 @Service
 @RequiredArgsConstructor
 public class ChatServiceImpl implements ChatService {
-
-  private final UserService userService;
 
   private final ChatPushService chatPushService;
 
@@ -80,19 +76,13 @@ public class ChatServiceImpl implements ChatService {
   @Transactional
   public void sendMessage(int channelId, int sendUserId, String content) {
 
-    Channel channel = findChannelById(channelId);
-
-    User user = userService.findById(sendUserId);
-
     Message message = Message.builder()
         .type(Type.MESSAGE)
         .content(content)
         .createAt(LocalDateTime.now())
+        .channelId(channelId)
+        .userId(sendUserId)
         .build();
-
-    message.setUser(user);
-
-    message.setChannel(channel);
 
     messageRepository.save(message);
 
