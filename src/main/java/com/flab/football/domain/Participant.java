@@ -35,20 +35,18 @@ public class Participant {
   @Column(name = "id")
   private int id;
 
-  @Column(name = "channel_id", updatable = false)
+  @Column(name = "channel_id", insertable = false, updatable = false)
   private int channelId;
 
-  @Column(name = "user_id", updatable = false)
+  @Column(name = "user_id", insertable = false, updatable = false)
   private int userId;
 
   @ManyToOne
-  @JoinColumn(name = "channel_id", referencedColumnName = "id",
-              insertable = false, updatable = false)
+  @JoinColumn(name = "channel_id", referencedColumnName = "id")
   private Channel channel;
 
   @OneToOne
-  @JoinColumn(name = "user_id", referencedColumnName = "id",
-              insertable = false, updatable = false)
+  @JoinColumn(name = "user_id", referencedColumnName = "id")
   private User user;
 
   /**

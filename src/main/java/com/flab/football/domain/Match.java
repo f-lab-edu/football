@@ -5,6 +5,7 @@ import java.util.List;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.ForeignKey;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
@@ -93,16 +94,11 @@ public class Match {
   @Column(name = "limit_gender")
   private LimitGender gender;
 
-  @Column(name = "stadium_id", updatable = false)
+  @Column(name = "stadium_id", insertable = false, updatable = false)
   private int stadiumId;
 
   @OneToOne(cascade = CascadeType.ALL)
-  @JoinColumn(
-      name = "stadium_id",
-      referencedColumnName = "id",
-      insertable = false,
-      updatable = false
-  )
+  @JoinColumn(name = "stadium_id", referencedColumnName = "id")
   private Stadium stadium;
 
   @OneToOne(mappedBy = "match", cascade = CascadeType.ALL)
@@ -128,21 +124,19 @@ public class Match {
     @Column(name = "id")
     private int id;
 
-    @Column(name = "user_id", updatable = false)
-    private int userId;
+    @Column(name = "match_id", insertable = false, updatable = false)
+    private int matchId;
 
-    @OneToOne
-    @JoinColumn(
-        name = "user_id",
-        referencedColumnName = "id",
-        insertable = false,
-        updatable = false
-    )
-    private User user;
+    @Column(name = "user_id", insertable = false, updatable = false)
+    private int userId;
 
     @OneToOne
     @JoinColumn(name = "match_id", referencedColumnName = "id")
     private Match match;
+
+    @OneToOne
+    @JoinColumn(name = "user_id", referencedColumnName = "id")
+    private User user;
 
   }
 
@@ -163,18 +157,18 @@ public class Match {
     @Column(name = "id")
     private int id;
 
-    @Column(name = "match_id", updatable = false)
+    @Column(name = "match_id", insertable = false, updatable = false)
     private int matchId;
 
-    @Column(name = "user_id", updatable = false)
+    @Column(name = "user_id", insertable = false, updatable = false)
     private int userId;
 
     @ManyToOne
-    @JoinColumn(name = "match_id", referencedColumnName = "id", insertable = false, updatable = false)
+    @JoinColumn(name = "match_id", referencedColumnName = "id")
     private Match match;
 
     @OneToOne
-    @JoinColumn(name = "user_id", referencedColumnName = "id", insertable = false, updatable = false)
+    @JoinColumn(name = "user_id", referencedColumnName = "id")
     private User user;
   }
 

@@ -4,11 +4,14 @@ import com.flab.football.domain.Channel;
 import com.flab.football.domain.Message;
 import com.flab.football.domain.Message.Type;
 import com.flab.football.domain.Participant;
+import com.flab.football.domain.User;
 import com.flab.football.repository.chat.ChannelRepository;
 import com.flab.football.repository.chat.MessageRepository;
 import com.flab.football.repository.chat.ParticipantRepository;
+import com.flab.football.repository.user.UserRepository;
 import com.flab.football.service.chat.command.PushMessageCommand;
 import com.flab.football.service.redis.RedisService;
+import com.flab.football.service.user.UserService;
 import java.time.LocalDateTime;
 import java.time.ZoneOffset;
 import java.util.List;
@@ -28,6 +31,8 @@ import org.springframework.transaction.annotation.Transactional;
 @Service
 @RequiredArgsConstructor
 public class ChatServiceImpl implements ChatService {
+
+  private final UserRepository userRepository;
 
   private final ChatPushService chatPushService;
 
@@ -53,15 +58,20 @@ public class ChatServiceImpl implements ChatService {
 
   @Override
   @Transactional
-  public void inviteParticipants(int channelId, List<Integer> participants) {
+  public void inviteParticipants(int channelId, List<Integer> userIdList) {
 
     List<Participant> participantList = Participant.listOf();
 
-    for (int userId : participants) {
+    Channel channel = channelRepository.findById(channelId)
+        .orElseThrow(() -> new RuntimeException("채팅방 정보가 존재하지 않습니다."));
+
+    List<User> userList = userRepository.findAllById(userIdList);
+
+    for (User user : userList) {
 
       Participant participant = Participant.builder()
-          .userId(userId)
-          .channelId(channelId)
+          .user(user)
+          .channel(channel)
           .build();
 
       participantList.add(participant);
@@ -76,12 +86,18 @@ public class ChatServiceImpl implements ChatService {
   @Transactional
   public void sendMessage(int channelId, int sendUserId, String content) {
 
+    Channel channel = channelRepository.findById(channelId)
+        .orElseThrow(() -> new RuntimeException("채팅방 정보가 존재하지 않습니다."));
+
+    User user = userRepository.findById(sendUserId)
+        .orElseThrow(() -> new RuntimeException("회원 정보가 존재하지 않습니다."));
+
     Message message = Message.builder()
         .type(Type.MESSAGE)
         .content(content)
         .createAt(LocalDateTime.now())
-        .channelId(channelId)
-        .userId(sendUserId)
+        .channel(channel)
+        .user(user)
         .build();
 
     messageRepository.save(message);
