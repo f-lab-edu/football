@@ -35,6 +35,12 @@ public class Participant {
   @Column(name = "id")
   private int id;
 
+  @Column(name = "channel_id", insertable = false, updatable = false)
+  private int channelId;
+
+  @Column(name = "user_id", insertable = false, updatable = false)
+  private int userId;
+
   @ManyToOne
   @JoinColumn(name = "channel_id", referencedColumnName = "id")
   private Channel channel;
@@ -45,7 +51,6 @@ public class Participant {
 
   /**
    * 매니저가 초대한 참가자 객체들을 담을 리스트 객체 생성 메소드.
-   *
    */
 
   public static List<Participant> listOf() {

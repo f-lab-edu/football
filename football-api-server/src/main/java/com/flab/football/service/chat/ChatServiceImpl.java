@@ -9,11 +9,11 @@ import com.flab.football.redis.service.RedisService;
 import com.flab.football.repository.chat.ChannelRepository;
 import com.flab.football.repository.chat.MessageRepository;
 import com.flab.football.repository.chat.ParticipantRepository;
+import com.flab.football.repository.user.UserRepository;
 import com.flab.football.service.chat.command.PushMessageCommand;
 import com.flab.football.service.user.UserService;
 import java.time.LocalDateTime;
 import java.time.ZoneOffset;
-import java.util.ArrayList;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -31,7 +31,7 @@ import org.springframework.transaction.annotation.Transactional;
 @RequiredArgsConstructor
 public class ChatServiceImpl implements ChatService {
 
-  private final UserService userService;
+  private final UserRepository userRepository;
 
   private final ChatPushService chatPushService;
 
@@ -57,23 +57,21 @@ public class ChatServiceImpl implements ChatService {
 
   @Override
   @Transactional
-  public void inviteParticipants(int channelId, List<Integer> participants) {
+  public void inviteParticipants(int channelId, List<Integer> userIdList) {
 
     List<Participant> participantList = Participant.listOf();
 
-    Channel channel = findChannelById(channelId);
+    Channel channel = channelRepository.findById(channelId)
+        .orElseThrow(() -> new RuntimeException("채팅방 정보가 존재하지 않습니다."));
 
-    List<User> users = userService.findAllById(participants);
+    List<User> userList = userRepository.findAllById(userIdList);
 
-    for (User user : users) {
+    for (User user : userList) {
 
       Participant participant = Participant.builder()
           .user(user)
+          .channel(channel)
           .build();
-
-      participant.setChannel(channel);
-
-      channel.addParticipant(participant);
 
       participantList.add(participant);
 
@@ -87,27 +85,24 @@ public class ChatServiceImpl implements ChatService {
   @Transactional
   public void sendMessage(int channelId, int sendUserId, String content) {
 
-    Channel channel = findChannelById(channelId);
+    Channel channel = channelRepository.findById(channelId)
+        .orElseThrow(() -> new RuntimeException("채팅방 정보가 존재하지 않습니다."));
 
-    User user = userService.findById(sendUserId);
+    User user = userRepository.findById(sendUserId)
+        .orElseThrow(() -> new RuntimeException("회원 정보가 존재하지 않습니다."));
 
     Message message = Message.builder()
         .type(Type.MESSAGE)
         .content(content)
         .createAt(LocalDateTime.now())
+        .channel(channel)
+        .user(user)
         .build();
 
     messageRepository.save(message);
 
-    message.setUser(user);
-
-    message.setChannel(channel);
-
-    // 해당 채팅방에 메세지를 받아야하는 대상자를 조회
-    // N+1 쿼리 제어 필요
     List<Integer> userIdList = findMessageReceivers(channelId);
 
-    // 조회된 user들에 대해 메세지를 푸시한다.
     for (int receiveUserId : userIdList) {
 
       if (receiveUserId != sendUserId) {
@@ -138,27 +133,17 @@ public class ChatServiceImpl implements ChatService {
 
   @Override
   @Transactional(readOnly = true)
-  public List<Participant> findParticipantsByChannelId(int channelId) {
+  public List<Integer> findMessageReceivers(int channelId) {
 
-    return participantRepository.findAllByChannelId(channelId);
+    return participantRepository.findAllUserIdByChannelId(channelId);
 
   }
 
   @Override
-  @Transactional
-  public List<Integer> findMessageReceivers(int channelId) {
+  @Transactional(readOnly = true)
+  public List<Participant> findParticipantsByChannelId(int channelId) {
 
-    List<Integer> userIdList = new ArrayList<>();
-
-    List<Participant> participants = findParticipantsByChannelId(channelId);
-
-    for (Participant participant : participants) {
-
-      userIdList.add(participant.getUser().getId());
-
-    }
-
-    return userIdList;
+    return participantRepository.findAllByChannelId(channelId);
 
   }
 

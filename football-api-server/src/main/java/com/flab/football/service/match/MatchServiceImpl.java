@@ -10,6 +10,7 @@ import com.flab.football.repository.match.MatchRepository;
 import com.flab.football.repository.stadium.StadiumRepository;
 import com.flab.football.repository.user.UserRepository;
 import com.flab.football.service.match.command.CreateMatchCommand;
+import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -36,14 +37,24 @@ public class MatchServiceImpl implements MatchService {
   @Override
   public void createMatch(CreateMatchCommand command) {
 
-    User user = userRepository.findById(command.getUserId())
-        .orElseThrow(() -> new RuntimeException("회원 정보를 조회할 수 없습니다."));
+    Optional<User> user = userRepository.findById(command.getUserId());
 
-    Stadium stadium = stadiumRepository.findById(command.getStadiumId())
-        .orElseThrow(() -> new NotExistStadiumException("구장 정보를 조회할 수 없습니다."));
+    if (user.isEmpty()) {
 
-    Manager manager = Manager.builder()
-        .user(user)
+      throw new RuntimeException("찾는 회원이 없습니다.");
+
+    }
+
+    Optional<Stadium> stadium = stadiumRepository.findById(command.getStadiumId());
+
+    if (stadium.isEmpty()) {
+
+      throw new NotExistStadiumException("찾는 구장 정보가 없습니다.");
+
+    }
+
+    Match.Manager manager = Manager.builder()
+        .user(user.get())
         .build();
 
     matchRepository.save(manager);
@@ -63,7 +74,7 @@ public class MatchServiceImpl implements MatchService {
 
     match.setManager(manager); // 매치 - 매니저 양방향 관계 설정
 
-    match.setStadium(stadium); // 매치 - 구장 단방향 관계 설정
+    match.setStadium(stadium.get()); // 매치 - 구장 단방향 관계 설정
 
     matchRepository.save(match);
 
@@ -72,23 +83,32 @@ public class MatchServiceImpl implements MatchService {
   @Override
   public void applyToParticipant(int userId, int matchId) {
 
-    User user = userRepository.findById(userId)
-        .orElseThrow(() -> new RuntimeException("회원 정보를 조회할 수 없습니다."));
+    Optional<User> user = userRepository.findById(userId);
 
-    Match match = matchRepository.findById(matchId)
-        .orElseThrow(() -> new RuntimeException("매치 정보를 조회할 수 없습니다."));
+    if (user.isEmpty()) {
 
+      throw new RuntimeException("회원 정보가 일치하지 않습니다.");
 
-    Member member = Member.builder()
-        .user(user)
-        .match(match)
+    }
+
+    Optional<Match> match = matchRepository.findById(matchId);
+
+    if(match.isEmpty()) {
+
+      throw new RuntimeException("매치 정보가 일치하지 않습니다.");
+
+    }
+
+    Match.Member member = Match.Member.builder()
+        .user(user.get())
+        .match(match.get())
         .build();
 
     matchRepository.save(member);
 
-    match.getMembers().add(member); // 매치 - 멤버 일대다 관계 생성
+    match.get().getMembers().add(member); // 매치 - 멤버 일대다 관계 생성
 
-    matchRepository.save(match); // 변경 감지 후 insert
+    matchRepository.save(match.get()); // 변경 감지 후 insert
 
   }
 }

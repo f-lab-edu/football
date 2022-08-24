@@ -1,6 +1,7 @@
 package com.flab.football.domain;
 
 import java.time.LocalDateTime;
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
@@ -52,12 +53,18 @@ public class Message {
   @Column(name = "create_at")
   private LocalDateTime createAt;
 
-  @OneToOne
-  @JoinColumn(name = "user_id", referencedColumnName = "id")
-  private User user;
+  @Column(name = "channel_id", insertable = false, updatable = false)
+  private int channelId;
 
-  @ManyToOne
+  @Column(name = "user_id", insertable = false, updatable = false)
+  private int userId;
+
+  @ManyToOne(cascade = CascadeType.ALL)
   @JoinColumn(name = "channel_id", referencedColumnName = "id")
   private Channel channel;
+
+  @OneToOne(cascade = CascadeType.ALL)
+  @JoinColumn(name = "user_id", referencedColumnName = "id")
+  private User user;
 
 }
