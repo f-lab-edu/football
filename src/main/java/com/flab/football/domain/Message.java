@@ -53,12 +53,18 @@ public class Message {
   @Column(name = "create_at")
   private LocalDateTime createAt;
 
-  @OneToOne(cascade = CascadeType.ALL)
-  @JoinColumn(name = "user_id", referencedColumnName = "id")
-  private User user;
+  @Column(name = "channel_id", insertable = false, updatable = false)
+  private int channelId;
+
+  @Column(name = "user_id", insertable = false, updatable = false)
+  private int userId;
 
   @ManyToOne(cascade = CascadeType.ALL)
   @JoinColumn(name = "channel_id", referencedColumnName = "id")
   private Channel channel;
+
+  @OneToOne(cascade = CascadeType.ALL)
+  @JoinColumn(name = "user_id", referencedColumnName = "id")
+  private User user;
 
 }
