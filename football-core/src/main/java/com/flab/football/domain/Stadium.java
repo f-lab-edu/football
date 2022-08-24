@@ -1,6 +1,5 @@
 package com.flab.football.domain;
 
-import com.flab.football.service.stadium.command.SaveStadiumCommand;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;

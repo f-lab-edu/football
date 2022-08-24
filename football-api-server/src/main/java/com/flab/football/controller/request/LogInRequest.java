@@ -1,6 +1,5 @@
 package com.flab.football.controller.request;
 
-import com.flab.football.domain.User;
 import com.flab.football.service.user.command.LogInCommand;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
