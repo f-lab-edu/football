@@ -1,3 +1,113 @@
+buildscript {
+	ext {
+		springBootVersion = '2.7.1'
+	}
+	repositories {
+		mavenCentral()
+	}
+	dependencies {
+		classpath "org.springframework.boot:spring-boot-gradle-plugin:${springBootVersion}"
+		classpath "io.spring.gradle:dependency-management-plugin:1.0.11.RELEASE"
+	}
+}
+
+// 하위 모든 프로젝트 공통 세팅
+subprojects {
+	apply plugin: 'java'
+	apply plugin: 'idea'
+	apply plugin: 'org.springframework.boot'
+	apply plugin: 'io.spring.dependency-management'
+
+	group 'org.example'
+	version '1.0-SNAPSHOT'
+
+	sourceCompatibility = '1.8'
+	targetCompatibility = '1.8'
+	compileJava.options.encoding = 'UTF-8'
+
+	repositories {
+		mavenCentral()
+	}
+
+	// 하위 모듈에서 공통으로 사용하는 세팅 추가
+	dependencies {
+
+		// Redis
+		implementation 'org.springframework.boot:spring-boot-starter-data-redis'
+
+		// Spring Security
+		implementation 'org.springframework.boot:spring-boot-starter-security'
+
+		// JWT
+		implementation group: 'io.jsonwebtoken', name: 'jjwt-api', version: '0.11.2'
+		runtimeOnly group: 'io.jsonwebtoken', name: 'jjwt-impl', version: '0.11.2'
+		runtimeOnly group: 'io.jsonwebtoken', name: 'jjwt-jackson', version: '0.11.2'
+
+		// MySql
+		implementation 'mysql:mysql-connector-java'
+
+		// Flyway
+		implementation 'org.flywaydb:flyway-core:5.2.4'
+
+		// JPA
+		implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
+
+		// Valid
+		implementation 'org.springframework.boot:spring-boot-starter-validation'
+
+		// Lombok
+		compileOnly 'org.projectlombok:lombok'
+		annotationProcessor 'org.projectlombok:lombok'
+
+		// JUnit5
+		testImplementation 'org.springframework.boot:spring-boot-starter-test'
+		testImplementation 'org.junit.jupiter:junit-jupiter-api:5.7.0'
+		testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.7.0'
+
+		// etc
+		implementation 'org.springframework.boot:spring-boot-starter-web'
+		implementation 'org.springframework.boot:spring-boot-starter'
+		annotationProcessor "org.springframework.boot:spring-boot-configuration-processor"
+	}
+
+	test {
+		useJUnitPlatform()
+	}
+}
+
+project(':football-core') {
+	// 공통 코드
+	bootJar { enabled = false }
+	jar { enabled = true }
+
+	dependencies {
+	}
+}
+
+project(':football-api-server') {
+	bootJar { enabled = true }
+	jar { enabled = false }
+
+	dependencies {
+		compileClasspath project(':football-core')
+	}
+}
+
+project(':football-websocket-server') {
+	bootJar { enabled = true }
+	jar { enabled = false }
+
+	dependencies {
+		compileClasspath project(':football-core')
+
+		// Web Socket
+		implementation 'org.springframework.boot:spring-boot-starter-websocket'
+
+	}
+}
+
+/**
+ * 단일 모듈 환경에서 사용된 설정.
 plugins {
 	id 'org.springframework.boot' version '2.7.1'
 	id 'io.spring.dependency-management' version '1.0.11.RELEASE'
@@ -55,3 +165,4 @@ dependencies {
 tasks.named('test') {
 	useJUnitPlatform()
 }
+*/
