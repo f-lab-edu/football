@@ -1,6 +1,6 @@
 package com.flab.football.service.chat;
 
-import static com.flab.football.websocket.util.WebSocketUtils.PREFIX_KEY;
+import static com.flab.football.util.WebSocketUtils.PREFIX_KEY;
 
 import com.flab.football.redis.service.RedisService;
 import com.flab.football.service.chat.command.PushMessageCommand;

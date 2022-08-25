@@ -1,4 +1,4 @@
-package com.flab.football.redis.config;
+package com.flab.football.config;
 
 import io.lettuce.core.ReadFrom;
 import java.util.List;

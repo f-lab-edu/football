@@ -1,4 +1,4 @@
-package com.flab.football.websocket.util;
+package com.flab.football.util;
 
 public class WebSocketUtils {
 

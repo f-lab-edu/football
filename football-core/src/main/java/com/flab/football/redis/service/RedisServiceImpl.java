@@ -1,6 +1,6 @@
 package com.flab.football.redis.service;
 
-import com.flab.football.websocket.util.WebSocketUtils;
+import com.flab.football.util.WebSocketUtils;
 import java.time.LocalDateTime;
 import java.util.Optional;
 import java.util.Set;

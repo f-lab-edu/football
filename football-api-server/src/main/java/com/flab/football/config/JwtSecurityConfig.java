@@ -1,6 +1,6 @@
-package com.flab.football.security.config;
+package com.flab.football.config;
 
-import com.flab.football.security.jwt.JwtFilter;
+import com.flab.football.jwt.JwtFilter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.SecurityConfigurerAdapter;

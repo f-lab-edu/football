@@ -1,9 +1,7 @@
-package com.flab.football.security.jwt;
-
-import static com.flab.football.security.util.SecurityUtil.AUTHORITIES_KEY;
-import static com.flab.football.security.util.SecurityUtil.NAME_KEY;
+package com.flab.football.jwt;
 
 import com.flab.football.exception.NotValidTokenException;
+import com.flab.football.util.SecurityUtil;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.Jwts;
@@ -18,7 +16,6 @@ import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
 import lombok.extern.slf4j.Slf4j;
-import org.flywaydb.core.internal.util.StringUtils;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -27,6 +24,7 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.stereotype.Component;
+import org.springframework.util.StringUtils;
 
 /**
  * TokenProvider 클래스.
@@ -81,8 +79,8 @@ public class TokenProvider implements InitializingBean {
         .setSubject(authentication.getName())
         .setExpiration(validity);
 
-    claims.put(AUTHORITIES_KEY, authorities);
-    claims.put(NAME_KEY, userName);
+    claims.put(SecurityUtil.AUTHORITIES_KEY, authorities);
+    claims.put(SecurityUtil.NAME_KEY, userName);
 
     return Jwts.builder()
         .setClaims(claims)
@@ -104,7 +102,7 @@ public class TokenProvider implements InitializingBean {
         .getBody();
 
     List<SimpleGrantedAuthority> authorities = Arrays
-        .stream(claims.get(AUTHORITIES_KEY).toString().split(","))
+        .stream(claims.get(SecurityUtil.AUTHORITIES_KEY).toString().split(","))
         .map(SimpleGrantedAuthority::new)
         .collect(Collectors.toList());
 

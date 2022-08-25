@@ -1,7 +1,7 @@
-package com.flab.football.security.config;
+package com.flab.football.config;
 
-import com.flab.football.security.jwt.JwtAccessDeniedHandler;
-import com.flab.football.security.jwt.JwtAuthenticationEntryPoint;
+import com.flab.football.jwt.JwtAccessDeniedHandler;
+import com.flab.football.jwt.JwtAuthenticationEntryPoint;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;

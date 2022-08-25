@@ -1,4 +1,4 @@
-package com.flab.football.security.jwt;
+package com.flab.football.jwt;
 
 import java.io.IOException;
 import javax.servlet.http.HttpServletRequest;

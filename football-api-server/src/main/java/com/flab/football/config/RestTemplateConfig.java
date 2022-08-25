@@ -1,4 +1,4 @@
-package com.flab.football.restTemplate.config;
+package com.flab.football.config;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;

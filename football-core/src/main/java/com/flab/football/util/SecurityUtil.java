@@ -1,4 +1,4 @@
-package com.flab.football.security.util;
+package com.flab.football.util;
 
 import java.util.Optional;
 import lombok.AccessLevel;

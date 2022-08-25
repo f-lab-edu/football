@@ -1,4 +1,4 @@
-package com.flab.football.mysql.config;
+package com.flab.football.config;
 
 import com.zaxxer.hikari.HikariDataSource;
 import javax.sql.DataSource;

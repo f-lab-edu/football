@@ -1,10 +1,10 @@
 package com.flab.football.websocket.handler;
 
-import static com.flab.football.security.util.SecurityUtil.AUTHORIZATION_HEADER;
-import static com.flab.football.websocket.util.WebSocketUtils.PREFIX_KEY;
+import static com.flab.football.util.SecurityUtil.AUTHORIZATION_HEADER;
+import static com.flab.football.util.WebSocketUtils.PREFIX_KEY;
 
+import com.flab.football.jwt.TokenProvider;
 import com.flab.football.redis.service.RedisService;
-import com.flab.football.security.jwt.TokenProvider;
 import com.flab.football.websocket.service.SessionService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;

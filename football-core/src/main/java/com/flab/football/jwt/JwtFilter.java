@@ -1,7 +1,6 @@
-package com.flab.football.security.jwt;
+package com.flab.football.jwt;
 
-import static com.flab.football.security.util.SecurityUtil.AUTHORIZATION_HEADER;
-
+import com.flab.football.util.SecurityUtil;
 import java.io.IOException;
 import javax.servlet.Filter;
 import javax.servlet.FilterChain;
@@ -11,10 +10,10 @@ import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.flywaydb.core.internal.util.StringUtils;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
+import org.springframework.util.StringUtils;
 
 /**
  * Request Header 에서 가져온 토큰을 필터링하는 과정을 담당
@@ -65,7 +64,7 @@ public class JwtFilter implements Filter {
 
   private String resolveToken(HttpServletRequest request) {
 
-    String bearerToken = request.getHeader(AUTHORIZATION_HEADER);
+    String bearerToken = request.getHeader(SecurityUtil.AUTHORIZATION_HEADER);
 
     if (StringUtils.hasText(bearerToken) && bearerToken.startsWith("Bearer ")) {
 
