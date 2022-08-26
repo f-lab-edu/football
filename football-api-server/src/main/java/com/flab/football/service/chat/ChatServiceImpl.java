@@ -11,7 +11,6 @@ import com.flab.football.repository.chat.MessageRepository;
 import com.flab.football.repository.chat.ParticipantRepository;
 import com.flab.football.repository.user.UserRepository;
 import com.flab.football.service.chat.command.PushMessageCommand;
-import com.flab.football.service.user.UserService;
 import java.time.LocalDateTime;
 import java.time.ZoneOffset;
 import java.util.List;

@@ -1,6 +1,5 @@
 package com.flab.football.websocket.service;
 
-import com.flab.football.dto.response.ResponseDto;
 import com.flab.football.websocket.conrtroller.request.HeartBeatRequest;
 import java.time.LocalDateTime;
 import lombok.RequiredArgsConstructor;
@@ -31,7 +30,7 @@ public class HeartBeatServiceImpl implements HeartBeatService {
       restTemplate.postForEntity(
           "http://localhost:8080/chat/health/check",
           request,
-          ResponseDto.class
+          HeartBeatRequest.class
       );
 
     }
