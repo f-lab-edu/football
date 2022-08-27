@@ -1,8 +1,8 @@
 package com.flab.football.service.security;
 
-import static com.flab.football.util.SecurityUtil.AUTHORIZATION_HEADER;
+import static com.flab.football.security.utils.SecurityUtil.AUTHORIZATION_HEADER;
 
-import com.flab.football.jwt.TokenProvider;
+import com.flab.football.security.jwt.TokenProvider;
 import com.flab.football.service.user.command.LogInCommand;
 import javax.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;

@@ -1,4 +1,4 @@
-package com.flab.football.ExceptionHandler;
+package com.flab.football.exception.ExceptionHandler;
 
 import com.flab.football.controller.response.ResponseDto;
 import com.flab.football.exception.AlreadyExistEmailException;
@@ -7,7 +7,7 @@ import com.flab.football.exception.NotExistStadiumException;
 import com.flab.football.exception.NotLogInBrowserException;
 import com.flab.football.exception.NotValidEmailException;
 import com.flab.football.exception.NotValidPasswordException;
-import com.flab.football.exception.NotValidTokenException;
+import com.flab.football.security.exception.NotValidTokenException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;

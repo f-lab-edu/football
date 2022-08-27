@@ -6,7 +6,7 @@ import com.flab.football.controller.response.ResponseDto;
 import com.flab.football.domain.User;
 import com.flab.football.service.security.SecurityService;
 import com.flab.football.service.user.UserService;
-import com.flab.football.util.SecurityUtil;
+import com.flab.football.security.utils.SecurityUtil;
 import javax.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;

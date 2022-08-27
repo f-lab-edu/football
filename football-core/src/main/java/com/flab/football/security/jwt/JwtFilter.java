@@ -1,6 +1,6 @@
-package com.flab.football.jwt;
+package com.flab.football.security.jwt;
 
-import com.flab.football.util.SecurityUtil;
+import com.flab.football.security.utils.SecurityUtil;
 import java.io.IOException;
 import javax.servlet.Filter;
 import javax.servlet.FilterChain;

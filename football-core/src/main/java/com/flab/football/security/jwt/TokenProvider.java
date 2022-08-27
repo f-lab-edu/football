@@ -1,7 +1,7 @@
-package com.flab.football.jwt;
+package com.flab.football.security.jwt;
 
-import com.flab.football.exception.NotValidTokenException;
-import com.flab.football.util.SecurityUtil;
+import com.flab.football.security.exception.NotValidTokenException;
+import com.flab.football.security.utils.SecurityUtil;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.Jwts;
