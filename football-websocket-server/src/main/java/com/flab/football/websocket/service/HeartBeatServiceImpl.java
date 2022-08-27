@@ -26,15 +26,12 @@ public class HeartBeatServiceImpl implements HeartBeatService {
         .heartBeatTime(LocalDateTime.now())
         .build();
 
-    if (!address.contains("8080")) {
+    restTemplate.postForObject(
+        "http://localhost:8080/chat/health/check",
+        request,
+        ResponseDto.class
+    );
 
-      restTemplate.postForObject(
-          "http://localhost:8080/chat/health/check",
-          request,
-          ResponseDto.class
-      );
-
-    }
   }
 
 }
