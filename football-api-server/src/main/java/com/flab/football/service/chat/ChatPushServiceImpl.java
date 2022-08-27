@@ -2,7 +2,7 @@ package com.flab.football.service.chat;
 
 import static com.flab.football.util.WebSocketUtils.PREFIX_KEY;
 
-import com.flab.football.redis.service.RedisService;
+import com.flab.football.service.redis.RedisService;
 import com.flab.football.service.chat.command.PushMessageCommand;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;

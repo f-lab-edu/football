@@ -1,5 +1,6 @@
 package com.flab.football.controller;
 
+import com.flab.football.controller.request.SaveConnectInfoRequest;
 import com.flab.football.controller.request.CreateChannelRequest;
 import com.flab.football.controller.request.HealthCheckRequest;
 import com.flab.football.controller.request.InviteParticipantsRequest;
@@ -7,7 +8,7 @@ import com.flab.football.controller.request.SendMessageRequest;
 import com.flab.football.controller.response.ResponseDto;
 import com.flab.football.controller.response.data.FindPrimaryWebSocketServerAddressData;
 import com.flab.football.service.chat.ChatService;
-import com.flab.football.service.security.SecurityService;
+import com.flab.football.service.redis.RedisService;
 import javax.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -33,7 +34,8 @@ public class ChatController {
 
   private final ChatService chatService;
 
-  private final SecurityService securityService;
+  private final RedisService redisService;
+
 
   /**
    * 웹 소켓 서버에 대한 healthCheck 값을 받기 위한 API.
@@ -42,7 +44,6 @@ public class ChatController {
   @PostMapping("/health/check")
   public ResponseDto healthCheck(@RequestBody HealthCheckRequest request) {
 
-    // 받아온 결과값을 저장하고 유지한다.
     chatService.healthCheck(
         request.getAddress(),
         request.getConnectionCount(),
@@ -55,7 +56,6 @@ public class ChatController {
 
   /**
    * 새로운 사용자가 접근할 최적 환경의 웹소켓 서버 주소를 탐색하는 API.
-   *
    */
 
   @GetMapping("/connect")
@@ -135,4 +135,21 @@ public class ChatController {
 
   }
 
+  @PostMapping("/save/connect/info")
+  public ResponseDto connectWebsocket(@RequestBody SaveConnectInfoRequest request) {
+
+    redisService.setWebSocketSession(request.getUserId(), request.getAddress());
+
+    return new ResponseDto(true, null, "웹소켓 연결 성공", null);
+
+  }
+
+  @PostMapping("/delete/connect/info")
+  public ResponseDto disconnectWebsocket(@RequestBody int userId) {
+
+    redisService.deleteWebSocketSession(userId);
+
+    return new ResponseDto(true, null, "웹소켓 연결 끊기 성공", null);
+
+  }
 }

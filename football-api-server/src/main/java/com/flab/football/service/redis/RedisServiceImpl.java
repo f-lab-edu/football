@@ -1,4 +1,4 @@
-package com.flab.football.redis.service;
+package com.flab.football.service.redis;
 
 import com.flab.football.util.WebSocketUtils;
 import java.time.LocalDateTime;
@@ -22,16 +22,16 @@ public class RedisServiceImpl implements RedisService {
 
 
   @Override
-  public void setWebSocketSession(String userId, String session) {
+  public void setWebSocketSession(int userId, String session) {
 
-    redisTemplate.opsForValue().set(userId, session);
+    redisTemplate.opsForValue().set(WebSocketUtils.PREFIX_KEY + userId, session);
 
   }
 
   @Override
-  public void deleteWebSocketSession(String userId) {
+  public void deleteWebSocketSession(int userId) {
 
-    redisTemplate.delete(userId);
+    redisTemplate.delete(WebSocketUtils.PREFIX_KEY + userId);
 
   }
 

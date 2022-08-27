@@ -2,6 +2,7 @@ package com.flab.football.websocket.conrtroller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.flab.football.websocket.conrtroller.request.SendMessageRequest;
+import com.flab.football.websocket.conrtroller.response.ResponseDto;
 import com.flab.football.websocket.service.HeartBeatService;
 import com.flab.football.websocket.service.SessionService;
 import lombok.RequiredArgsConstructor;
@@ -45,19 +46,17 @@ public class WebSocketController {
 
   /**
    * 접속한 대상 회원에게 메세지 전송 API.
-   * 이후 모듈 분리 대상
    */
 
   @PostMapping("/send/message")
-  public ResponseEntity<HttpStatus> sendMessage(
-      @RequestBody SendMessageRequest request) throws Exception
-  {
+  public ResponseDto sendMessage(
+      @RequestBody SendMessageRequest request) throws Exception {
 
     WebSocketSession session = sessionService.findSessionByUserId(request.getReceiveUserId());
 
     session.sendMessage(new TextMessage(objectMapper.writeValueAsString(request)));
 
-    return new ResponseEntity<>(HttpStatus.OK);
+    return new ResponseDto(true, null, "메세지 전송 완료", null);
 
   }
 

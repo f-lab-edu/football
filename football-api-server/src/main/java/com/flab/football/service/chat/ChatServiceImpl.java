@@ -5,7 +5,7 @@ import com.flab.football.domain.Message;
 import com.flab.football.domain.Message.Type;
 import com.flab.football.domain.Participant;
 import com.flab.football.domain.User;
-import com.flab.football.redis.service.RedisService;
+import com.flab.football.service.redis.RedisService;
 import com.flab.football.repository.chat.ChannelRepository;
 import com.flab.football.repository.chat.MessageRepository;
 import com.flab.football.repository.chat.ParticipantRepository;

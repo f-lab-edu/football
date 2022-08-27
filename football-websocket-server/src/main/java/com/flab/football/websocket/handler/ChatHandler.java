@@ -1,14 +1,13 @@
 package com.flab.football.websocket.handler;
 
-import static com.flab.football.util.SecurityUtil.AUTHORIZATION_HEADER;
-import static com.flab.football.util.WebSocketUtils.PREFIX_KEY;
-
-import com.flab.football.jwt.TokenProvider;
-import com.flab.football.redis.service.RedisService;
+import com.flab.football.websocket.conrtroller.response.ResponseDto;
+import com.flab.football.websocket.handler.request.SaveConnectInfoRequest;
 import com.flab.football.websocket.service.SessionService;
+import java.util.Objects;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
+import org.springframework.web.client.RestTemplate;
 import org.springframework.web.socket.CloseStatus;
 import org.springframework.web.socket.WebSocketSession;
 import org.springframework.web.socket.handler.TextWebSocketHandler;
@@ -22,9 +21,7 @@ import org.springframework.web.socket.handler.TextWebSocketHandler;
 @RequiredArgsConstructor
 public class ChatHandler extends TextWebSocketHandler {
 
-  private final TokenProvider tokenProvider;
-
-  private final RedisService redisService;
+  private final RestTemplate restTemplate;
 
   private final SessionService sessionService;
 
@@ -32,21 +29,24 @@ public class ChatHandler extends TextWebSocketHandler {
 
   /**
    * Client가 접속 시 호출되는 메서드.
-     * 앱을 실행시킨 경우
-     * key = userId, value = [웹소켓 서버 정보] 으로 Redis 에 저장
    */
 
   @Override
   public void afterConnectionEstablished(WebSocketSession session) throws Exception {
 
-    log.info(session.getPrincipal().getName() + " 님이 입장하셨습니다.");
+    int userId = Integer.parseInt(Objects.requireNonNull(session.getPrincipal()).getName());
 
-    int userId = getCurrentUserId(session);
+    log.info(userId + " 님이 입장하셨습니다.");
 
-    // userId 와 웹소켓 서버 정보를 redis 에 저장
-    redisService.setWebSocketSession(PREFIX_KEY + userId, address);
+    restTemplate.postForObject(
+        "http://localhost:8080/chat/save/connect/info",
+        SaveConnectInfoRequest.builder()
+            .userId(userId)
+            .address(address)
+            .build(),
+        SaveConnectInfoRequest.class
+    );
 
-    // 웹소켓 서버 내 메모리에 session 객체를 저장
     sessionService.saveSession(userId, session);
 
   }
@@ -58,24 +58,17 @@ public class ChatHandler extends TextWebSocketHandler {
   @Override
   public void afterConnectionClosed(WebSocketSession session, CloseStatus status) throws Exception {
 
-    log.info(session.getPrincipal().getName() + " 님이 퇴장하셨습니다.");
+    int userId = Integer.parseInt(Objects.requireNonNull(session.getPrincipal()).getName());
 
-    int userId = getCurrentUserId(session);
+    log.info(userId + " 님이 퇴장하셨습니다.");
 
-    // userId 와 웹소켓 서버 정보를 redis 에서 삭제
-    redisService.deleteWebSocketSession(PREFIX_KEY + userId);
+    restTemplate.postForObject(
+        "http://localhost:8080/chat/delete/connect/info",
+        userId,
+        ResponseDto.class
+    );
 
-    // 웹소켓 서버 내 메모리에 session 객체를 삭제
     sessionService.removeSession(userId, session);
-
-  }
-
-  // SecurityUtils.getCurrentUserId()를 활용하지 못하기 때문에 session에서 토큰 정보를 직접 가져와 해석해 userId를 조회하는 메소드를 따로 구현
-  private int getCurrentUserId(WebSocketSession session) {
-
-    String bearerToken = session.getHandshakeHeaders().get(AUTHORIZATION_HEADER).toString();
-
-    return tokenProvider.getCurrentUserId(bearerToken);
 
   }
 

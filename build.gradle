@@ -31,6 +31,9 @@ subprojects {
 	// 하위 모듈에서 공통으로 사용하는 세팅 추가
 	dependencies {
 
+		// Spring Security
+		implementation 'org.springframework.boot:spring-boot-starter-security'
+
 		// Lombok
 		compileOnly 'org.projectlombok:lombok'
 		annotationProcessor 'org.projectlombok:lombok'
@@ -58,22 +61,16 @@ project(':football-core') {
 
 	dependencies {
 
-		// MySql
-		implementation 'mysql:mysql-connector-java'
-
-		// Redis
-		implementation 'org.springframework.boot:spring-boot-starter-data-redis'
-
-		// JPA
-		implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
-
-		// Spring Security
-		implementation 'org.springframework.boot:spring-boot-starter-security'
-
 		// JWT
 		implementation group: 'io.jsonwebtoken', name: 'jjwt-api', version: '0.11.2'
 		runtimeOnly group: 'io.jsonwebtoken', name: 'jjwt-impl', version: '0.11.2'
 		runtimeOnly group: 'io.jsonwebtoken', name: 'jjwt-jackson', version: '0.11.2'
+
+		// MySql
+		implementation 'mysql:mysql-connector-java'
+
+		// JPA
+		implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
 	}
 }
 
@@ -95,9 +92,6 @@ project(':football-api-server') {
 		// JPA
 		implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
 
-		// Spring Security
-		implementation 'org.springframework.boot:spring-boot-starter-security'
-
 		// Valid
 		implementation 'org.springframework.boot:spring-boot-starter-validation'
 
@@ -110,9 +104,6 @@ project(':football-websocket-server') {
 	jar { enabled = false }
 
 	dependencies {
-
-		// Redis
-		implementation 'org.springframework.boot:spring-boot-starter-data-redis'
 
 		// Web Socket
 		implementation 'org.springframework.boot:spring-boot-starter-websocket'

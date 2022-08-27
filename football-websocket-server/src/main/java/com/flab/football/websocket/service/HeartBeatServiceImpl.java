@@ -1,6 +1,7 @@
 package com.flab.football.websocket.service;
 
 import com.flab.football.websocket.conrtroller.request.HeartBeatRequest;
+import com.flab.football.websocket.conrtroller.response.ResponseDto;
 import java.time.LocalDateTime;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -27,10 +28,10 @@ public class HeartBeatServiceImpl implements HeartBeatService {
 
     if (!address.contains("8080")) {
 
-      restTemplate.postForEntity(
+      restTemplate.postForObject(
           "http://localhost:8080/chat/health/check",
           request,
-          HeartBeatRequest.class
+          ResponseDto.class
       );
 
     }

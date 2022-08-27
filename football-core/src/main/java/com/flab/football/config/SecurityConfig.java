@@ -46,6 +46,8 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     web
         .ignoring()
         .antMatchers("/chat/health/check")
+        .antMatchers("/chat/save/connect/info")
+        .antMatchers("/chat/delete/connect/info")
         .antMatchers("/ws/send/message")
         .antMatchers("/ws/connect");
 
@@ -57,27 +59,27 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
   @Override
   protected void configure(HttpSecurity http) throws Exception {
-      http
-          .csrf().disable()
+    http
+        .csrf().disable()
 
-          .exceptionHandling()
-          .authenticationEntryPoint(jwtAuthenticationEntryPoint)
-          .accessDeniedHandler(jwtAccessDeniedHandler)
+        .exceptionHandling()
+        .authenticationEntryPoint(jwtAuthenticationEntryPoint)
+        .accessDeniedHandler(jwtAccessDeniedHandler)
 
-          .and()
-          .sessionManagement()
-          .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
+        .and()
+        .sessionManagement()
+        .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
 
-          // 인증 절차를 생략할 API를 지정
-          .and()
-          .authorizeRequests()
-          .antMatchers("/user/signup", "/user/login").permitAll()
+        // 인증 절차를 생략할 API를 지정
+        .and()
+        .authorizeRequests()
+        .antMatchers("/user/signup", "/user/login").permitAll()
 
-          // 그 외 API는 인증 절차 수행
-          .anyRequest().authenticated()
+        // 그 외 API는 인증 절차 수행
+        .anyRequest().authenticated()
 
-          // JwtSecurityConfig 클래스 적용
-          .and()
-          .apply(jwtSecurityConfig);
+        // JwtSecurityConfig 클래스 적용
+        .and()
+        .apply(jwtSecurityConfig);
     }
 }
