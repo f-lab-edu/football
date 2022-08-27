@@ -33,16 +33,10 @@ public class CustomUserDetailsService implements UserDetailsService {
 
   private UserDetails createUserDetails(User user) {
 
-    List<SimpleGrantedAuthority> authorities = new ArrayList<>();
-    authorities.add(new SimpleGrantedAuthority(user.getRole().toString()));
-
     return new org.springframework.security.core.userdetails.User(
         String.valueOf(user.getId()),
         user.getPassword(),
-        authorities
-
-        // Cannot find symbol 발생 지점
-        //List.of(new SimpleGrantedAuthority(user.getRole().toString()))
+        List.of(new SimpleGrantedAuthority(user.getRole().toString()))
     );
 
   }

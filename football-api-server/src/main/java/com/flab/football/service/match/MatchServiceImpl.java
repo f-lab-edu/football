@@ -2,7 +2,6 @@ package com.flab.football.service.match;
 
 import com.flab.football.domain.Match;
 import com.flab.football.domain.Match.Manager;
-import com.flab.football.domain.Match.Member;
 import com.flab.football.domain.Stadium;
 import com.flab.football.domain.User;
 import com.flab.football.exception.NotExistStadiumException;
