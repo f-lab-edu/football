@@ -39,3 +39,8 @@ out/
 ### APM ###
 apm-server-7.15.0-darwin-x86_64
 apm-server-7.15.0-darwin-x86_64.tar.gz
+
+### Docker ###
+docker/db
+docker/example-docker-data
+docker/volume

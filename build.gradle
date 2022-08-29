@@ -1,57 +1,53 @@
-plugins {
-	id 'org.springframework.boot' version '2.7.1'
-	id 'io.spring.dependency-management' version '1.0.11.RELEASE'
-	id 'java'
-}
-
-group = 'com.flab'
-version = '0.0.1-SNAPSHOT'
-sourceCompatibility = '11'
-
-configurations {
-	compileOnly {
-		extendsFrom annotationProcessor
+buildscript {
+	ext {
+		springBootVersion = '2.7.1'
+	}
+	repositories {
+		mavenCentral()
+	}
+	dependencies {
+		classpath "org.springframework.boot:spring-boot-gradle-plugin:${springBootVersion}"
+		classpath "io.spring.gradle:dependency-management-plugin:1.0.11.RELEASE"
 	}
 }
 
-repositories {
-	mavenCentral()
+// 하위 모든 프로젝트 공통 세팅
+subprojects {
+	apply plugin: 'java'
+	apply plugin: 'idea'
+	apply plugin: 'org.springframework.boot'
+	apply plugin: 'io.spring.dependency-management'
+
+	group 'org.example'
+	version '1.0-SNAPSHOT'
+
+	sourceCompatibility = '11'
+	compileJava.options.encoding = 'UTF-8'
+
+	repositories {
+		mavenCentral()
+	}
+
+	// 하위 모듈에서 공통으로 사용하는 의존성도 추가할 수 있습니다. 다만 모듈별 확실한 구분을 위해 미사용합니다.
+	dependencies {
+	}
+
+	test {
+		useJUnitPlatform()
+	}
 }
 
-dependencies {
-	// Redis
-	implementation 'org.springframework.boot:spring-boot-starter-data-redis'
-
-	// Web Socket
-	implementation 'org.springframework.boot:spring-boot-starter-websocket'
-
-	// Spring Security
-	implementation 'org.springframework.boot:spring-boot-starter-security'
-
-	// JWT
-	implementation group: 'io.jsonwebtoken', name: 'jjwt-api', version: '0.11.2'
-	runtimeOnly group: 'io.jsonwebtoken', name: 'jjwt-impl', version: '0.11.2'
-	runtimeOnly group: 'io.jsonwebtoken', name: 'jjwt-jackson', version: '0.11.2'
-
-	// Flyway
-	implementation 'org.flywaydb:flyway-core:5.2.4'
-
-	// MySql
-	implementation 'mysql:mysql-connector-java'
-
-	// JPA
-	implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
-
-	// Valid
-	implementation 'org.springframework.boot:spring-boot-starter-validation'
-
-	// Basic
-	implementation 'org.springframework.boot:spring-boot-starter-web'
-	compileOnly 'org.projectlombok:lombok'
-	annotationProcessor 'org.projectlombok:lombok'
-	testImplementation 'org.springframework.boot:spring-boot-starter-test'
+project(':football-core') {
+	bootJar { enabled = false } // main()으로 실행시키지 않을 모듈
+	jar { enabled = true } // 하지만 jar 파일이 만들어여야만 다른 모듈에서 의존 가능
 }
 
-tasks.named('test') {
-	useJUnitPlatform()
+project(':football-api-server') {
+	bootJar { enabled = true }
+	jar { enabled = false }
+}
+
+project(':football-websocket-server') {
+	bootJar { enabled = true }
+	jar { enabled = false }
 }

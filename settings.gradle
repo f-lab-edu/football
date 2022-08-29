@@ -1,1 +1,5 @@
 rootProject.name = 'football'
+include 'football-api-server'
+include 'football-websocket-server'
+include 'football-core'
+
