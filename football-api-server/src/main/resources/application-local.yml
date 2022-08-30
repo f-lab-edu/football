@@ -1,5 +1,8 @@
 server:
   port: 9090
+  host:
+    api: http://localhost:9090
+    websocket: http://localhost:9000
 
 spring:
   profiles: local

@@ -1,5 +1,8 @@
 server:
   port: 8000
+  host:
+    api:
+    websocket:
 
 jwt:
   header: Authorization
