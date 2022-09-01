@@ -4,6 +4,7 @@ import com.flab.football.websocket.conrtroller.request.HeartBeatRequest;
 import com.flab.football.websocket.conrtroller.response.ResponseDto;
 import java.time.LocalDateTime;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
@@ -17,6 +18,8 @@ public class HeartBeatServiceImpl implements HeartBeatService {
 
   private final String address;
 
+  @Value("${server.host.api}")
+  private String apiHost;
 
   public void sendHeartBeat() {
 
@@ -27,7 +30,7 @@ public class HeartBeatServiceImpl implements HeartBeatService {
         .build();
 
     restTemplate.postForObject(
-        "http://localhost:8080/chat/health/check",
+        apiHost + "/chat/health/check",
         request,
         ResponseDto.class
     );
