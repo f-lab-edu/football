@@ -6,32 +6,12 @@ server:
 
 spring:
   profiles: prod
+
   datasource:
-    master:
-      hikari:
-        jdbc-url: jdbc:mysql://localhost:3306/football_db?characterEncoding=UTF-8
-        username: football
-        password: 1234
-        driver-class-name: com.mysql.cj.jdbc.Driver
-        read-only: false
-
-    slave:
-      hikari:
-        jdbc-url: jdbc:mysql://localhost:3306/football_db?characterEncoding=UTF-8
-        username: football
-        password: 1234
-        driver-class-name: com.mysql.cj.jdbc.Driver
-        read-only: true
-
-  redis:
-    cluster:
-      nodes:
-        - 127.0.0.1:7001
-        - 127.0.0.1:7002
-        - 127.0.0.1:7003
-        - 127.0.0.1:7004
-        - 127.0.0.1:7005
-        - 127.0.0.1:7006
+    url: jdbc:mysql://football-db-mysql.ckt0scabogid.ap-northeast-2.rds.amazonaws.com:3306/football_db_mysql
+    username: admin
+    password: 1q2w3e4r!
+    driver-class-name: com.mysql.cj.jdbc.Driver
 
   jpa:
     database: Mysql
@@ -43,6 +23,10 @@ spring:
     flyway:
       enabled: true
       baseline-on-migrate: true
+
+  redis:
+    host: football-redis.qyvl4a.clustercfg.apn2.cache.amazonaws.com:6379
+    port: 6379
 
 jwt:
   header: Authorization
