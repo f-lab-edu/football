@@ -36,7 +36,7 @@ public class ChatPushServiceImpl implements ChatPushService {
     } else {
 
       // 그 외 경우엔 해당 서버에 접속중인 회원이 Map 컬렉션에 저장되어 있기에 메세지를 전송한다.
-      String uri = "http://" + address + "/ws/send/message";
+      String uri = address + "/ws/send/message";
 
       restTemplate.postForEntity(uri, command, ResponseEntity.class);
 

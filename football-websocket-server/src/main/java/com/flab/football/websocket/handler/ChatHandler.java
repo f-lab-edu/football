@@ -6,6 +6,7 @@ import com.flab.football.websocket.service.SessionService;
 import java.util.Objects;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.socket.CloseStatus;
@@ -25,7 +26,8 @@ public class ChatHandler extends TextWebSocketHandler {
 
   private final SessionService sessionService;
 
-  private final String address;
+  @Value("${server.host.websocket}")
+  private String address;
 
   /**
    * Client가 접속 시 호출되는 메서드.
@@ -39,7 +41,7 @@ public class ChatHandler extends TextWebSocketHandler {
     log.info(userId + " 님이 입장하셨습니다.");
 
     restTemplate.postForObject(
-        "http://localhost:8080/chat/save/connect/info",
+        address + "/chat/save/connect/info",
         SaveConnectInfoRequest.builder()
             .userId(userId)
             .address(address)
@@ -63,7 +65,7 @@ public class ChatHandler extends TextWebSocketHandler {
     log.info(userId + " 님이 퇴장하셨습니다.");
 
     restTemplate.postForObject(
-        "http://localhost:8080/chat/delete/connect/info",
+        address + "/chat/save/connect/info",
         userId,
         ResponseDto.class
     );

@@ -1,8 +1,8 @@
 server:
   port: 8080
   host:
-    api:
-    websocket:
+    api: http://10.0.74.229:8080
+    websocket: http://10.0.11.55:8000
 
 spring:
   profiles: prod
@@ -25,7 +25,7 @@ spring:
       baseline-on-migrate: true
 
   redis:
-    host: football-redis.qyvl4a.clustercfg.apn2.cache.amazonaws.com:6379
+    host: football-elasticache-redis.qyvl4a.ng.0001.apn2.cache.amazonaws.com
     port: 6379
 
 jwt:
