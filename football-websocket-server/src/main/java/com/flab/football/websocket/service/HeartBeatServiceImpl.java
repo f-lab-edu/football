@@ -17,21 +17,21 @@ public class HeartBeatServiceImpl implements HeartBeatService {
   private final SessionService sessionService;
 
   @Value("${server.host.websocket}")
-  private String address;
+  private String websocketAddress;
 
   @Value("${server.host.api}")
-  private String apiHost;
+  private String apiAddress;
 
   public void sendHeartBeat() {
 
     HeartBeatRequest request = HeartBeatRequest.builder()
-        .address(address)
+        .address(websocketAddress)
         .connectionCount(sessionService.getSessionCount())
         .heartBeatTime(LocalDateTime.now())
         .build();
 
     restTemplate.postForObject(
-        apiHost + "/chat/health/check",
+        "http://" + apiAddress + "/chat/health/check",
         request,
         ResponseDto.class
     );
