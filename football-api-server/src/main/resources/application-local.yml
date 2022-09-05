@@ -6,32 +6,12 @@ server:
 
 spring:
   profiles: local
+
   datasource:
-    master:
-      hikari:
-        jdbc-url: jdbc:mysql://localhost:3306/football_db?characterEncoding=UTF-8
-        username: football
-        password: 1234
-        driver-class-name: com.mysql.cj.jdbc.Driver
-        read-only: false
-
-    slave:
-      hikari:
-        jdbc-url: jdbc:mysql://localhost:3306/football_db?characterEncoding=UTF-8
-        username: football
-        password: 1234
-        driver-class-name: com.mysql.cj.jdbc.Driver
-        read-only: true
-
-  redis:
-    cluster:
-      nodes:
-        - 127.0.0.1:7001
-        - 127.0.0.1:7002
-        - 127.0.0.1:7003
-        - 127.0.0.1:7004
-        - 127.0.0.1:7005
-        - 127.0.0.1:7006
+    url: jdbc:mysql://localhost:3306/football_db?characterEncoding=UTF-8
+    username: football
+    password: 1234
+    driver-class-name: com.mysql.cj.jdbc.Driver
 
   jpa:
     database: Mysql
@@ -40,9 +20,23 @@ spring:
       format_sql: true
       ddl-auto: none
 
-    flyway:
-      enabled: true
-      baseline-on-migrate: true
+  flyway:
+    enabled: true
+    baseline-on-migrate: true
+
+  redis:
+    host: localhost
+    port: 7001
+
+    # local 환경에서 redis cluster 활용시 사용하는 변수
+    cluster:
+      nodes:
+        - 127.0.0.1:7001
+        - 127.0.0.1:7002
+        - 127.0.0.1:7003
+        - 127.0.0.1:7004
+        - 127.0.0.1:7005
+        - 127.0.0.1:7006
 
 jwt:
   header: Authorization

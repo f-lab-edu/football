@@ -16,7 +16,8 @@ public class HeartBeatServiceImpl implements HeartBeatService {
 
   private final SessionService sessionService;
 
-  private final String address;
+  @Value("${server.host.websocket}")
+  private String address;
 
   @Value("${server.host.api}")
   private String apiHost;

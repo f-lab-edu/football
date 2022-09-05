@@ -1,37 +1,17 @@
 server:
   port: 8080
   host:
-    api:
-    websocket:
+    api: http://10.0.74.229:8080
+    websocket: http://10.0.11.55:8000
 
 spring:
   profiles: prod
+
   datasource:
-    master:
-      hikari:
-        jdbc-url: jdbc:mysql://localhost:3306/football_db?characterEncoding=UTF-8
-        username: football
-        password: 1234
-        driver-class-name: com.mysql.cj.jdbc.Driver
-        read-only: false
-
-    slave:
-      hikari:
-        jdbc-url: jdbc:mysql://localhost:3306/football_db?characterEncoding=UTF-8
-        username: football
-        password: 1234
-        driver-class-name: com.mysql.cj.jdbc.Driver
-        read-only: true
-
-  redis:
-    cluster:
-      nodes:
-        - 127.0.0.1:7001
-        - 127.0.0.1:7002
-        - 127.0.0.1:7003
-        - 127.0.0.1:7004
-        - 127.0.0.1:7005
-        - 127.0.0.1:7006
+    url: jdbc:mysql://football-db-mysql.ckt0scabogid.ap-northeast-2.rds.amazonaws.com:3306/football_db_mysql
+    username: admin
+    password: 1q2w3e4r!
+    driver-class-name: com.mysql.cj.jdbc.Driver
 
   jpa:
     database: Mysql
@@ -43,6 +23,10 @@ spring:
     flyway:
       enabled: true
       baseline-on-migrate: true
+
+  redis:
+    host: football-elasticache-redis.qyvl4a.ng.0001.apn2.cache.amazonaws.com
+    port: 6379
 
 jwt:
   header: Authorization

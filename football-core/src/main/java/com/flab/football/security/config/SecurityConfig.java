@@ -49,7 +49,8 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
         .antMatchers("/chat/save/connect/info")
         .antMatchers("/chat/delete/connect/info")
         .antMatchers("/ws/send/message")
-        .antMatchers("/ws/connect");
+        .antMatchers("/ws/connect")
+        .antMatchers("/"); // AWS 로드 밸런서 health check
 
   }
 

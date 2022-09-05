@@ -45,22 +45,4 @@ public class WebSocketEtcConfig {
     return objectMapper;
 
   }
-
-  /**
-   * 서버 실행시 서버 주소를 저장해두기 위한 객체.
-   */
-
-  @Bean
-  public String address() {
-
-    String port = applicationContext
-        .getBean(Environment.class)
-        .getProperty("server.port", String.class, "8080");
-
-    log.info("WebSocket Server Address = {}", InetAddress.getLoopbackAddress().getHostAddress() + ":" + port);
-
-    return InetAddress.getLoopbackAddress().getHostAddress() + ":" + port;
-
-  }
-
 }
