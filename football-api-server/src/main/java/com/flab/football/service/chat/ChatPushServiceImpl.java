@@ -2,11 +2,11 @@ package com.flab.football.service.chat;
 
 import static com.flab.football.util.WebSocketUtils.PREFIX_KEY;
 
+import com.flab.football.controller.response.ResponseDto;
 import com.flab.football.service.redis.RedisService;
 import com.flab.football.service.chat.command.PushMessageCommand;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.http.ResponseEntity;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
@@ -36,9 +36,9 @@ public class ChatPushServiceImpl implements ChatPushService {
     } else {
 
       // 그 외 경우엔 해당 서버에 접속중인 회원이 Map 컬렉션에 저장되어 있기에 메세지를 전송한다.
-      String uri = address + "/ws/send/message";
+      String uri = "http://" + address + "/ws/send/message";
 
-      restTemplate.postForEntity(uri, command, ResponseEntity.class);
+      restTemplate.postForObject(uri, command, ResponseDto.class);
 
       log.info(command.getReceiveUserId() + "님에게 메세지 전송이 완료되었습니다.");
 

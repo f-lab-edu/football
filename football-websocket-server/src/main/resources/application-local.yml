@@ -2,7 +2,9 @@ server:
   port: 9000
   host:
     api: localhost:9090
-    websocket: localhost:9000
+    websocket:
+      public: localhost:9000
+      private: localhost:9000
 
 jwt:
   header: Authorization
