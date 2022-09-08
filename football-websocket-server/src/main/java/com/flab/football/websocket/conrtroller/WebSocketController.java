@@ -47,8 +47,7 @@ public class WebSocketController {
    */
 
   @PostMapping("/send/message")
-  public ResponseDto sendMessage(
-      @RequestBody SendMessageRequest request) throws Exception {
+  public ResponseDto sendMessage(@RequestBody SendMessageRequest request) throws Exception {
 
     WebSocketSession session = sessionService.findSessionByUserId(request.getReceiveUserId());
 
