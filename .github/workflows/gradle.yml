@@ -20,16 +20,6 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-#    - name: Set Up MySQL
-#      uses: samin/mysql-action@v1
-#      with:
-#        host port: 3306
-#        container port: 3306
-#        character set server: 'utf8'
-#        mysql database: 'football_db'
-#        mysql password: ${{ secrets.DB_PASSWORD }}
-#        mysql user: 'football'
-#        mysql root password: ${{ secrets.ROOT_PASSWORD }}
 
     - uses: actions/checkout@v3
 
