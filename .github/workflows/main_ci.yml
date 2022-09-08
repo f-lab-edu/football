@@ -5,12 +5,11 @@
 # This workflow will build a Java project with Gradle and cache/restore any dependencies to improve the workflow execution time
 # For more information see: https://help.github.com/actions/language-and-framework-guides/building-and-testing-java-with-gradle
 
-name: Java CI/CD with Gradle
+name: Java CI with Gradle
 
 on:
   pull_request:
     branches: [ main ]
-  workflow_dispatch:
 
 permissions:
   contents: read
@@ -37,32 +36,3 @@ jobs:
 # Build 진행
     - name: Build with Gradle
       run: ./gradlew clean build
-
-  deploy:
-# 빌드 과정에 대한 의존관계 생₩
-    needs: build
-    runs-on: ubuntu-latest
-
-    steps:
-      - uses: actions/checkout@v3
-
-# 디렉토리 생성
-      - name: Make Directory
-        run: mkdir -p football
-
-# Api 서버 Jar 파일 복사
-      - name: Copy Jar
-        run: cp ./football-api-server/build/libs/*.jar ./football
-
-# Websocket Jar 파일 복사
-      - name: Copy Jar
-        run: cp ./football-websocket-server/build/libs/*.jar ./football
-
-#      - uses: actions/checkout@v2
-#      - name: Run scripts in server
-#        uses: appleboy/ssh-action@master
-#        with:
-#          key: ${{ secrets.SSH_KEY }}
-#          host: ${{ secrets.HOST }}
-#          username: ${{ secrets.USER }}
-#          script: # EC2 서버 접속 후 사용할 커맨드
