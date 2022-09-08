@@ -2,8 +2,19 @@ name: Java CD with Gradle
 
 on:
    workflow_dispatch:
-#   push:
-#     branches: [ main ]
+     inputs:
+       name:
+         description: "Person to greet"
+         required: true
+         default: "bossm0n5t3r"
+       home:
+         description: "location"
+         required: false
+         default: "The Octoverse"
+   repository_dispatch:
+     types: [build-event]
+   schedule:
+     - cron: "0 0 * * *"
 
 permissions:
   contents: read
