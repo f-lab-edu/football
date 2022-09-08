@@ -8,10 +8,7 @@
 name: Java CI/CD with Gradle
 
 on:
-  # workflow_dispatch:
   pull_request:
-    branches: [ main ]
-  push:
     branches: [ main ]
 
 permissions:
@@ -42,26 +39,3 @@ jobs:
     # Build 진행
     - name: Build with Gradle
       run: ./gradlew clean build
-
-    # CD
-
-    # 디렉토리 생성
-    - name: Make Directory
-      run: mkdir -p football
-
-    # Api 서버 Jar 파일 복사
-    - name: Copy Jar
-      run: cp ./football-api-server/build/libs/*.jar ./football
-
-    # Websocket Jar 파일 복사
-    - name: Copy Jar
-      run: cp ./football-websocket-server/build/libs/*.jar ./football
-
-#    - uses: actions/checkout@v2
-#    - name: Run scripts in server
-#      uses: appleboy/ssh-action@master
-#      with:
-#        key: ${{ secrets.SSH_KEY }}
-#        host: ${{ secrets.HOST }}
-#        username: ${{ secrets.USER }}
-#        script: # EC2 서버 접속 후 사용할 커맨드
