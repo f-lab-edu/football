@@ -48,7 +48,7 @@ jobs:
         run: cp ./football-websocket-server/build/libs/*.jar ./football
 
       # 웹소켓 서버(= 배스천 서버)에 생성된 jar 파일이 저장된 폴더를 전송
-      - name: Deliver File
+      - name: Deliver File To Bastion Server
         uses: appleboy/scp-action@master
         with:
           host: ${{ secrets.SSH_WC_HOST }} # 인스턴스 IP 주소
@@ -60,7 +60,7 @@ jobs:
           rm: true
 
       # 배스천 서버에서 api 서버로 jar 파일만 따로 전송
-      - name: Deploy
+      - name: Deliver File To Private Server
         uses: appleboy/ssh-action@master
         with:
           host: ${{ secrets.SSH_WC_HOST }}
@@ -69,3 +69,27 @@ jobs:
           port: ${{ secrets.SSH_PORT }}
           script:
             scp -i ./.ssh/shkim-keypair.cer ./source/football/football-api-server-1.0-SNAPSHOT.jar ${{ secrets.SSH_API_USERNAME }}@${{ secrets.SSH_API_HOST }}:./source/football
+
+      #
+      - name: Run Api Server
+        uses: appleboy/ssh-action@master
+        with:
+          host: ${{ secrets.SSH_WC_HOST }}
+          username: ${{ secrets.SSH_WC_USERNAME }}
+          key: ${{ secrets.SSH_KEY }}
+          port: ${{ secrets.SSH_PORT }}
+          script:
+            ssh api
+  
+            java -jar -Dspring.profiles.active=prod ./source/football/*.jar
+
+      #
+      - name: Run Websocket Server
+        uses: appleboy/ssh-action@master
+        with:
+          host: ${{ secrets.SSH_WC_HOST }}
+          username: ${{ secrets.SSH_WC_USERNAME }}
+          key: ${{ secrets.SSH_KEY }}
+          port: ${{ secrets.SSH_PORT }}
+          script:
+            java -jar -Dspring.profiles.active=prod ./source/football/*-weboscket-*.jar
