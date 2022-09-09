@@ -93,3 +93,19 @@ jobs:
           port: ${{ secrets.SSH_PORT }}
           script:
             java -jar -Dspring.profiles.active=prod ./source/football/*-weboscket-*.jar
+
+#          SOURCE_DIR=source/build/libs
+#          FILE_NAME=`find $SOURCE_DIR/*.jar -printf "%f\n"`
+#          PID=`ps -ef | grep occupying | grep sudo | grep -v "bash -c" | awk '{print $2}'`
+#
+#          if [ -z "$PID" ]; then
+#          echo "#### THERE IS NO PROCESS ####"
+#          else
+#          echo "#### KILL $PID ####"
+#          sudo kill $PID
+#          fi
+#
+#          echo "#### RUN $SOURCE_DIR/$FILE_NAME ####"
+#
+#          sudo java -jar $SOURCE_DIR/$FILE_NAME > /dev/null 2>&1 &
+
