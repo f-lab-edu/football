@@ -8,13 +8,14 @@
 name: Java CD with Gradle
 
 on:
+  # 개발자가 원하는 지점에 배포될 수 있도록 구성
   workflow_dispatch:
 
 permissions:
   contents: read
 
 jobs:
-  build:
+  deploy:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
@@ -46,11 +47,25 @@ jobs:
       - name: Copy Jar
         run: cp ./football-websocket-server/build/libs/*.jar ./football
 
-#    - uses: actions/checkout@v2
-#    - name: Run scripts in server
-#      uses: appleboy/ssh-action@master
-#      with:
-#        key: ${{ secrets.SSH_KEY }}
-#        host: ${{ secrets.HOST }}
-#        username: ${{ secrets.USER }}
-#        script: # EC2 서버 접속 후 사용할 커맨드
+      # 웹소켓 서버(= 배스천 서버)에 생성된 jar 파일이 저장된 폴더를 전송
+      - name: Deliver File
+        uses: appleboy/scp-action@master
+        with:
+          host: ${{ secrets.SSH_WC_HOST }} # 인스턴스 IP 주소
+          username: ${{ secrets.SSH_WC_USERNAME }} # 인스턴스에 지정된 user name(ex. ubuntu, ec2-user 등)
+          key: ${{ secrets.SSH_KEY }} # SSH key의 private key
+          port: ${{ secrets.SSH_PORT }} # port 번호(보통 22 포트 사용)
+          source: "./football"
+          target: "source"
+          rm: true
+
+      # 배스천 서버에서 api 서버로 jar 파일만 따로 전송
+      - name: Deploy
+        uses: appleboy/ssh-action@master
+        with:
+          host: ${{ secrets.SSH_WC_HOST }}
+          username: ${{ secrets.SSH_WC_USERNAME }}
+          key: ${{ secrets.SSH_KEY }}
+          port: ${{ secrets.SSH_PORT }}
+          script:
+            scp -i ./.ssh/shkim-keypair.cer ./source/football/football-api-server-1.0-SNAPSHOT.jar ${{ secrets.SSH_API_USERNAME }}@${{ secrets.SSH_API_HOST }}:./source/football
