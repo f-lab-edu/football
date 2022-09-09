@@ -64,18 +64,8 @@ jobs:
           username: ${{ secrets.WC_SSH_USERNAME }} # user name = ubuntu?
           key: ${{ secrets.SSH_KEY }} # private key
           port: ${{ secrets.SSH_PORT }} # port = 22
-          script: |
-#            SOURCE_DIR=source/build/libs
-#            FILE_NAME=`find $SOURCE_DIR/*.jar -printf "%f\n"`
-#            PID=`ps -ef | grep occupying | grep sudo | grep -v "bash -c" | awk '{print $2}'`
-#
-#            if [ -z "$PID" ]; then
-#                    echo "#### THERE IS NO PROCESS ####"
-#            else
-#                    echo "#### KILL $PID ####"
-#                    sudo kill $PID
-#            fi
-#
-#            echo "#### RUN $SOURCE_DIR/$FILE_NAME ####"
-#
-#            sudo java -jar $SOURCE_DIR/$FILE_NAME > /dev/null 2>&1 &
+          script:
+            scp -i ./.ssh/shkim-keypair.cer ./source/football/football-api-server-1.0-SNAPSHOT.jar ${{ secrets.WC_SSH_USERNAME }}@10.0.74.229:./source/football
+
+
+            # java -jar -Dspring.profiles.active=prod ./source/football/football-websocket-*.jar
