@@ -81,8 +81,8 @@ jobs:
           username: ${{ secrets.SSH_WC_USERNAME }}
           key: ${{ secrets.SSH_KEY }}
           port: ${{ secrets.SSH_PORT }}
-          script: |
-            ssh ./.ssh/shkim-keypair.cer ${{ secrets.SSH_API_USERNAME }}@${{ secrets.SSH_API_HOST }}
+          script:|
+            ssh -i ./.ssh/shkim-keypair.cer ${{ secrets.SSH_API_USERNAME }}@${{ secrets.SSH_API_HOST }}
             
             SOURCE_DIR=./source/football/api
             FILE_NAME=`find $SOURCE_DIR/*.jar -printf "%f\n"`
