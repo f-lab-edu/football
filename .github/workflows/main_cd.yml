@@ -86,7 +86,6 @@ jobs:
           proxy_key: ${{ secrets.SSH_KEY }}
           proxy_port: ${{ secrets.SSH_PORT }}
           script: |
-#            ssh -i ./.ssh/shkim-keypair.cer ${{ secrets.SSH_API_USERNAME }}@${{ secrets.SSH_API_HOST }}
             
             SOURCE_DIR=./source/football/api
             FILE_NAME=`find $SOURCE_DIR/*.jar -printf "%f\n"`
@@ -102,6 +101,8 @@ jobs:
             echo "#### RUN $SOURCE_DIR/$FILE_NAME ####"
 
             sudo java -jar -Dspring.profiles.active=prod $SOURCE_DIR/$FILE_NAME > /dev/null 2>&1 &
+
+#            ssh -i ./.ssh/shkim-keypair.cer ${{ secrets.SSH_API_USERNAME }}@${{ secrets.SSH_API_HOST }}
 
       # websocket 서버 실행
       - name: Run Websocket Server
