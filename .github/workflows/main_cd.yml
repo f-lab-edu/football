@@ -81,7 +81,7 @@ jobs:
           username: ${{ secrets.SSH_WC_USERNAME }}
           key: ${{ secrets.SSH_KEY }}
           port: ${{ secrets.SSH_PORT }}
-          script:|
+          script: |
             ssh -i ./.ssh/shkim-keypair.cer ${{ secrets.SSH_API_USERNAME }}@${{ secrets.SSH_API_HOST }}
             
             SOURCE_DIR=./source/football/api
