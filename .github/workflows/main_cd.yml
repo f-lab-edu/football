@@ -37,7 +37,7 @@ jobs:
 
       # 디렉토리 생성
       - name: Make Directory
-        run: mkdir -p football football/websocket footabll/api
+        run: mkdir -p football football/websocket football/api
 
       # Api 서버 Jar 파일 복사
       - name: Copy Jar
