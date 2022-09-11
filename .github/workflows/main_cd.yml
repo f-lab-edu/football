@@ -82,7 +82,7 @@ jobs:
           key: ${{ secrets.SSH_KEY }}
           port: ${{ secrets.SSH_PORT }}
           script: |
-            ssh -i ./.ssh/shkim-keypair.cer ubuntu@$10.0.74.229
+            ssh -i ./.ssh/shkim-keypair.cer ubuntu@10.0.74.229
 
 #            ssh -i ./.ssh/shkim-keypair.cer ${{ secrets.SSH_API_USERNAME }}@${{ secrets.SSH_API_HOST }}
             
