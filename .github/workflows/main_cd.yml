@@ -37,15 +37,15 @@ jobs:
 
       # 디렉토리 생성
       - name: Make Directory
-        run: mkdir -p football
+        run: mkdir -p football football/websocket footabll/api
 
       # Api 서버 Jar 파일 복사
       - name: Copy Jar
-        run: cp ./football-api-server/build/libs/*.jar ./football
+        run: cp ./football-api-server/build/libs/*.jar ./football/api
 
       # Websocket Jar 파일 복사
       - name: Copy Jar
-        run: cp ./football-websocket-server/build/libs/*.jar ./football
+        run: cp ./football-websocket-server/build/libs/*.jar ./football/websocket
 
       # 웹소켓 서버(= 배스천 서버)에 생성된 jar 파일이 저장된 폴더를 전송
       - name: Deliver File To Bastion Server
@@ -55,7 +55,7 @@ jobs:
           username: ${{ secrets.SSH_WC_USERNAME }} # 인스턴스에 지정된 user name(ex. ubuntu, ec2-user 등)
           key: ${{ secrets.SSH_KEY }} # SSH key의 private key
           port: ${{ secrets.SSH_PORT }} # port 번호(보통 22 포트 사용)
-          source: "./football"
+          source: "./"
           target: "source"
           rm: true
 
@@ -68,9 +68,10 @@ jobs:
           key: ${{ secrets.SSH_KEY }}
           port: ${{ secrets.SSH_PORT }}
           script:
-            scp -i ./.ssh/shkim-keypair.cer ./source/football/football-api-server-1.0-SNAPSHOT.jar ${{ secrets.SSH_API_USERNAME }}@${{ secrets.SSH_API_HOST }}:./source/football
-          
-            rm ./source/football/football-api-server-1.0-SNAPSHOT.jar
+            SOURCE_DIR=./source/football/api
+            FILE_NAME=`find $SOURCE_DIR/*.jar -printf "%f\n"`
+            
+            scp -i ./.ssh/shkim-keypair.cer $SOURCE_DIR/$FILE_NAME ${{ secrets.SSH_API_USERNAME }}@${{ secrets.SSH_API_HOST }}:$SOURCE_DIR
 
       # Api 서버 실행
       - name: Run Api Server
@@ -80,10 +81,11 @@ jobs:
           username: ${{ secrets.SSH_WC_USERNAME }}
           key: ${{ secrets.SSH_KEY }}
           port: ${{ secrets.SSH_PORT }}
-          script: |
-            ssh api
+          script:
+            # api 서버에 접속
+            ssh ./.ssh/shkim-keypair.cer ${{ secrets.SSH_API_USERNAME }}@${{ secrets.SSH_API_HOST }}
             
-            SOURCE_DIR=source/football
+            SOURCE_DIR=./source/football/api
             FILE_NAME=`find $SOURCE_DIR/*.jar -printf "%f\n"`
             PID=`ps -ef | grep occupying | grep sudo | grep -v "bash -c" | awk '{print $2}'`
 
@@ -107,7 +109,7 @@ jobs:
           key: ${{ secrets.SSH_KEY }}
           port: ${{ secrets.SSH_PORT }}
           script: |
-            SOURCE_DIR=source/football/websocket
+            SOURCE_DIR=./source/football/websocket
             FILE_NAME=`find $SOURCE_DIR/*.jar -printf "%f\n"`
             PID=`ps -ef | grep occupying | grep sudo | grep -v "bash -c" | awk '{print $2}'`
 
