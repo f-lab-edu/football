@@ -29,7 +29,7 @@ jobs:
         java-version: '11'
         distribution: 'temurin'
 
-# gradlew 에 대한 권한 설정(?)
+# gradlew 에 대한 권한 설정
     - name: Grant execute permission for gradlew
       run: chmod +x gradlew
 

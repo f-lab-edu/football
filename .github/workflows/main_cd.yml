@@ -27,7 +27,7 @@ jobs:
           java-version: '11'
           distribution: 'temurin'
 
-      # gradlew 에 대한 권한 설정(?)
+      # gradlew 에 대한 권한 설정
       - name: Grant execute permission for gradlew
         run: chmod +x gradlew
 
@@ -59,7 +59,7 @@ jobs:
           target: "source"
           rm: true
 
-      # 배스천 서버에서 api 서버로 jar 파일만 따로 전송
+      # 배스천 서버에 접속해 api 서버로 jar 파일만 따로 전송
       - name: Deliver File To Private Server
         uses: appleboy/ssh-action@master
         with:
@@ -69,8 +69,10 @@ jobs:
           port: ${{ secrets.SSH_PORT }}
           script:
             scp -i ./.ssh/shkim-keypair.cer ./source/football/football-api-server-1.0-SNAPSHOT.jar ${{ secrets.SSH_API_USERNAME }}@${{ secrets.SSH_API_HOST }}:./source/football
+          
+            rm ./source/football/football-api-server-1.0-SNAPSHOT.jar
 
-      #
+      # Api 서버 실행
       - name: Run Api Server
         uses: appleboy/ssh-action@master
         with:
@@ -80,10 +82,23 @@ jobs:
           port: ${{ secrets.SSH_PORT }}
           script:
             ssh api
-  
-            java -jar -Dspring.profiles.active=prod ./source/football/*.jar
+            
+            SOURCE_DIR=source/football
+            FILE_NAME=`find $SOURCE_DIR/*.jar -printf "%f\n"`
+            PID=`ps -ef | grep occupying | grep sudo | grep -v "bash -c" | awk '{print $2}'`
 
-      #
+            if [ -z "$PID" ]; then
+            echo "#### THERE IS NO PROCESS ####"
+            else
+            echo "#### KILL $PID ####"
+            sudo kill $PID
+            fi
+
+            echo "#### RUN $SOURCE_DIR/$FILE_NAME ####"
+
+            sudo java -jar -Dspring.profiles.active=prod $SOURCE_DIR/$FILE_NAME > /dev/null 2>&1 &
+
+      # websocket 서버 실행
       - name: Run Websocket Server
         uses: appleboy/ssh-action@master
         with:
@@ -92,20 +107,17 @@ jobs:
           key: ${{ secrets.SSH_KEY }}
           port: ${{ secrets.SSH_PORT }}
           script:
-            java -jar -Dspring.profiles.active=prod ./source/football/*-weboscket-*.jar
+            SOURCE_DIR=source/football/websocket
+            FILE_NAME=`find $SOURCE_DIR/*.jar -printf "%f\n"`
+            PID=`ps -ef | grep occupying | grep sudo | grep -v "bash -c" | awk '{print $2}'`
 
-#            SOURCE_DIR=source/build/libs
-#            FILE_NAME=`find $SOURCE_DIR/*.jar -printf "%f\n"`
-#            PID=`ps -ef | grep occupying | grep sudo | grep -v "bash -c" | awk '{print $2}'`
-#
-#            if [ -z "$PID" ]; then
-#            echo "#### THERE IS NO PROCESS ####"
-#            else
-#            echo "#### KILL $PID ####"
-#            sudo kill $PID
-#            fi
-#
-#            echo "#### RUN $SOURCE_DIR/$FILE_NAME ####"
-#
-#            sudo java -jar $SOURCE_DIR/$FILE_NAME > /dev/null 2>&1 &
+            if [ -z "$PID" ]; then
+            echo "#### THERE IS NO PROCESS ####"
+            else
+            echo "#### KILL $PID ####"
+            sudo kill $PID
+            fi
 
+            echo "#### RUN $SOURCE_DIR/$FILE_NAME ####"
+
+            sudo java -jar -Dspring.profiles.active=prod $SOURCE_DIR/$FILE_NAME > /dev/null 2>&1 &
