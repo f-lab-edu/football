@@ -82,24 +82,22 @@ jobs:
           key: ${{ secrets.SSH_KEY }}
           port: ${{ secrets.SSH_PORT }}
           script: |
-            ssh -i ./.ssh/shkim-keypair.cer ubuntu@10.0.74.229
-
-#            ssh -i ./.ssh/shkim-keypair.cer ${{ secrets.SSH_API_USERNAME }}@${{ secrets.SSH_API_HOST }}
+            ssh -i ./.ssh/shkim-keypair.cer ${{ secrets.SSH_API_USERNAME }}@${{ secrets.SSH_API_HOST }}
             
-#            SOURCE_DIR=./source/football/api
-#            FILE_NAME=`find $SOURCE_DIR/*.jar -printf "%f\n"`
-#            PID=`ps -ef | grep occupying | grep sudo | grep -v "bash -c" | awk '{print $2}'`
-#
-#            if [ -z "$PID" ]; then
-#            echo "#### THERE IS NO PROCESS ####"
-#            else
-#            echo "#### KILL $PID ####"
-#            sudo kill $PID
-#            fi
-#
-#            echo "#### RUN $SOURCE_DIR/$FILE_NAME ####"
-#
-#            sudo java -jar -Dspring.profiles.active=prod $SOURCE_DIR/$FILE_NAME > /dev/null 2>&1 &
+            SOURCE_DIR=./source/football/api
+            FILE_NAME=`find $SOURCE_DIR/*.jar -printf "%f\n"`
+            PID=`ps -ef | grep occupying | grep sudo | grep -v "bash -c" | awk '{print $2}'`
+
+            if [ -z "$PID" ]; then
+            echo "#### THERE IS NO PROCESS ####"
+            else
+            echo "#### KILL $PID ####"
+            sudo kill $PID
+            fi
+
+            echo "#### RUN $SOURCE_DIR/$FILE_NAME ####"
+
+            sudo java -jar -Dspring.profiles.active=prod $SOURCE_DIR/$FILE_NAME > /dev/null 2>&1 &
 
       # websocket 서버 실행
       - name: Run Websocket Server
