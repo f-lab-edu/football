@@ -77,14 +77,15 @@ jobs:
       - name: Run Api Server
         uses: appleboy/ssh-action@master
         with:
-          host: ${{ secrets.SSH_WC_HOST }}
-          username: ${{ secrets.SSH_WC_USERNAME }}
-          key: ${{ secrets.SSH_KEY }}
-          port: ${{ secrets.SSH_PORT }}
-          proxy_host: ${{ secrets.SSH_API_HOST }}
-          proxy_username: ${{ secrets.SSH_API_USERNAME }}
-          proxy_key: ${{ secrets.SSH_KEY }}
-          proxy_port: ${{ secrets.SSH_PORT }}
+          host: ${{ secrets.SSH_API_HOST }} # private IP
+          username: ${{ secrets.SSH_API_USERNAME }} # ubuntu
+          key: ${{ secrets.SSH_KEY }} # private key
+          port: ${{ secrets.SSH_PORT }} # 22
+
+          proxy_host: ${{ secrets.SSH_WC_HOST }} # public IP
+          proxy_username: ${{ secrets.SSH_WC_USERNAME }} # ubuntu
+          proxy_key: ${{ secrets.SSH_KEY }} # private key
+          proxy_port: ${{ secrets.SSH_PORT }} # 22
           script: |
             
             SOURCE_DIR=./source/football/api
