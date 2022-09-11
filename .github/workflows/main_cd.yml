@@ -40,11 +40,11 @@ jobs:
         run: mkdir -p football football/websocket football/api
 
       # Api 서버 Jar 파일 복사
-      - name: Copy Jar
+      - name: Copy Api Jar
         run: cp ./football-api-server/build/libs/*.jar ./football/api
 
       # Websocket Jar 파일 복사
-      - name: Copy Jar
+      - name: Copy Websocket Jar
         run: cp ./football-websocket-server/build/libs/*.jar ./football/websocket
 
       # 웹소켓 서버(= 배스천 서버)에 생성된 jar 파일이 저장된 폴더를 전송
@@ -82,9 +82,10 @@ jobs:
           key: ${{ secrets.SSH_KEY }}
           port: ${{ secrets.SSH_PORT }}
           script: |
-            ssh -i ./.ssh/shkim-keypair.cer ${{ secrets.SSH_API_USERNAME }}@${{ secrets.SSH_API_HOST }}
+            ssh -i ./.ssh/shkim-keypair.cer ubuntu@$10.0.74.229
+
+#            ssh -i ./.ssh/shkim-keypair.cer ${{ secrets.SSH_API_USERNAME }}@${{ secrets.SSH_API_HOST }}
             
-            echo "is this api server?"
 #            SOURCE_DIR=./source/football/api
 #            FILE_NAME=`find $SOURCE_DIR/*.jar -printf "%f\n"`
 #            PID=`ps -ef | grep occupying | grep sudo | grep -v "bash -c" | awk '{print $2}'`
