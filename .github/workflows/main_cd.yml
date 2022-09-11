@@ -80,23 +80,23 @@ jobs:
           username: ${{ secrets.SSH_WC_USERNAME }}
           key: ${{ secrets.SSH_KEY }}
           port: ${{ secrets.SSH_PORT }}
-          script:
+          script: |
             ssh api
             
-#            SOURCE_DIR=source/football
-#            FILE_NAME=`find $SOURCE_DIR/*.jar -printf "%f\n"`
-#            PID=`ps -ef | grep occupying | grep sudo | grep -v "bash -c" | awk '{print $2}'`
-#
-#            if [ -z "$PID" ]; then
-#            echo "#### THERE IS NO PROCESS ####"
-#            else
-#            echo "#### KILL $PID ####"
-#            sudo kill $PID
-#            fi
-#
-#            echo "#### RUN $SOURCE_DIR/$FILE_NAME ####"
-#
-#            sudo java -jar -Dspring.profiles.active=prod $SOURCE_DIR/$FILE_NAME > /dev/null 2>&1 &
+            SOURCE_DIR=source/football
+            FILE_NAME=`find $SOURCE_DIR/*.jar -printf "%f\n"`
+            PID=`ps -ef | grep occupying | grep sudo | grep -v "bash -c" | awk '{print $2}'`
+
+            if [ -z "$PID" ]; then
+            echo "#### THERE IS NO PROCESS ####"
+            else
+            echo "#### KILL $PID ####"
+            sudo kill $PID
+            fi
+
+            echo "#### RUN $SOURCE_DIR/$FILE_NAME ####"
+
+            sudo java -jar -Dspring.profiles.active=prod $SOURCE_DIR/$FILE_NAME > /dev/null 2>&1 &
 
       # websocket 서버 실행
       - name: Run Websocket Server
@@ -106,18 +106,18 @@ jobs:
           username: ${{ secrets.SSH_WC_USERNAME }}
           key: ${{ secrets.SSH_KEY }}
           port: ${{ secrets.SSH_PORT }}
-          script:
-#            SOURCE_DIR=source/football/websocket
-#            FILE_NAME=`find $SOURCE_DIR/*.jar -printf "%f\n"`
-#            PID=`ps -ef | grep occupying | grep sudo | grep -v "bash -c" | awk '{print $2}'`
-#
-#            if [ -z "$PID" ]; then
-#            echo "#### THERE IS NO PROCESS ####"
-#            else
-#            echo "#### KILL $PID ####"
-#            sudo kill $PID
-#            fi
-#
-#            echo "#### RUN $SOURCE_DIR/$FILE_NAME ####"
-#
-#            sudo java -jar -Dspring.profiles.active=prod $SOURCE_DIR/$FILE_NAME > /dev/null 2>&1 &
+          script: |
+            SOURCE_DIR=source/football/websocket
+            FILE_NAME=`find $SOURCE_DIR/*.jar -printf "%f\n"`
+            PID=`ps -ef | grep occupying | grep sudo | grep -v "bash -c" | awk '{print $2}'`
+
+            if [ -z "$PID" ]; then
+            echo "#### THERE IS NO PROCESS ####"
+            else
+            echo "#### KILL $PID ####"
+            sudo kill $PID
+            fi
+
+            echo "#### RUN $SOURCE_DIR/$FILE_NAME ####"
+
+            sudo java -jar -Dspring.profiles.active=prod $SOURCE_DIR/$FILE_NAME > /dev/null 2>&1 &
