@@ -81,8 +81,12 @@ jobs:
           username: ${{ secrets.SSH_WC_USERNAME }}
           key: ${{ secrets.SSH_KEY }}
           port: ${{ secrets.SSH_PORT }}
+          proxy_host: ${{ secrets.SSH_API_HOST }}
+          proxy_username: ${{ secrets.SSH_API_USERNAME }}
+          proxy_key: ${{ secrets.SSH_KEY }}
+          proxy_port: ${{ secrets.SSH_PORT }}
           script: |
-            ssh -i ./.ssh/shkim-keypair.cer ${{ secrets.SSH_API_USERNAME }}@${{ secrets.SSH_API_HOST }}
+#            ssh -i ./.ssh/shkim-keypair.cer ${{ secrets.SSH_API_USERNAME }}@${{ secrets.SSH_API_HOST }}
             
             SOURCE_DIR=./source/football/api
             FILE_NAME=`find $SOURCE_DIR/*.jar -printf "%f\n"`
