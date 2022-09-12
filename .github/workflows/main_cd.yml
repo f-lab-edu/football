@@ -27,7 +27,7 @@ jobs:
           java-version: '11'
           distribution: 'temurin'
 
-      # gradlew 에 대한 권한 설정(?)
+      # gradlew 에 대한 권한 설정
       - name: Grant execute permission for gradlew
         run: chmod +x gradlew
 
@@ -37,30 +37,30 @@ jobs:
 
       # 디렉토리 생성
       - name: Make Directory
-        run: mkdir -p football
+        run: mkdir -p football football/websocket football/api
 
-      # Api 서버 Jar 파일 복사
-      - name: Copy Jar
-        run: cp ./football-api-server/build/libs/*.jar ./football
+      # Api Jar 파일 복사
+      - name: Copy Api Jar
+        run: cp ./football-api-server/build/libs/*.jar ./football/api
 
       # Websocket Jar 파일 복사
-      - name: Copy Jar
-        run: cp ./football-websocket-server/build/libs/*.jar ./football
+      - name: Copy Websocket Jar
+        run: cp ./football-websocket-server/build/libs/*.jar ./football/websocket
 
-      # 웹소켓 서버(= 배스천 서버)에 생성된 jar 파일이 저장된 폴더를 전송
-      - name: Deliver File
+      # 웹소켓 서버(= 배스천 서버)로 생성된 api jar 파일이 저장된 폴더를 전송
+      - name: Deliver File To Bastion Server
         uses: appleboy/scp-action@master
         with:
           host: ${{ secrets.SSH_WC_HOST }} # 인스턴스 IP 주소
           username: ${{ secrets.SSH_WC_USERNAME }} # 인스턴스에 지정된 user name(ex. ubuntu, ec2-user 등)
           key: ${{ secrets.SSH_KEY }} # SSH key의 private key
           port: ${{ secrets.SSH_PORT }} # port 번호(보통 22 포트 사용)
-          source: "./football"
+          source: "./"
           target: "source"
           rm: true
 
-      # 배스천 서버에서 api 서버로 jar 파일만 따로 전송
-      - name: Deploy
+      # 배스천 서버에 접속해 api 서버로 jar 파일만 따로 전송
+      - name: Deliver File To Private Server
         uses: appleboy/ssh-action@master
         with:
           host: ${{ secrets.SSH_WC_HOST }}
@@ -68,4 +68,61 @@ jobs:
           key: ${{ secrets.SSH_KEY }}
           port: ${{ secrets.SSH_PORT }}
           script:
-            scp -i ./.ssh/shkim-keypair.cer ./source/football/football-api-server-1.0-SNAPSHOT.jar ${{ secrets.SSH_API_USERNAME }}@${{ secrets.SSH_API_HOST }}:./source/football
+            SOURCE_DIR=./source/football/api
+            FILE_NAME=`find $SOURCE_DIR/*.jar -printf "%f\n"`
+            
+            scp -i ./.ssh/shkim-keypair.cer $SOURCE_DIR/$FILE_NAME ${{ secrets.SSH_API_USERNAME }}@${{ secrets.SSH_API_HOST }}:$SOURCE_DIR
+
+      # Api 서버 접속 및 실행
+      - name: Run Api Server
+        uses: appleboy/ssh-action@master
+        with:
+          # 접속할 private 서버 관련 변수
+          host: ${{ secrets.SSH_API_HOST }}
+          username: ${{ secrets.SSH_API_USERNAME }}
+          key: ${{ secrets.SSH_KEY }}
+          port: ${{ secrets.SSH_PORT }}
+          # 배스천 서버 관련 변수
+          proxy_host: ${{ secrets.SSH_WC_HOST }}
+          proxy_username: ${{ secrets.SSH_WC_USERNAME }}
+          proxy_key: ${{ secrets.SSH_KEY }}
+          proxy_port: ${{ secrets.SSH_PORT }}
+          script: |
+            SOURCE_DIR=./source/football/api
+            FILE_NAME=`find $SOURCE_DIR/*.jar -printf "%f\n"`
+            PID=`ps -ef | grep occupying | grep sudo | grep -v "bash -c" | awk '{print $2}'`
+
+            if [ -z "$PID" ]; then
+            echo "#### THERE IS NO PROCESS ####"
+            else
+            echo "#### KILL $PID ####"
+            sudo kill $PID
+            fi
+
+            echo "#### RUN $SOURCE_DIR/$FILE_NAME ####"
+
+            sudo java -jar -Dspring.profiles.active=prod $SOURCE_DIR/$FILE_NAME > /dev/null 2>&1 &
+
+      # websocket 서버 접속 및 실행
+      - name: Run Websocket Server
+        uses: appleboy/ssh-action@master
+        with:
+          host: ${{ secrets.SSH_WC_HOST }}
+          username: ${{ secrets.SSH_WC_USERNAME }}
+          key: ${{ secrets.SSH_KEY }}
+          port: ${{ secrets.SSH_PORT }}
+          script: |
+            SOURCE_DIR=./source/football/websocket
+            FILE_NAME=`find $SOURCE_DIR/*.jar -printf "%f\n"`
+            PID=`ps -ef | grep occupying | grep sudo | grep -v "bash -c" | awk '{print $2}'`
+
+            if [ -z "$PID" ]; then
+            echo "#### THERE IS NO PROCESS ####"
+            else
+            echo "#### KILL $PID ####"
+            sudo kill $PID
+            fi
+
+            echo "#### RUN $SOURCE_DIR/$FILE_NAME ####"
+
+            sudo java -jar -Dspring.profiles.active=prod $SOURCE_DIR/$FILE_NAME > /dev/null 2>&1 &
