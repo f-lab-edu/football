@@ -2,7 +2,7 @@ server:
   port: 9000
   host:
     api: localhost:9090
-    websocket:
+    chatting:
       public: localhost:9000
       private: localhost:9000
 

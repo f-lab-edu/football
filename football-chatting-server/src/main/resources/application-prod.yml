@@ -2,8 +2,8 @@ server:
   port: 8000
   host:
     api: football-lb-app-1899246839.ap-northeast-2.elb.amazonaws.com
-    websocket:
-      public: 3.39.254.213:8000
+    chatting:
+      public: 43.201.5.143:8000
       private: 10.0.11.55:8000
 
 jwt:
