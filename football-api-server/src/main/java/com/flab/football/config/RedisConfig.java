@@ -44,13 +44,13 @@ public class RedisConfig {
   @Bean
   public RedisConnectionFactory redisConnectionFactory() {
 
-    LettuceClientConfiguration clientConfiguration = LettuceClientConfiguration.builder()
-        .readFrom(ReadFrom.REPLICA_PREFERRED) // Slave 노드에 우선으로 접근
-        .build();
-    RedisClusterConfiguration redisClusterConfig = new RedisClusterConfiguration(nodes);
-    return new LettuceConnectionFactory(redisClusterConfig, clientConfiguration);
+//    LettuceClientConfiguration clientConfiguration = LettuceClientConfiguration.builder()
+//        .readFrom(ReadFrom.REPLICA_PREFERRED) // Slave 노드에 우선으로 접근
+//        .build();
+//    RedisClusterConfiguration redisClusterConfig = new RedisClusterConfiguration(nodes);
+//    return new LettuceConnectionFactory(redisClusterConfig, clientConfiguration);
 
-//    return new LettuceConnectionFactory(redisHost, redisPort);
+    return new LettuceConnectionFactory(redisHost, redisPort);
 
   }
 
