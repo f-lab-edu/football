@@ -25,10 +25,10 @@ import org.springframework.data.redis.serializer.StringRedisSerializer;
 @Getter
 @Setter
 @Configuration
-//@ConfigurationProperties(prefix = "spring.redis.cluster")
+@ConfigurationProperties(prefix = "spring.redis.cluster")
 public class RedisConfig {
 
-  //private List<String> nodes;
+  private List<String> nodes;
 
   @Value("${spring.redis.host}")
   private String redisHost;
@@ -44,15 +44,13 @@ public class RedisConfig {
   @Bean
   public RedisConnectionFactory redisConnectionFactory() {
 
-    /*
     LettuceClientConfiguration clientConfiguration = LettuceClientConfiguration.builder()
         .readFrom(ReadFrom.REPLICA_PREFERRED) // Slave 노드에 우선으로 접근
         .build();
     RedisClusterConfiguration redisClusterConfig = new RedisClusterConfiguration(nodes);
     return new LettuceConnectionFactory(redisClusterConfig, clientConfiguration);
-     */
 
-    return new LettuceConnectionFactory(redisHost, redisPort);
+//    return new LettuceConnectionFactory(redisHost, redisPort);
 
   }
 

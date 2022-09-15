@@ -47,7 +47,7 @@ project(':football-api-server') {
 	jar { enabled = false }
 }
 
-project(':football-websocket-server') {
+project(':football-chatting-server') {
 	bootJar { enabled = true }
 	jar { enabled = false }
 }
