@@ -16,8 +16,8 @@ public class HeartBeatServiceImpl implements HeartBeatService {
 
   private final SessionService sessionService;
 
-  @Value("${server.host.websocket.public}")
-  private String publicWebsocketAddress;
+  @Value("${server.host.chatting.public}")
+  private String publicChattingServerAddress;
 
   @Value("${server.host.api}")
   private String apiAddress;
@@ -25,7 +25,7 @@ public class HeartBeatServiceImpl implements HeartBeatService {
   public void sendHeartBeat() {
 
     HeartBeatRequest request = HeartBeatRequest.builder()
-        .address(publicWebsocketAddress)
+        .address(publicChattingServerAddress)
         .connectionCount(sessionService.getSessionCount())
         .heartBeatTime(LocalDateTime.now())
         .build();

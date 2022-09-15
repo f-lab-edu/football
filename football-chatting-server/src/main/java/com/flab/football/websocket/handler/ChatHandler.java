@@ -29,8 +29,8 @@ public class ChatHandler extends TextWebSocketHandler {
   @Value("${server.host.api}")
   private String apiAddress;
 
-  @Value("${server.host.websocket.private}")
-  private String privateWebsocketAddress;
+  @Value("${server.host.chatting.private}")
+  private String privateChattingServerAddress;
 
   /**
    * Client가 접속 시 호출되는 메서드.
@@ -47,7 +47,7 @@ public class ChatHandler extends TextWebSocketHandler {
         "http://" + apiAddress + "/chat/save/connect/info",
         SaveConnectInfoRequest.builder()
             .userId(userId)
-            .address(privateWebsocketAddress)
+            .address(privateChattingServerAddress)
             .build(),
         SaveConnectInfoRequest.class
     );

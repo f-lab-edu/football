@@ -37,15 +37,15 @@ jobs:
 
       # 디렉토리 생성
       - name: Make Directory
-        run: mkdir -p football football/websocket football/api
+        run: mkdir -p football football/chatting football/api
 
       # Api Jar 파일 복사
       - name: Copy Api Jar
         run: cp ./football-api-server/build/libs/*.jar ./football/api
 
-      # Websocket Jar 파일 복사
-      - name: Copy Websocket Jar
-        run: cp ./football-websocket-server/build/libs/*.jar ./football/websocket
+      # chatting Jar 파일 복사
+      - name: Copy chatting Jar
+        run: cp ./football-chatting-server/build/libs/*.jar ./football/chatting
 
       # 웹소켓 서버(= 배스천 서버)로 생성된 api jar 파일이 저장된 폴더를 전송
       - name: Deliver File To Bastion Server
@@ -103,8 +103,8 @@ jobs:
 
             sudo java -jar -Dspring.profiles.active=prod $SOURCE_DIR/$FILE_NAME > /dev/null 2>&1 &
 
-      # websocket 서버 접속 및 실행
-      - name: Run Websocket Server
+      # chatting 서버 접속 및 실행
+      - name: Run chatting Server
         uses: appleboy/ssh-action@master
         with:
           host: ${{ secrets.SSH_WC_HOST }}
@@ -112,7 +112,7 @@ jobs:
           key: ${{ secrets.SSH_KEY }}
           port: ${{ secrets.SSH_PORT }}
           script: |
-            SOURCE_DIR=./source/football/websocket
+            SOURCE_DIR=./source/football/chatting
             FILE_NAME=`find $SOURCE_DIR/*.jar -printf "%f\n"`
             PID=`ps -ef | grep occupying | grep sudo | grep -v "bash -c" | awk '{print $2}'`
 
