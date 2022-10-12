@@ -6,10 +6,6 @@ package com.flab.football.exception;
 
 public class NotLogInBrowserException extends RuntimeException {
 
-  /**
-   *.
-   */
-
   public NotLogInBrowserException(String message) {
 
     super(message);

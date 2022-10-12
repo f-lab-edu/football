@@ -6,10 +6,6 @@ package com.flab.football.exception;
 
 public class NotValidPasswordException extends RuntimeException {
 
-  /**
-   *.
-   */
-
   public NotValidPasswordException(String message) {
 
     super(message);

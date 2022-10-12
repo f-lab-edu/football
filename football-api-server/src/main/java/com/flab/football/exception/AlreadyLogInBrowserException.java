@@ -6,10 +6,6 @@ package com.flab.football.exception;
 
 public class AlreadyLogInBrowserException extends RuntimeException {
 
-  /**
-   * .
-   */
-
   public AlreadyLogInBrowserException(String message) {
 
     super(message);

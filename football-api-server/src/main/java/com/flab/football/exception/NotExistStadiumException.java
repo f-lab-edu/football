@@ -6,10 +6,6 @@ package com.flab.football.exception;
 
 public class NotExistStadiumException extends RuntimeException {
 
-  /**
-   * .
-   */
-
   public NotExistStadiumException(String message) {
 
     super(message);

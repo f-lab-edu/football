@@ -6,10 +6,6 @@ package com.flab.football.exception;
 
 public class AlreadyManagerRoleException extends RuntimeException {
 
-  /**
-   * .
-   */
-
   public AlreadyManagerRoleException(String message) {
 
     super(message);
