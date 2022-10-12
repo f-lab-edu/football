@@ -26,20 +26,20 @@
 ### 📎 다른 설계 도안이 궁금하다면?
 - **아키텍처 설계 도안**
 
-  ➡️ [링크](https://github.com/f-lab-edu/football/wiki/Application-Architecture)로 이동해주세요.
+  ➡️ [링크](https://github.com/kimcno3/football/wiki/Application-Architecture)로 이동해주세요.
 
 - **AWS 인프라스트럭처 도안**
 
-  ➡️ [링크](https://github.com/f-lab-edu/football/wiki/AWS-InfraStructure)로 이동해주세요.
+  ➡️ [링크](https://github.com/kimcno3/football/wiki/AWS-InfraStructure)로 이동해주세요.
 
 ## 📌 ERD
 ![football_add_chat](https://user-images.githubusercontent.com/77563468/179156877-057c161e-eab5-4d0f-afdf-554781360aa8.png)
 
 ## 📌 Use Case
-> [상세 설명](https://github.com/f-lab-edu/football/wiki/Use-Case) 페이지로 이동해주세요
+> [상세 설명](https://github.com/kimcno3/football/wiki/Use-Case) 페이지로 이동해주세요
 
 ## 📌 Trouble Shooting
-> 모든 트러블 슈팅 내용이 궁금하다면! [링크](https://github.com/f-lab-edu/football/wiki/Trouble-Shooting)로 이동해주세요.
+> 모든 트러블 슈팅 내용이 궁금하다면! [링크](https://github.com/kimcno3/football/wiki/Trouble-Shooting)로 이동해주세요.
 
 ### ‼️ 핵심 트러블 슈팅
 - **Scale Out을 고려한 아키텍처 설계** ➡️ [상세설명](https://kimcno3.github.io/f-lab/2022/09/19/Scale-Out%EC%9D%84-%EA%B3%A0%EB%A0%A4%ED%95%9C-%EC%95%84%ED%82%A4%ED%85%8D%EC%B2%98-%EC%84%A4%EA%B3%84.html)
