@@ -6,10 +6,6 @@ package com.flab.football.exception;
 
 public class AlreadyExistEmailException extends RuntimeException {
 
-  /**
-   * .
-   */
-
   public AlreadyExistEmailException(String message) {
 
     super(message);

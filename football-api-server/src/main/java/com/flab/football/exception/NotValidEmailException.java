@@ -6,10 +6,6 @@ package com.flab.football.exception;
 
 public class NotValidEmailException extends RuntimeException {
 
-  /**
-   *.
-   */
-
   public NotValidEmailException(String message) {
 
     super(message);

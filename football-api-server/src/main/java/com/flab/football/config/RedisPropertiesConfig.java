@@ -13,6 +13,7 @@ import org.springframework.context.annotation.Configuration;
  * Redis 구성을 위한 현경 변수 설정 클래스
  *
  * 해당 클래스는 Setter를 사용하지 않고 Application.yml 파일 내에 환경 변수 값을 immutable하게 호출해 오기 위해 추가했습니다.
+ *
  * 주요 어노테이션 설명
    * `@EnableConfigurationProperties(value = RedisProperties.class)` : RedisProperties 객체를 Bean 등록하기 위한 어노테이션
    * `@ConstructorBinding` : 생성자 주입 방식으로 환경변수를 가져오기 위한 어노테이션

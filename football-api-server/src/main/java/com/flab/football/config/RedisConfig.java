@@ -31,7 +31,7 @@ public class RedisConfig {
   public RedisConnectionFactory redisConnectionFactory() {
 
 //    LettuceClientConfiguration clientConfiguration = LettuceClientConfiguration.builder()
-//        .readFrom(ReadFrom.REPLICA_PREFERRED) // Slave 노드에 우선으로 접근
+//        .readFrom(ReadFrom.REPLICA_PREFERRED)
 //        .build();
 //    RedisClusterConfiguration redisClusterConfig = new RedisClusterConfiguration(properties.getNodes());
 //    return new LettuceConnectionFactory(redisClusterConfig, clientConfiguration);

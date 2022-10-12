@@ -1,8 +1,6 @@
 package com.flab.football.controller.request;
 
-import com.flab.football.service.chat.command.CreateChannelCommand;
 import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
