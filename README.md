@@ -42,9 +42,9 @@
 > 모든 트러블 슈팅 내용이 궁금하다면! [링크](https://github.com/kimcno3/football/wiki/Trouble-Shooting)로 이동해주세요.
 
 ### ‼️ 핵심 트러블 슈팅
-- **Scale Out을 고려한 아키텍처 설계** ➡️ [상세설명]()
+- **Scale Out을 고려한 아키텍처 설계** ➡️ [상세설명](https://kimcno3.github.io/posts/Scale-Out%EC%9D%84-%EA%B3%A0%EB%A0%A4%ED%95%9C-%EC%95%84%ED%82%A4%ED%85%8D%EC%B2%98-%EC%84%A4%EA%B3%84/)
 
-- **AWS를 활용한 배포 환경 구성** ➡️ [상세설명](https://kimcno3.github.io/posts/Scale-Out%EC%9D%84-%EA%B3%A0%EB%A0%A4%ED%95%9C-%EC%95%84%ED%82%A4%ED%85%8D%EC%B2%98-%EC%84%A4%EA%B3%84/)
+- **AWS를 활용한 배포 환경 구성** ➡️ [상세설명](https://kimcno3.github.io/posts/AWS%EB%A5%BC-%ED%99%9C%EC%9A%A9%ED%95%9C-%EB%B0%B0%ED%8F%AC-%ED%99%98%EA%B2%BD-%EA%B5%AC%EC%84%B1/)
 
 - **멀티 모듈 구조를 통한 서비스 단위 서버 구분** ➡️ [상세설명](https://kimcno3.github.io/posts/%EB%A9%80%ED%8B%B0-%EB%AA%A8%EB%93%88-%EA%B5%AC%EC%A1%B0%EB%A5%BC-%ED%86%B5%ED%95%9C-%EC%84%9C%EB%B9%84%EC%8A%A4-%EB%8B%A8%EC%9C%84-%EC%84%9C%EB%B2%84-%EA%B5%AC%EB%B6%84/)
 
