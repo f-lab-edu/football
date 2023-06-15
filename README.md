@@ -42,13 +42,13 @@
 > 모든 트러블 슈팅 내용이 궁금하다면! [링크](https://github.com/kimcno3/football/wiki/Trouble-Shooting)로 이동해주세요.
 
 ### ‼️ 핵심 트러블 슈팅
-- **Scale Out을 고려한 아키텍처 설계** ➡️ [상세설명](https://kimcno3.github.io/f-lab/2022/09/19/Scale-Out%EC%9D%84-%EA%B3%A0%EB%A0%A4%ED%95%9C-%EC%95%84%ED%82%A4%ED%85%8D%EC%B2%98-%EC%84%A4%EA%B3%84.html)
+- **Scale Out을 고려한 아키텍처 설계** ➡️ [상세설명]()
 
-- **AWS를 활용한 배포 환경 구성** ➡️ [상세설명](https://kimcno3.github.io/f-lab/2022/09/20/AWS%EB%A5%BC-%ED%99%9C%EC%9A%A9%ED%95%9C-%EB%B0%B0%ED%8F%AC-%ED%99%98%EA%B2%BD-%EA%B5%AC%EC%84%B1.html)
+- **AWS를 활용한 배포 환경 구성** ➡️ [상세설명](https://kimcno3.github.io/posts/Scale-Out%EC%9D%84-%EA%B3%A0%EB%A0%A4%ED%95%9C-%EC%95%84%ED%82%A4%ED%85%8D%EC%B2%98-%EC%84%A4%EA%B3%84/)
 
-- **멀티 모듈 구조를 통한 서비스 단위 서버 구분** ➡️ [상세설명](https://kimcno3.github.io/f-lab/2022/09/12/%EB%A9%80%ED%8B%B0-%EB%AA%A8%EB%93%88-%EA%B5%AC%EC%A1%B0%EB%A5%BC-%ED%86%B5%ED%95%9C-%EC%84%9C%EB%B9%84%EC%8A%A4-%EB%8B%A8%EC%9C%84-%EC%84%9C%EB%B2%84-%EA%B5%AC%EB%B6%84.html)
+- **멀티 모듈 구조를 통한 서비스 단위 서버 구분** ➡️ [상세설명](https://kimcno3.github.io/posts/%EB%A9%80%ED%8B%B0-%EB%AA%A8%EB%93%88-%EA%B5%AC%EC%A1%B0%EB%A5%BC-%ED%86%B5%ED%95%9C-%EC%84%9C%EB%B9%84%EC%8A%A4-%EB%8B%A8%EC%9C%84-%EC%84%9C%EB%B2%84-%EA%B5%AC%EB%B6%84/)
 
-- **Github Actions를 활용한 CI/CD 구조 설계** ➡️ [상세설명](https://kimcno3.github.io/f-lab/2022/09/13/Github-Actions%EB%A5%BC-%ED%99%9C%EC%9A%A9%ED%95%9C-CI-CD.html)
+- **Github Actions를 활용한 CI/CD 구조 설계** ➡️ [상세설명](https://kimcno3.github.io/posts/Github-Actions%EB%A5%BC-%ED%99%9C%EC%9A%A9%ED%95%9C-CI-CD/)
 
-- **JPA를 활용한 객체 지향적인 설계를 위한 고민** ➡️ [상세설명](https://kimcno3.github.io/f-lab/2022/08/19/JPA%EB%A5%BC-%ED%99%9C%EC%9A%A9%ED%95%9C-%EA%B0%9D%EC%B2%B4-%EC%A7%80%ED%96%A5%EC%A0%81%EC%9D%B8-%EC%84%A4%EA%B3%84%EB%A5%BC-%EC%9C%84%ED%95%9C-%EA%B3%A0%EB%AF%BC.html)
+- **JPA를 활용한 객체 지향적인 설계를 위한 고민** ➡️ [상세설명](https://kimcno3.github.io/posts/JPA%EB%A5%BC-%ED%99%9C%EC%9A%A9%ED%95%9C-%EA%B0%9D%EC%B2%B4-%EC%A7%80%ED%96%A5%EC%A0%81%EC%9D%B8-%EC%84%A4%EA%B3%84%EB%A5%BC-%EC%9C%84%ED%95%9C-%EA%B3%A0%EB%AF%BC/)
 
