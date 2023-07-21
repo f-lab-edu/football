@@ -87,7 +87,7 @@ public class ChatServiceImpl implements ChatService {
     Channel channel = channelRepository.findById(channelId)
         .orElseThrow(() -> new RuntimeException("채팅방 정보가 존재하지 않습니다."));
 
-    User user = userRepository.findById(sendUserId)
+    User sendUser = userRepository.findById(sendUserId)
         .orElseThrow(() -> new RuntimeException("회원 정보가 존재하지 않습니다."));
 
     Message message = Message.builder()
@@ -95,29 +95,35 @@ public class ChatServiceImpl implements ChatService {
         .content(content)
         .createAt(LocalDateTime.now())
         .channel(channel)
-        .user(user)
+        .user(sendUser)
         .build();
 
     messageRepository.save(message);
 
-    List<Integer> userIdList = findMessageReceivers(channelId);
+    List<Participant> participants = channel.getParticipants(); // 조회 쿼리문 실행, 지연 로딩으로 N+1쿼리 발생 X
 
-    for (int receiveUserId : userIdList) {
+//    List<Participant> participants = participantRepository.findAllByChannelIdFetchJoin(channelId); // fetch join 사용
+
+    participants.forEach(participant -> {
+
+      int receiveUserId = participant.getUser().getId(); // 프록시 객체에서 엔티티 객체로 바로 접근해 N+1쿼리 발생 X
+
+//      int receiveUserId = participant.getUserId(); // 그래서 외래키값을 그대로 가져오도록 엔티티 클래스를 수정
 
       if (receiveUserId != sendUserId) {
 
         PushMessageCommand command = PushMessageCommand.builder()
-            .channelId(channelId)
-            .sendUserId(sendUserId)
-            .receiveUserId(receiveUserId)
-            .content(content)
-            .build();
+                .channelId(channelId)
+                .sendUserId(sendUserId)
+                .receiveUserId(receiveUserId)
+                .content(content)
+                .build();
 
         chatPushService.pushMessage(command);
 
       }
 
-    }
+    });
 
   }
 

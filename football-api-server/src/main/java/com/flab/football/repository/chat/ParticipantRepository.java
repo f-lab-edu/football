@@ -19,8 +19,9 @@ public interface ParticipantRepository extends JpaRepository<Participant, Intege
 
   Optional<Participant> findById(Participant participant);
 
-  @EntityGraph(attributePaths = "user")
-  @Query("SELECT p FROM Participant p WHERE p.channel.id = :channelId")
+  @Query("SELECT p FROM Participant p join fetch p.user WHERE p.channel.id = :channelId")
+  List<Participant> findAllByChannelIdFetchJoin(@Param(value = "channelId") int channelId);
+
   List<Participant> findAllByChannelId(@Param(value = "channelId") int channelId);
 
   @Query("SELECT p.userId FROM Participant p WHERE p.channel.id = :channelId")
