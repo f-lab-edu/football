@@ -2,15 +2,7 @@ package com.flab.football.domain;
 
 import java.util.ArrayList;
 import java.util.List;
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
-import javax.persistence.OneToOne;
-import javax.persistence.Table;
+import javax.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -35,17 +27,18 @@ public class Participant {
   @Column(name = "id")
   private int id;
 
+  // 외래키 값을 그대로 받아오는 형태
   @Column(name = "channel_id", insertable = false, updatable = false)
   private int channelId;
 
   @Column(name = "user_id", insertable = false, updatable = false)
   private int userId;
 
-  @ManyToOne
+  @ManyToOne(fetch = FetchType.LAZY)
   @JoinColumn(name = "channel_id", referencedColumnName = "id")
   private Channel channel;
 
-  @OneToOne
+  @OneToOne(fetch = FetchType.LAZY)
   @JoinColumn(name = "user_id", referencedColumnName = "id")
   private User user;
 
