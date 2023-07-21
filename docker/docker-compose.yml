@@ -2,10 +2,10 @@ version : "3"
 services:
   db:
     platform: linux/x86_64
-    container_name: football_db
+    container_name: football-mysql
     image: mysql
     environment:
-      MYSQL_DATABASE: football_db
+      MYSQL_DATABASE: football-mysql
       MYSQL_USER: football
       MYSQL_PASSWORD: 1234
       MYSQL_ROOT_PASSWORD: 1234
@@ -16,7 +16,7 @@ services:
     restart: always
 
   redis-cluster:
-    container_name: redis-master-1
+    container_name: football-redis-master-1
     image: redis:latest
     command: redis-server /usr/local/etc/redis/redis.conf
     volumes:
@@ -32,7 +32,7 @@ services:
 
   redis-master-2:
     network_mode: "service:redis-cluster"
-    container_name: redis-master-2
+    container_name: football-redis-master-2
     image: redis:latest
     command: redis-server /usr/local/etc/redis/redis.conf
     volumes:
@@ -41,7 +41,7 @@ services:
 
   redis-master-3:
     network_mode: "service:redis-cluster"
-    container_name: redis-master-3
+    container_name: football-redis-master-3
     image: redis:latest
     command: redis-server /usr/local/etc/redis/redis.conf
     volumes:
@@ -50,7 +50,7 @@ services:
 
   redis-slave-1:
     network_mode: "service:redis-cluster"
-    container_name: redis-slave-1
+    container_name: football-redis-slave-1
     image: redis:latest
     command: redis-server /usr/local/etc/redis/redis.conf
     volumes:
@@ -59,7 +59,7 @@ services:
 
   redis-slave-2:
     network_mode: "service:redis-cluster"
-    container_name: redis-slave-2
+    container_name: football-redis-slave-2
     image: redis:latest
     command: redis-server /usr/local/etc/redis/redis.conf
     volumes:
@@ -68,7 +68,7 @@ services:
 
   redis-slave-3:
     network_mode: "service:redis-cluster"
-    container_name: redis-slave-3
+    container_name: football-redis-slave-3
     image: redis:latest
     command: redis-server /usr/local/etc/redis/redis.conf
     volumes:
