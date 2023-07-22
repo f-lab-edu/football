@@ -2,7 +2,7 @@ version : "3"
 services:
   elasticsearch:
     image: docker.elastic.co/elasticsearch/elasticsearch:7.15.0
-    container_name: football_elastic
+    container_name: football-elastic
     environment:
       - node.name=elasticsearch
       - cluster.name=es-docker-cluster
@@ -21,7 +21,7 @@ services:
 
   kibana:
     image: docker.elastic.co/kibana/kibana:7.15.0
-    container_name: football_kibana
+    container_name: football-kibana
     ports:
       - "5601:5601"
     environment:
@@ -32,7 +32,7 @@ services:
 
   apm:
     image: docker.elastic.co/apm/apm-server:7.15.0
-    container_name: football_apm
+    container_name: football-apm
     ports:
       - "8200:8200"
     volumes:
